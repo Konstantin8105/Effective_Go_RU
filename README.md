@@ -8,50 +8,25 @@ go version go1.7.4
 <h2 id="introduction">Введение</h2>
 
 <p>
-Go - это новый язык программирования. Although it borrows ideas from
-existing languages,
-it has unusual properties that make effective Go programs
-different in character from programs written in its relatives.
-A straightforward translation of a C++ or Java program into Go
-is unlikely to produce a satisfactory result&mdash;Java programs
-are written in Java, not Go.
-On the other hand, thinking about the problem from a Go
-perspective could produce a successful but quite different
-program.
-In other words,
-to write Go well, it's important to understand its properties
-and idioms.
-It's also important to know the established conventions for
-programming in Go, such as naming, formatting, program
-construction, and so on, so that programs you write
-will be easy for other Go programmers to understand.
+Go - это новый язык программирования. Хотя он заимствует идеи из существующих языков, он обладает необычными свойствами, которые делают эффективные программы Go отличающиеся по своему характеру от программ, написанных на его родственных. Прямолинейный перевод C++ или Java программ в Go вряд ли даст удовлетворительный результат, т.к. Java программы написаны на Java, не на Go. С другой стороны, думая о проблеме с точки зрения Go можно добиться успеха, но это уже другая программа. Другими словами, для написания на Go хорошо, важно понимать его особенности и идиомы.
+Также важно знать установленные соглашения для программирования на Go, такие как именование, форматирование, разработка программ и так далее, так чтобы программы написанные Вами были простыми для понимания другими программистами Go.
 </p>
 
 <p>
-This document gives tips for writing clear, idiomatic Go code.
-It augments the <a href="/ref/spec">language specification</a>,
-the <a href="//tour.golang.org/">Tour of Go</a>,
-and <a href="/doc/code.html">How to Write Go Code</a>,
-all of which you
-should read first.
+Этот документ дает примеры для написания чистого, идеоматичного кода на Go.
+Он дополняет <a href="https://golang.org/ref/spec">спецификацию языка</a>,
+ <a href="https://tour.golang.org/">Тур по Go</a>,
+и <a href="https://golang.org/doc/code.html">Как написать Go код</a>,
+каждую из которых необходимо прочитать в первую очередь.
 </p>
 
-<h3 id="examples">Examples</h3>
+<h3 id="examples">Примеры</h3>
 
 <p>
-The <a href="/src/">Go package sources</a>
-are intended to serve not
-only as the core library but also as examples of how to
-use the language.
-Moreover, many of the packages contain working, self-contained
-executable examples you can run directly from the
-<a href="//golang.org">golang.org</a> web site, such as
-<a href="//golang.org/pkg/strings/#example_Map">this one</a> (if
-necessary, click on the word "Example" to open it up).
-If you have a question about how to approach a problem or how something
-might be implemented, the documentation, code and examples in the
-library can provide answers, ideas and
-background.
+<a href="https://golang.org/src/">Go пакеты исходных кодов</a>
+предназначены не только в качестве основных библиотек, но и в качестве примеров использования языка.
+Кроме того, многие пакеты имеют работающие, автономные исполняемые примеры и Вы можете запустить напрямую с помощью <a href="https://golang.org">golang.org</a> страницы, такие как <a href="https://golang.org/pkg/strings/#example_Map">этот</a> ( если  необходимо, нажмите на слово "Примеры" чтобы открыть его).
+Если у Вас есть вопрос о том как решить какую-либо проблему или как что-то реализовать, то документация, исходные коды и примеры в библиотеке могут дать ответ, идею или объяснение.
 </p>
 
 
