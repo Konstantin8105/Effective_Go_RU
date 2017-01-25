@@ -30,7 +30,7 @@ Go - это новый язык программирования. Хотя он 
 </p>
 
 
-<h2 id="formatting">Formatting</h2>
+<h2 id="formatting">Форматирование</h2>
 
 <p>
 Formatting issues are the most contentious
