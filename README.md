@@ -14,17 +14,17 @@ Go - это новый язык программирования. Хотя он 
 
 
 Этот документ дает примеры для написания чистого, идеоматичного кода на Go.
-Он дополняет [спецификацию языка]{https://golang.org/ref/spec},
- [Тур по Go]{https://tour.golang.org/},
-и [Как написать на Go]{https://golang.org/doc/code.html},
+Он дополняет [спецификацию языка](https://golang.org/ref/spec),
+ [Тур по Go](https://tour.golang.org/),
+и [Как написать на Go](https://golang.org/doc/code.html),
 каждую из которых необходимо прочитать в первую очередь.
 
 
 ### Примеры
 
 
-[Go пакеты исходных кодов]{https://golang.org/src/} предназначены не только в качестве основных библиотек, но и в качестве примеров использования языка.
-Кроме того, многие пакеты имеют работающие, автономные исполняемые примеры и Вы можете запустить напрямую с помощью [golang.org]{https://golang.org} страницы, такие как [этот]{https://golang.org/pkg/strings/#example_Map} ( если  необходимо, нажмите на слово "Примеры" чтобы открыть его).
+[Go пакеты исходных кодов](https://golang.org/src/) предназначены не только в качестве основных библиотек, но и в качестве примеров использования языка.
+Кроме того, многие пакеты имеют работающие, автономные исполняемые примеры и Вы можете запустить напрямую с помощью [golang.org](https://golang.org) страницы, такие как [этот](https://golang.org/pkg/strings/#example_Map) ( если  необходимо, нажмите на слово "Примеры" чтобы открыть его).
 Если у Вас есть вопрос о том как решить какую-либо проблему или как что-то реализовать, то документация, исходные коды и примеры в библиотеке могут дать ответ, идею или объяснение.
 
 
@@ -145,30 +145,16 @@ package regexp
 
 Не требуется дополнительное формативание, к примеру баннер из * (звездочек).
 Шрифт для сформированного результата не обязательно будет миниширинный, поэтому не стои использовать выравнивание пробелами ```godoc```, также как ```gofmt```, заботиться об этом.
+Комментарии это интерпретируется как простой текст, поэтому HTML и другие аннотации такие как ```_this_```поспроизводяться *дословно* и поэтому не должно использоваться.
+Одна установка ```godoc``` действительно делает отображение текста как моноширинного, подходит для вставки короткого кода.
+*Комментарий пакета* для [```fmt```]{https://golang.org/pkg/fmt/} пакета использует это для лучшего эффекта.
 
-The comments are uninterpreted plain text, so HTML and other
-annotations such as ```_this_``` will reproduce *verbatim* and should
-not be used.
-One adjustment ```godoc``` does do is to display indented
-text in a fixed-width font, suitable for program snippets.
-The package comment for the
-<a href="/pkg/fmt/">```fmt``` package</a> uses this to good effect.
+В зависимости от контекста, ```godoc``` не может переформатировать комментарии, поэтому убедитесь что это выглялит хорошо:
+используйте правильное правописание, знаки препинятия и структуру предложения,
+use correct spelling, punctuation, and sentence structure, и так далее.
 
-
-
-Depending on the context, ```godoc``` might not even
-reformat comments, so make sure they look good straight up:
-use correct spelling, punctuation, and sentence structure,
-fold long lines, and so on.
-
-
-
-Inside a package, any comment immediately preceding a top-level declaration
-serves as a *doc comment* for that declaration.
-Every exported (capitalized) name in a program should
-have a doc comment.
-
-
+Любые комментарии внутри пакета установленые до диклорации служат как *doc comment* для диклорации.
+Каждое экспортируемое(начанающаяся с большой первой буквой) должна иметь *doc comment*.
 
 Doc comments work best as complete sentences, which allow
 a wide variety of automated presentations.
