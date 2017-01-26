@@ -43,7 +43,7 @@ Go - это новый язык программирования. Хотя он 
 К примеру, нет необходимости тратить время на выравнивание комментариев в структуре кода. ```Gofmt``` сделает это за Вас. Принимая во внимание принятые соглашения.
 
 
-```
+```golang
 type T struct {
     name string // name of the object
     value int // its value
@@ -54,7 +54,7 @@ type T struct {
 _ ```gofmt``` будет выравнивать по колонкам:
 
 
-```
+```golang
 type T struct {
     name    string // name of the object
     value   int    // its value
@@ -110,7 +110,7 @@ and C++-стиль ```//``` для комментариев однострочн
 Он сначало появляется на странице ```godoc``` и должна представлять из себя детальную информацию, которой можно следовать.
 
 
-```
+```golang
 /*
 Package regexp implements a simple library for regular expressions.
 
@@ -137,7 +137,7 @@ package regexp
 Если пакет простой, то комментарий пакет может быть кратким.
 
 
-```
+```golang
 // Package path implements utility routines for
 // manipulating slash-separated filename paths.
 ```
@@ -176,7 +176,7 @@ The first sentence should be a one-sentence summary that
 starts with the name being declared.
 
 
-```
+```golang
 // Compile parses a regular expression and returns, if successful,
 // a Regexp that can be used to match against text.
 func Compile(str string) (*Regexp, error) {
@@ -190,7 +190,7 @@ the parsing function for regular expressions, so you ran
 the command,
 
 
-```
+```command
 $ godoc regexp | grep parse
 ```
 
@@ -201,7 +201,7 @@ doc comment with the name, you'd see something like this,
 which recalls the word you're looking for.
 
 
-```
+```command
 $ godoc regexp | grep parse
     Compile parses a regular expression and returns, if successful, a Regexp
     parsed. It simplifies safe initialization of global variables holding
@@ -215,7 +215,7 @@ A single doc comment can introduce a group of related constants or variables.
 Since the whole declaration is presented, such a comment can often be perfunctory.
 
 
-```
+```golang
 // Error codes returned by failures to parse an expression.
 var (
     ErrInternal      = errors.New("regexp: internal error")
@@ -230,7 +230,7 @@ Grouping can also indicate relationships between items,
 such as the fact that a set of variables is protected by a mutex.
 
 
-```
+```golang
 var (
     countLock   sync.Mutex
     inputCount  uint32
@@ -258,7 +258,7 @@ When a package is imported, the package name becomes an accessor for the
 contents.  After
 
 
-```
+```golang
 import "bytes"
 ```
 
@@ -330,7 +330,7 @@ the field from the method.
 A setter function, if needed, will likely be called ```SetOwner```.
 Both names read well in practice:
 
-```
+```golang
 owner := obj.Owner()
 if owner != user {
     obj.SetOwner(user)
@@ -342,17 +342,12 @@ if owner != user {
 
 By convention, one-method interfaces are named by
 the method name plus an -er suffix or similar modification
-to construct an agent noun: ```Reader```,
-```Writer```, ```Formatter```,
-```CloseNotifier``` etc.
+to construct an agent noun: ```Reader```, ```Writer```, ```Formatter```, ```CloseNotifier``` etc.
 
 
 
 There are a number of such names and it's productive to honor them and the function
-names they capture.
-```Read```, ```Write```, ```Close```, ```Flush```,
-```String``` and so on have
-canonical signatures and meanings.  To avoid confusion,
+names they capture. ```Read```, ```Write```, ```Close```, ```Flush```, ```String``` and so on have canonical signatures and meanings.  To avoid confusion,
 don't give your method one of those names unless it
 has the same signature and meaning.
 Conversely, if your type implements a method with the
@@ -384,7 +379,7 @@ The rule is this. If the last token before a newline is an identifier
 a basic literal such as a number or string constant, or one of the
 tokens
 
-```
+```golang
 break continue fallthrough return ++ -- ) }
 ```
 
