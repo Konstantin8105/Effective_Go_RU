@@ -99,7 +99,7 @@ x&lt;&lt;8 + y&lt;&lt;16
 <h2 id="commentary">Комментарии</h2>
 
 <p>
-Go использует C-стиль <code>```/* */```</code> для блока комментариев
+Go использует C-стиль ``/* */`` для блока комментариев
 and C++-стиль <code>//</code> для комментариев однострочных.
 Line comments are the norm;
 block comments appear mostly as package comments, but
