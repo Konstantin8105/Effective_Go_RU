@@ -57,7 +57,7 @@ type T struct {
 </pre>
 
 <p>
-<code>gofmt</code> будкет выравнивать по колонкам:
+<code>gofmt</code> будет выравнивать по колонкам:
 </p>
 
 <pre>
@@ -99,8 +99,8 @@ x&lt;&lt;8 + y&lt;&lt;16
 <h2 id="commentary">Комментарии</h2>
 
 <p>
-Go provides C-style <code>/* */</code> block comments
-and C++-style <code>//</code> line comments.
+Go использует C-стиль <code>```/* */```</code> для блока комментариев
+and C++-стиль <code>//</code> для комментариев однострочных.
 Line comments are the norm;
 block comments appear mostly as package comments, but
 are useful within an expression or to disable large swaths of code.
@@ -128,6 +128,7 @@ should set up the detailed documentation that follows.
 </p>
 
 <pre>
+```
 /*
 Package regexp implements a simple library for regular expressions.
 
@@ -148,6 +149,7 @@ The syntax of the regular expressions accepted is:
         '(' regexp ')'
 */
 package regexp
+```
 </pre>
 
 <p>
