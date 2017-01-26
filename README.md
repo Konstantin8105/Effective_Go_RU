@@ -45,10 +45,8 @@ Go - это новый язык программирования. Хотя он 
 </p>
 
 <p>
-As an example, there's no need to spend time lining up
-the comments on the fields of a structure.
-<code>Gofmt</code> will do that for you.  Given the
-declaration
+К примеру, нет необходимости тратить время на выравнивание комментариев в структуре кода.
+<code>Gofmt</code> сделает это за Вас. Принимая во внимание принятые соглашения.
 </p>
 
 <pre>
@@ -59,7 +57,7 @@ type T struct {
 </pre>
 
 <p>
-<code>gofmt</code> will line up the columns:
+<code>gofmt</code> будкет выравнивать по колонкам:
 </p>
 
 <pre>
@@ -70,38 +68,35 @@ type T struct {
 </pre>
 
 <p>
-All Go code in the standard packages has been formatted with <code>gofmt</code>.
+Все стандартные пакеты Go отформатированны с помощью <code>gofmt</code>.
 </p>
 
 
 <p>
-Some formatting details remain.  Very briefly:
+Некоторые детали форматирования. Очень кратко:
 </p>
 
 <dl>
-    <dt>Indentation</dt>
-    <dd>We use tabs for indentation and <code>gofmt</code> emits them by default.
-    Use spaces only if you must.
+    <dt>Абзац</dt>
+    <dd>Мы используем табуляцию для абзацев и <code>gofmt</code> делает это по умолчанию. Используйте пробелы только если вы должны.
     </dd>
-    <dt>Line length</dt>
+    <dt>Длина строки</dt>
     <dd>
-    Go has no line length limit.  Don't worry about overflowing a punched card.
-    If a line feels too long, wrap it and indent with an extra tab.
+    Go не имеет предела длинны строки. Не беспокойтесь о длинных строках. Если длина строки слишком длинная, то переведите на другуб строку и сделайте с дополнительной табуляцией.
     </dd>
-    <dt>Parentheses</dt>
+    <dt>Круглые скобки</dt>
     <dd>
-    Go needs fewer parentheses than C and Java: control structures (<code>if</code>,
-    <code>for</code>, <code>switch</code>) do not have parentheses in
-    their syntax.
-    Also, the operator precedence hierarchy is shorter and clearer, so
+    Go нуждается в меньшем количестве круглых скобок чем C и Java: структуры ветвления, цикла (<code>if</code>,
+    <code>for</code>, <code>switch</code>) не имеют круглых скобок в своем синтаксисе.
+    Также, иерархия операторов стала проще и короче. К примеру,
 <pre>
 x&lt;&lt;8 + y&lt;&lt;16
 </pre>
-    means what the spacing implies, unlike in the other languages.
+    добавлением пробелов, в отличии от других языков.
     </dd>
 </dl>
 
-<h2 id="commentary">Commentary</h2>
+<h2 id="commentary">Комментарии</h2>
 
 <p>
 Go provides C-style <code>/* */</code> block comments
