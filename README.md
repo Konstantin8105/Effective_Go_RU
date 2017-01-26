@@ -92,7 +92,7 @@ x<<8 + y<<16
 <h2 id="commentary">Комментарии</h2>
 
 
-Go использует C-стиль `````/* */````` для блока комментариев
+Go использует C-стиль ```/* */``` для блока комментариев
 and C++-стиль ```//``` для комментариев однострочных.
 Типично используется однострочные комментарии; Блок комментариев в основном используется для комментировании пакетов, но также для выразительности или отключения большого участка кода.
 
@@ -104,13 +104,12 @@ and C++-стиль ```//``` для комментариев однострочн
 
 
 
-Каждый пакет должен иметь <i>комментарии пакета</i>, это блок комментариев предшествующий диклорации пакета.
+Каждый пакет должен иметь *комментарии пакета*, это блок комментариев предшествующий диклорации пакета.
 Для пакетов состоящий из нескольких файлов, комментарии пакета должны быть расположены в одном файле или в любой из них.
 Комментарии пакета должен представлять информацию о пакете целиком.
 Он сначало появляется на странице ```godoc``` и должна представлять из себя детальную информацию, которой можно следовать.
 
 
-```
 ```
 /*
 Package regexp implements a simple library for regular expressions.
@@ -133,7 +132,6 @@ The syntax of the regular expressions accepted is:
 */
 package regexp
 ```
-```
 
 
 Если пакет простой, то комментарий пакет может быть кратким.
@@ -149,7 +147,7 @@ package regexp
 Шрифт для сформированного результата не обязательно будет миниширинный, поэтому не стои использовать выравнивание пробелами ```godoc```, также как ```gofmt```, заботиться об этом.
 
 The comments are uninterpreted plain text, so HTML and other
-annotations such as ```_this_``` will reproduce <i>verbatim</i> and should
+annotations such as ```_this_``` will reproduce *verbatim* and should
 not be used.
 One adjustment ```godoc``` does do is to display indented
 text in a fixed-width font, suitable for program snippets.
@@ -166,7 +164,7 @@ fold long lines, and so on.
 
 
 Inside a package, any comment immediately preceding a top-level declaration
-serves as a <i>doc comment</i> for that declaration.
+serves as a *doc comment* for that declaration.
 Every exported (capitalized) name in a program should
 have a doc comment.
 
@@ -273,7 +271,7 @@ lower case, single-word names; there should be no need for underscores
 or mixedCaps.
 Err on the side of brevity, since everyone using your
 package will be typing that name.
-And don't worry about collisions <i>a priori</i>.
+And don't worry about collisions *a priori*.
 The package name is only the default name for imports; it need not be unique
 across all source code, and in the rare case of a collision the
 importing package can choose a different name to use locally.
@@ -634,7 +632,7 @@ If you only need the second item in the range (the value), use the <em>blank ide
 
 ```
 sum := 0
-for _, value := range array {
+for _ , value := range array {
     sum += value
 }
 ```
@@ -834,7 +832,7 @@ and modifying an argument passed by address.
 In C, a write error is signaled by a negative count with the
 error code secreted away in a volatile location.
 In Go, ```Write```
-can return a count <i>and</i> an error: &ldquo;Yes, you wrote some
+can return a count *and* an error: &ldquo;Yes, you wrote some
 bytes but not all of them because you filled the device&rdquo;.
 The signature of the ```Write``` method on files from
 package ```os``` is:
@@ -927,7 +925,7 @@ func ReadFull(r Reader, buf []byte) (n int, err error) {
 
 
 Go's ```defer``` statement schedules a function call (the
-<i>deferred</i> function) to be run immediately before the function
+*deferred* function) to be run immediately before the function
 executing the ```defer``` returns.  It's an unusual but
 effective way to deal with situations such as resources that must be
 released regardless of which path a function takes to return.  The
@@ -969,8 +967,8 @@ which is much clearer than placing it at the end of the function.
 
 
 The arguments to the deferred function (which include the receiver if
-the function is a method) are evaluated when the <i>defer</i>
-executes, not when the <i>call</i> executes.  Besides avoiding worries
+the function is a method) are evaluated when the *defer*
+executes, not when the *call* executes.  Besides avoiding worries
 about variables changing values as the function executes, this means
 that a single deferred call site can defer multiple function
 executions.  Here's a silly example.
@@ -1137,7 +1135,7 @@ func NewFile(fd int, name string) *File {
 
 
 There's a lot of boiler plate in there.  We can simplify it
-using a <i>composite literal</i>, which is
+using a *composite literal*, which is
 an expression that creates a
 new instance each time it is evaluated.
 
@@ -1167,7 +1165,7 @@ so we can combine these last two lines.
 
 
 The fields of a composite literal are laid out in order and must all be present.
-However, by labeling the elements explicitly as <i>field</i>```:```<i>value</i>
+However, by labeling the elements explicitly as *field*```:```*value*
 pairs, the initializers can appear in any
 order, with the missing ones left as their respective zero values.  Thus we could say
 
@@ -1198,7 +1196,7 @@ m := map[int]string{Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
 
 
 Back to allocation.
-The built-in function ```make(T, ```<i>args</i>```)``` serves
+The built-in function ```make(T, ```*args*```)``` serves
 a purpose different from ```new(T)```.
 It creates slices, maps, and channels only, and it returns an <em>initialized</em>
 (not <em>zeroed</em>)
@@ -1272,7 +1270,7 @@ Arrays are values. Assigning one array to another copies all the elements.
 </li>
 <li>
 In particular, if you pass an array to a function, it
-will receive a <i>copy</i> of the array, not a pointer to it.
+will receive a *copy* of the array, not a pointer to it.
 <li>
 The size of an array is part of its type.  The types ```[10]int```
 and ```[20]int``` are distinct.
@@ -1317,18 +1315,16 @@ the elements of the slice will be visible to the caller, analogous to
 passing a pointer to the underlying array.  A ```Read```
 function can therefore accept a slice argument rather than a pointer
 and a count; the length within the slice sets an upper
-limit of how much data to read.  Here is the signature of the
-```Read``` method of the ```File``` type in package
-```os```:
+limit of how much data to read.  Here is the signature of the ```Read``` method of the ```File``` type in package ```os```:
 
 ```
-func (f *File) Read(buf []byte) (n int, err error)
+func (f * File) Read(buf []byte) (n int, err error)
 ```
 
 The method returns the number of bytes read and an error value, if
 any.
 To read into the first 32 bytes of a larger buffer
-```buf```, <i>slice</i> (here used as a verb) the buffer.
+```buf```, *slice* (here used as a verb) the buffer.
 
 ```
     n, err := f.Read(buf[0:32])
@@ -1352,7 +1348,7 @@ the moment, the following snippet would also read the first 32 bytes of the buff
 
 The length of a slice may be changed as long as it still fits within
 the limits of the underlying array; just assign it to a slice of
-itself.  The <i>capacity</i> of a slice, accessible by the built-in
+itself.  The *capacity* of a slice, accessible by the built-in
 function ```cap```, reports the maximum length the slice may
 assume.  Here is a function to append data to a slice.  If the data
 exceeds the capacity, the slice is reallocated.  The
@@ -1365,7 +1361,7 @@ func Append(slice, data []byte) []byte {
     l := len(slice)
     if l + len(data) &gt; cap(slice) {  // reallocate
         // Allocate double what's needed, for future growth.
-        newSlice := make([]byte, (l+len(data))*2)
+        newSlice := make([]byte, (l+len(data))* 2)
         // The copy function is predeclared and works for any slice type.
         copy(newSlice, slice)
         slice = newSlice
@@ -1551,7 +1547,7 @@ you can use the <a href="#blank">blank identifier</a> (```_```)
 in place of the usual variable for the value.
 
 ```
-_, present := timeZone[tz]
+_ , present := timeZone[tz]
 ```
 
 To delete a map entry, use the ```delete```
@@ -1681,7 +1677,7 @@ a method with the signature ```String() string``` on the type.
 For our simple type ```T```, that might look like this.
 
 ```
-func (t *T) String() string {
+func (t * T) String() string {
     return fmt.Sprintf("%d/%g/%q", t.a, t.b, t.c)
 }
 fmt.Printf("%v\n", t)
@@ -1774,7 +1770,7 @@ for a min function that chooses the least of a list of integers:
 ```
 func Min(a ...int) int {
     min := int(^uint(0) >> 1)  // largest int
-    for _, i := range a {
+    for _ , i := range a {
         if i &lt; min {
             min = i
         }
@@ -1791,10 +1787,10 @@ is different from our custom ```Append``` function above.
 Schematically, it's like this:
 
 ```
-func append(slice []<i>T</i>, elements ...<i>T</i>) []<i>T</i>
+func append(slice []*T*, elements ...*T*) []*T*
 ```
 
-where <i>T</i> is a placeholder for any given type.  You can't
+where *T* is a placeholder for any given type.  You can't
 actually write a function in Go where the type ```T```
 is determined by the caller.
 That's why ```append``` is built in: it needs support from the
@@ -1960,7 +1956,7 @@ func (slice ByteSlice) Append(data []byte) []byte {
 
 This still requires the method to return the updated slice.  We can
 eliminate that clumsiness by redefining the method to take a
-<i>pointer</i> to a ```ByteSlice``` as its receiver, so the
+*pointer* to a ```ByteSlice``` as its receiver, so the
 method can overwrite the caller's slice.
 
 ```
