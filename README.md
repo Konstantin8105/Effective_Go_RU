@@ -99,32 +99,22 @@ x&lt;&lt;8 + y&lt;&lt;16
 <h2 id="commentary">Комментарии</h2>
 
 <p>
-Go использует C-стиль ``/* */`` для блока комментариев
+Go использует C-стиль ``<code>/* */</code>`` для блока комментариев
 and C++-стиль <code>//</code> для комментариев однострочных.
-Line comments are the norm;
-block comments appear mostly as package comments, but
-are useful within an expression or to disable large swaths of code.
+Типично используется однострочные комментарии; Блок комментариев в основном используется для комментировании пакетов, но также для выразительности или отключения большого участка кода.
 </p>
 
 <p>
-The program—and web server—<code>godoc</code> processes
-Go source files to extract documentation about the contents of the
-package.
-Comments that appear before top-level declarations, with no intervening newlines,
-are extracted along with the declaration to serve as explanatory text for the item.
-The nature and style of these comments determines the
-quality of the documentation <code>godoc</code> produces.
+Программа -и веб-сервер-<code>godoc</code> обрабатывает Go исходники для формирования документации о содержимом пакета.
+Комментарии расположенные до верхней объявлением(диклорацией) без добавления пустых строк извлекаются вместе с диклорацией для пояснения данного элемента.
+Характер и стиль комментариев напрямую влияет на качество документации производимой <code>godoc</code>.
 </p>
 
 <p>
-Every package should have a <i>package comment</i>, a block
-comment preceding the package clause.
-For multi-file packages, the package comment only needs to be
-present in one file, and any one will do.
-The package comment should introduce the package and
-provide information relevant to the package as a whole.
-It will appear first on the <code>godoc</code> page and
-should set up the detailed documentation that follows.
+Каждый пакет должен иметь <i>комментарии пакета</i>, это блок комментариев предшествующий диклорации пакета.
+Для пакетов состоящий из нескольких файлов, комментарии пакета должны быть расположены в одном файле или в любой из них.
+Комментарии пакета должен представлять информацию о пакете целиком.
+Он сначало появляется на странице <code>godoc</code> и должна представлять из себя детальную информацию, которой можно следовать.
 </p>
 
 <pre>
@@ -153,7 +143,7 @@ package regexp
 </pre>
 
 <p>
-If the package is simple, the package comment can be brief.
+Если пакет простой, то комментарий пакет может быть кратким.
 </p>
 
 <pre>
@@ -162,10 +152,9 @@ If the package is simple, the package comment can be brief.
 </pre>
 
 <p>
-Comments do not need extra formatting such as banners of stars.
-The generated output may not even be presented in a fixed-width font, so don't depend
-on spacing for alignment&mdash;<code>godoc</code>, like <code>gofmt</code>,
-takes care of that.
+Не требуется дополнительное формативание, к примеру баннер из * (звездочек).
+Шрифт для сформированного результата не обязательно будет миниширинный, поэтому не стои использовать выравнивание пробелами <code>godoc</code>, также как <code>gofmt</code>, заботиться об этом.
+
 The comments are uninterpreted plain text, so HTML and other
 annotations such as <code>_this_</code> will reproduce <i>verbatim</i> and should
 not be used.
