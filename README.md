@@ -80,7 +80,7 @@ type T struct {
     </dd>
     <dt>Круглые скобки</dt>
     <dd>
-    Go нуждается в меньшем количестве круглых скобок чем C и Java: структуры ветвления, цикла (```if```, ```for``` , ```switch```) не имеют круглых скобок в своем синтаксисе.
+    Go нуждается в меньшем количестве круглых скобок чем C и Java: структуры ветвления, цикла ( ```if``` , ```for``` , ```switch```) не имеют круглых скобок в своем синтаксисе.
     Также, иерархия операторов стала проще и короче. К примеру,
 ```
 x<<8 + y<<16
@@ -89,7 +89,7 @@ x<<8 + y<<16
     </dd>
 </dl>
 
-<h2 id="commentary">Комментарии</h2>
+## Комментарии
 
 
 Go использует C-стиль ```/* */``` для блока комментариев
@@ -150,8 +150,7 @@ package regexp
 *Комментарий пакета* для [```fmt```](https://golang.org/pkg/fmt/) пакета использует это для лучшего эффекта.
 
 В зависимости от контекста, ```godoc``` не может переформатировать комментарии, поэтому убедитесь что это выглялит хорошо:
-используйте правильное правописание, знаки препинятия и структуру предложения,
-use correct spelling, punctuation, and sentence structure, и так далее.
+используйте правильное правописание, знаки препинятия и структуру предложения, и так далее.
 
 Любые комментарии внутри пакета установленые до диклорации служат как *doc comment* для диклорации.
 Каждое экспортируемое(начанающаяся с большой первой буквой) должна иметь *doc comment*.
@@ -165,24 +164,14 @@ use correct spelling, punctuation, and sentence structure, и так далее.
 func Compile(str string) (*Regexp, error) {
 ```
 
-
-If the name always begins the comment, the output of ```godoc```
-can usefully be run through ```grep```.
-Imagine you couldn't remember the name "Compile" but were looking for
-the parsing function for regular expressions, so you ran
-the command,
-
+Если комментарий начинается с имени, то в результате ```godoc``` может с пользой запустить ```grep```.
+Представте что Вы не можете вспомнить имя "Compile", но Вы ищите *the parsing function* для регулярных выражений и тогда вы можете запустить
 
 ```command
 $ godoc regexp | grep parse
 ```
 
-
-If all the doc comments in the package began, "This function...", ```grep```
-wouldn't help you remember the name. But because the package starts each
-doc comment with the name, you'd see something like this,
-which recalls the word you're looking for.
-
+Если все *doc comments* в пакете начанаються с "This function...", ```grep``` не сможет помочь с вспоминанием имени. Только потому что *doc comment*  пакета начинается с имени, Вы можете увидеть что то вроде этого, которое напоминает слово которое вы ищите.
 
 ```command
 $ godoc regexp | grep parse
@@ -192,11 +181,9 @@ $ godoc regexp | grep parse
 $
 ```
 
-
-Go's declaration syntax allows grouping of declarations.
-A single doc comment can introduce a group of related constants or variables.
-Since the whole declaration is presented, such a comment can often be perfunctory.
-
+Диклорация синтаксиса Go допускает групповую диклорацию.
+В один *doc comment* может представлять целую группу констант или переменных.
+Однако такая целиковая диклорация выглядит небрежно.
 
 ```golang
 // Error codes returned by failures to parse an expression.
@@ -208,10 +195,7 @@ var (
 )
 ```
 
-
-Grouping can also indicate relationships between items,
-such as the fact that a set of variables is protected by a mutex.
-
+Группировка также может показать взаимосвязи между элементами, которые к примеру по-факту группа переменных защищенных mutex.
 
 ```golang
 var (
@@ -222,19 +206,13 @@ var (
 )
 ```
 
-<h2 id="names">Names</h2>
+## Именование
 
+Именование очень важно в Go, как и в других языках.
+И оно имеет семантический эффект: Видимость за пределами пакета означает что первая буква должна быть большой.
+Именно поэтому стоит уделить время на обсуждение соглашения об именовании в Go программах.
 
-Names are as important in Go as in any other language.
-They even have semantic effect:
-the visibility of a name outside a package is determined by whether its
-first character is upper case.
-It's therefore worth spending a little time talking about naming conventions
-in Go programs.
-
-
-
-<h3 id="package-names">Package names</h3>
+### Именование пакетов
 
 
 When a package is imported, the package name becomes an accessor for the
