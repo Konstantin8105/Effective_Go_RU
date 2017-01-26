@@ -1,4 +1,4 @@
-# Effective_Go_RU (Эффективное программирование на языке Go)
+# Effective Go (RU) (Эффективное программирование на языке Go)
 
 Оригинал смотри: https://golang.org/doc/effective_go.html
 ```
@@ -16,7 +16,7 @@ Go - это новый язык программирования. Хотя он 
 Этот документ дает примеры для написания чистого, идеоматичного кода на Go.
 Он дополняет <a href="https://golang.org/ref/spec">спецификацию языка</a>,
  <a href="https://tour.golang.org/">Тур по Go</a>,
-и <a href="https://golang.org/doc/code.html">Как написать Go код</a>,
+и <a href="https://golang.org/doc/code.html">Как написать на Go</a>,
 каждую из которых необходимо прочитать в первую очередь.
 </p>
 
@@ -33,31 +33,15 @@ Go - это новый язык программирования. Хотя он 
 <h2 id="formatting">Форматирование</h2>
 
 <p>
-Formatting issues are the most contentious
-but the least consequential.
-People can adapt to different formatting styles
-but it's better if they don't have to, and
-less time is devoted to the topic
-if everyone adheres to the same style.
-The problem is how to approach this Utopia without a long
-prescriptive style guide.
+Форматирование является наиболее спорным и менее важным.
+Люди могут адаптироваться к различным стилям форматирования, но было бы лучше если бы этого не приходилось делать и меньше времени придавались этой теме, если бы все использовали одинаковый стиль.
+Проблема данной утопии в том как это сделать без длинного руководства по стилю.
 </p>
 
 <p>
-With Go we take an unusual
-approach and let the machine
-take care of most formatting issues.
-The <code>gofmt</code> program
-(also available as <code>go fmt</code>, which
-operates at the package level rather than source file level)
-reads a Go program
-and emits the source in a standard style of indentation
-and vertical alignment, retaining and if necessary
-reformatting comments.
-If you want to know how to handle some new layout
-situation, run <code>gofmt</code>; if the answer doesn't
-seem right, rearrange your program (or file a bug about <code>gofmt</code>),
-don't work around it.
+В Go мы используем нетипичный подход и передаем машине заботу о форматировании.
+<code>gofmt</code> программа (также доступна как <code>go fmt</code>, который действует на уровне пакета а не на уровне файлов) читающая код на Go и выпускает исходный код в стандарном стиле отступов и вертикальном выравнивании, сохраняющая и если необходимо переформатирует комментарии.
+Если Вы хотите знать - как справиться с новой ситуацией размещения кода, то запустите <code>gofmt</code>; если ответ не будет правильным, то <code>gofmt</code> поправить Вашу программу (или файл сообщит об ошибки <code>gofmt</code>), не работайте в обход форматирования программой <code>gofmt</code>.
 </p>
 
 <p>
