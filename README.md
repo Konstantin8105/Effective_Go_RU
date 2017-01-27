@@ -214,17 +214,14 @@ var (
 
 ### Именование пакетов
 
-
-When a package is imported, the package name becomes an accessor for the
-contents.  After
-
+Когда пакет импортируется, имя пакета используется для доступа к содержимому.
 
 ```golang
 import "bytes"
 ```
 
 
-the importing package can talk about ```bytes.Buffer```.  It's
+After the importing package can talk about ```bytes.Buffer```.  It's
 helpful if everyone using the package can use the same name to refer to
 its contents, which implies that the package name should be good:
 short, concise, evocative.  By convention, packages are given
