@@ -265,111 +265,62 @@ if owner != user {
 
 ### Точка с запятой
 
-Like C, Go's formal grammar uses semicolons to terminate statements,
-but unlike in C, those semicolons do not appear in the source.
-Instead the lexer uses a simple rule to insert semicolons automatically
-as it scans, so the input text is mostly free of them.
+Формально грамматика Go использует точку с запятой в конце операции(строки), как и в языке C, но не так как в языке C, так как точка с запятой не отображается в коде.
+Вместо закона используйте простое правило для вставки точки с запятой автоматически при сканировании, т.е. в большенстве случаев вводимый текст не имеет их.
 
+Правило в следующем.
 
-
-The rule is this. If the last token before a newline is an identifier
-(which includes words like ```int``` and ```float64```),
-a basic literal such as a number or string constant, or one of the
-tokens
+Если последний маркер перед символом новой строки является идентификатором (который включает в себя такие слова, как ```int``` и ```float64```), основным буквальным, например, номер или строковой константы, или один из маркеров
 
 ```golang
 break continue fallthrough return ++ -- ) }
 ```
+закон - всегда добавляйте точку с запятой после маркеров.
 
-the lexer always inserts a semicolon after the token.
-This could be summarized as, &ldquo;if the newline comes
-after a token that could end a statement, insert a semicolon&rdquo;.
+Несколько примеров:
 
-
-
-A semicolon can also be omitted immediately before a closing brace,
-so a statement such as
-
-```
-    go func() { for { dst &lt;- &lt;-src } }()
+```golang
+     go func() { for { dst <- <-src } }()
 ```
 
-needs no semicolons.
-Idiomatic Go programs have semicolons only in places such as
-```for``` loop clauses, to separate the initializer, condition, and
-continuation elements.  They are also necessary to separate multiple
-statements on a line, should you write code that way.
-
-
-
-One consequence of the semicolon insertion rules
-is that you cannot put the opening brace of a
-control structure (```if```, ```for```, ```switch```,
-or ```select```) on the next line.  If you do, a semicolon
-will be inserted before the brace, which could cause unwanted
-effects.  Write them like this
-
-
-```
-if i &lt; f() {
+```golang
+if i < f() {
     g()
 }
 ```
 
-not like this
+но не так
 
-```
-if i &lt; f()  // wrong!
+```golang
+if i < f()  // wrong!
 {           // wrong!
     g()
 }
 ```
 
 
-<h2 id="control-structures">Control structures</h2>
+## Управляющие структуры
 
+Управляющие структуры Go похоже на С, но отличается.
+Go не имеет ```do``` или ```while``` циклов, лишь обощенные ```for``` , ```switch``` которые более гибкие; ```if``` и ```switch``` допускают отсутствие инициализации как в ```for```; ```break``` и ```continue``` могут иметь ярлыки для индентификации чего именно прервать или продолжить и эти управляющие структуры включают переключитель типов - ```type switch``` и многоканальный коммуникатор ```select```.
 
-The control structures of Go are related to those of C but differ
-in important ways.
-There is no ```do``` or ```while``` loop, only a
-slightly generalized
-```for```;
-```switch``` is more flexible;
-```if``` and ```switch``` accept an optional
-initialization statement like that of ```for```;
-```break``` and ```continue``` statements
-take an optional label to identify what to break or continue;
-and there are new control structures including a type switch and a
-multiway communications multiplexer, ```select```.
-The syntax is also slightly different:
-there are no parentheses
-and the bodies must always be brace-delimited.
+Синтаксис также немного отличается: нет никаких круглых скобок и тело всегда должно иметь разделители - фигурные скобки ```{ }```.
 
+### If
 
-<h3 id="if">If</h3>
+В Go простое использование ```if``` условие выглядит так:
 
-
-In Go a simple ```if``` looks like this:
-
-```
-if x &gt; 0 {
+```golang
+if x > 0 {
     return y
 }
 ```
 
+Обязательные фигурные скобки поддерживают написание простых условиях ```if``` на несколько строк. Это хороший стиль в любом случае, особенно когда тело содержит управляющий оператор, такие как ```return``` или ```break```.
 
-Mandatory braces encourage writing simple ```if``` statements
-on multiple lines.  It's good style to do so anyway,
-especially when the body contains a control statement such as a
-```return``` or ```break```.
+Однако ```if``` и  ```switch``` допускают наличие начальных условий для создания локальной переменной.
 
-
-
-Since ```if``` and ```switch``` accept an initialization
-statement, it's common to see one used to set up a local variable.
-
-
-```
+```golang
 if err := file.Chmod(0664); err != nil {
     log.Print(err)
     return err
