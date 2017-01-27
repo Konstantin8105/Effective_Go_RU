@@ -220,73 +220,27 @@ var (
 import "bytes"
 ```
 
+После того, как пакет импорта может говорить о ```bytes.Buffer```. Это полезно, если все с помощью пакета можно использовать то же имя для обозначения его содержимого, что означает, что имя пакета должно быть хорошим: коротким, кратким, запоминающим. В соответствии с соглашением, пакеты приведены в нижнем регистре, имена однословные; не должно быть оснований для подчеркивания или mixedCaps. Ошибка краткости, означает что каждый кто используя ваш пакет будет вводить это имя. И не беспокойтесь о столкновениях *априори*. Имя пакета - Это то что импортируется по-умолчанию; оно не должно быть уникальным во всем исходном коде, а в редких случаях столкновения имя импортируемого пакета можно заменить на другое имя для использования на местном уровне. В любом случае, путаница встречается редко, так как имя файла в импорте определяет, какой именно пакет используется.
 
-After the importing package can talk about ```bytes.Buffer```.  It's
-helpful if everyone using the package can use the same name to refer to
-its contents, which implies that the package name should be good:
-short, concise, evocative.  By convention, packages are given
-lower case, single-word names; there should be no need for underscores
-or mixedCaps.
-Err on the side of brevity, since everyone using your
-package will be typing that name.
-And don't worry about collisions *a priori*.
-The package name is only the default name for imports; it need not be unique
-across all source code, and in the rare case of a collision the
-importing package can choose a different name to use locally.
-In any case, confusion is rare because the file name in the import
-determines just which package is being used.
+Другом соглашение является то, что имя пакета является базовым именем его исходного каталога; пакет ```src/encoding/base64``` импортируется как ```"encoding/base64"```, но имеет название ```base64```, а не ```encoding_base64``` и не ```encodingBase64```.
 
+Импортер пакета будет использовать имя для обозначения его содержимого, поэтому экспорт имен в пакет могут использовать этот факт, чтобы избежать повторения. (Не используйте ```import .```) Например, тип буферного чтения расположен в пакете ```bufio``` называется ```Reader```, а не ```BufReader```, т.к полхователи его видят как ```bufio.Reader```, и это кратко и ясно.
 
+Кроме того, так как импортируемые объекты адрессуються с именем пакета, к примеру ```bufio.Reader``` не будет конфликта с ```io.Reader```.
+Аналогично с функциями, для создания новую сущность(объекта) можно использовать имя ```ring.Ring```, которая объявлена как *конструктор* в Go; также допустимо вызов ```NewRing```, но так как ```Ring``` это характерна для определенного пакета и так как пакет называется ```ring```, то если использоать имя  просто как ```New```, то любой кто использует Ваш пакет будет видеть как ```ring.New```.
+Используйте структуру пакета для того чтобы хорошо подобрать имена.
 
-Another convention is that the package name is the base name of
-its source directory;
-the package in ```src/encoding/base64```
-is imported as ```"encoding/base64"``` but has name ```base64```,
-not ```encoding_base64``` and not ```encodingBase64```.
+Другой короткий пример ```once.Do```; ```once.Do(setup)``` читается неплохо и не будет улучшена если имя будет ```once.DoOrWaitUntilDone(setup)```.
+Длинные имена не делает более читабельным.
+В то время как документация может больше ценным, чем длинные имена.
 
+## Геттеры
 
-
-The importer of a package will use the name to refer to its contents,
-so exported names in the package can use that fact
-to avoid stutter.
-(Don't use the ```import .``` notation, which can simplify
-tests that must run outside the package they are testing, but should otherwise be avoided.)
-For instance, the buffered reader type in the ```bufio``` package is called ```Reader```,
-not ```BufReader```, because users see it as ```bufio.Reader```,
-which is a clear, concise name.
-Moreover,
-because imported entities are always addressed with their package name, ```bufio.Reader```
-does not conflict with ```io.Reader```.
-Similarly, the function to make new instances of ```ring.Ring```&mdash;which
-is the definition of a <em>constructor</em> in Go&mdash;would
-normally be called ```NewRing```, but since
-```Ring``` is the only type exported by the package, and since the
-package is called ```ring```, it's called just ```New```,
-which clients of the package see as ```ring.New```.
-Use the package structure to help you choose good names.
-
-
-
-Another short example is ```once.Do```;
-```once.Do(setup)``` reads well and would not be improved by
-writing ```once.DoOrWaitUntilDone(setup)```.
-Long names don't automatically make things more readable.
-A helpful doc comment can often be more valuable than an extra long name.
-
-
-<h3 id="Getters">Getters</h3>
-
-
-Go doesn't provide automatic support for getters and setters.
-There's nothing wrong with providing getters and setters yourself,
-and it's often appropriate to do so, but it's neither idiomatic nor necessary
-to put ```Get``` into the getter's name.  If you have a field called
-```owner``` (lower case, unexported), the getter method should be
-called ```Owner``` (upper case, exported), not ```GetOwner```.
-The use of upper-case names for export provides the hook to discriminate
-the field from the method.
-A setter function, if needed, will likely be called ```SetOwner```.
-Both names read well in practice:
+Go не предоставляет автоматическую поддержку геттеров и сеттеров.
+Но небудет ошибкой создание геттеров и сеттеров самому, и если это необходимо то делайте так, но идиоматически нет необходимости добавлять ```Get``` в имя геттера. Если у Вас есть поле с именем ```owner``` (с маленькой буквы, не экспортируемый), то геттер может называться ```Owner``` (с большой буквы, экспортируемый), а не ```GetOwner```.
+Использовуйте имена с большой буквы для экспортирования для различия полей от методов(функций).
+Для сеттеров, если необходимо, то лучше незывать```SetOwner```.
+Оба примера в следующем коде:
 
 ```golang
 owner := obj.Owner()
@@ -295,35 +249,21 @@ if owner != user {
 }
 ```
 
-<h3 id="interface-names">Interface names</h3>
+### Имена интерфейсам
+
+Согласно соглашению, интерфейсы с одним методомдолжен называться как метод с суффиксом -er или некоторые другое для образования существительного: ```Reader```, ```Writer```, ```Formatter```, ```CloseNotifier``` и так далее.
+
+Есть целый ряд таких имен, и они соблюдать соглашение. ```Read``` , ``` Write``` , ```Close```,``` Flush```, ```String``` и так далее имеют канонические подписи и значения. Чтобы избежать путаницы, не давайте методу неодного из этих имен, если оно не имеет ту же подпись и значение.
+
+С другой стороны, если ваш тип имеет метод с тем же значением как и метод на хорошо известный тип, то дайте ему то же имя и значение; назовите Ваш метод конвертации в строку как ```String``` , а не ```ToString```.
 
 
-By convention, one-method interfaces are named by
-the method name plus an -er suffix or similar modification
-to construct an agent noun: ```Reader```, ```Writer```, ```Formatter```, ```CloseNotifier``` etc.
+### MixedCaps
+
+В заключении, Go соглашение использует ```MixedCaps``` или ```mixedCaps```, а не подчеркивание для имен из нескольких слов.
 
 
-
-There are a number of such names and it's productive to honor them and the function
-names they capture. ```Read```, ```Write```, ```Close```, ```Flush```, ```String``` and so on have canonical signatures and meanings.  To avoid confusion,
-don't give your method one of those names unless it
-has the same signature and meaning.
-Conversely, if your type implements a method with the
-same meaning as a method on a well-known type,
-give it the same name and signature;
-call your string-converter method ```String``` not ```ToString```.
-
-
-<h3 id="mixed-caps">MixedCaps</h3>
-
-
-Finally, the convention in Go is to use ```MixedCaps```
-or ```mixedCaps``` rather than underscores to write
-multiword names.
-
-
-<h2 id="semicolons">Semicolons</h2>
-
+### Точка с запятой
 
 Like C, Go's formal grammar uses semicolons to terminate statements,
 but unlike in C, those semicolons do not appear in the source.
