@@ -327,15 +327,10 @@ if err := file.Chmod(0664); err != nil {
 }
 ```
 
-<p id="else">
-In the Go libraries, you'll find that
-when an ```if``` statement doesn't flow into the next statement—that is,
-the body ends in ```break```, ```continue```,
-```goto```, or ```return```—the unnecessary
-```else``` is omitted.
+В библиотеке Go, вы увидете это когда условие ```if``` не переходит в следующее условие, тело заканчивается ```break```, ```continue```, ```goto```, или ```return``` — ненужное ```else``` опускается.
 
 
-```
+```golang
 f, err := os.Open(name)
 if err != nil {
     return err
@@ -343,15 +338,9 @@ if err != nil {
 codeUsing(f)
 ```
 
+Это общей пример, когда код должен защититься от последовательности условий ошибок. Код читает хорошо, если успешный поток управления проходит вниз страницы, исключая случаи ошибок по мере их возникновения. Так как в случаи ошибок, как правило, заканчиваются ```return``` заявлений, результирующий код не нуждается в ```else``` объявлении.
 
-This is an example of a common situation where code must guard against a
-sequence of error conditions.  The code reads well if the
-successful flow of control runs down the page, eliminating error cases
-as they arise.  Since error cases tend to end in ```return```
-statements, the resulting code needs no ```else``` statements.
-
-
-```
+```golang
 f, err := os.Open(name)
 if err != nil {
     return err
@@ -364,8 +353,7 @@ if err != nil {
 codeUsing(f, d)
 ```
 
-
-<h3 id="redeclaration">Redeclaration and reassignment</h3>
+### Переопределение и переназначение
 
 
 An aside: The last example in the previous section demonstrates a detail of how the
