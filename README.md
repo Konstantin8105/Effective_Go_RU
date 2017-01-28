@@ -935,38 +935,28 @@ x := Sum(&array)  // Note the explicit address-of operator
 Используйте слайсы вместо массивов.
 
 
-### Слайсы(Slices)
+### Слайсы(Slices, срез)
 
+Слайсы это обертка для массивов и при это этом более общий, мощный и предоставляет более удобный интерфейс по управлению данными. В случаях когда не известно точное количество элементов и необходимо преобразование массивов.
+Большенство массивов в языке Go выполнены с использование слайсов, а не простых массивов.
 
-Slices wrap arrays to give a more general, powerful, and convenient
-interface to sequences of data.  Except for items with explicit
-dimension such as transformation matrices, most array programming in
-Go is done with slices rather than simple arrays.
-
-
-Slices hold references to an underlying array, and if you assign one
-slice to another, both refer to the same array.
-If a function takes a slice argument, changes it makes to
-the elements of the slice will be visible to the caller, analogous to
-passing a pointer to the underlying array.  A ```Read```
-function can therefore accept a slice argument rather than a pointer
-and a count; the length within the slice sets an upper
-limit of how much data to read.  Here is the signature of the ```Read``` method of the ```File``` type in package ```os```:
+Слайс хранит ссылку на массив и поэтому если приравнять слайс к другому слайсу, то будет тот же массив.
+Если слайс является аргументом функция, то изменения элементов в слайсе будут видны вызывающему данному функцию, это аналогично передачи указателя на базовый массив.
+В функции ```Read``` может принимать в качестве аргумента слайс, что равнозначно указателя на массиву и длине массива; длина слайса указывает верхний предел количество данных которые необходимо прочитать.
+В данном случаи для типа ```File``` пакета ```os``` имеет следующую сигнатуру метода ```Read```:
 
 ```golang
 func (f * File) Read(buf []byte) (n int, err error)
 ```
 
-The method returns the number of bytes read and an error value, if
-any.
-To read into the first 32 bytes of a larger buffer ```buf```, *slice* (here used as a verb) the buffer.
+Метод возвращает количество прочитанных байт или если есть то ошибку.
+Для чтения первых 32 байт в буфере ```buf```, *получить(срезать) часть* буфера.
 
 ```golang
     n, err := f.Read(buf[0:32])
 ```
 
-Such slicing is common and efficient.  In fact, leaving efficiency aside for
-the moment, the following snippet would also read the first 32 bytes of the buffer.
+Такой срез является эффективным. На самом деле, если оставить в стороне эффективность, то следующий пример показывает чтение первых 32 байт из буфера.
 
 ```golang
     var n int
