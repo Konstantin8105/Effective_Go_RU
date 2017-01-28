@@ -773,26 +773,21 @@ leaving: b
 
 ### Созданные с помощью ```new```
 
+Для создания приметивов в языке Go используються функции ```new``` и ```make```.
+Они разные и применяються для разных типов, это может сбить с толку, но правило очень просто.
+Для начало обсудим функцию ```new```.
+Данная функция резервирует память, но нетакже как в других языках программирования, он не *инициализирует* память, а вместо этого заполняет *нулями*.
 
-Go has two allocation primitives, the built-in functions ```new``` and ```make```.
-They do different things and apply to different types, which can be confusing, but the rules are simple.
-Let's talk about ```new``` first.
-It's a built-in function that allocates memory, but unlike its namesakes in some other languages it does not *initialize* the memory, it only *zeros* it.
-That is, ```new(T)``` allocates zeroed storage for a new item of type ```T``` and returns its address, a value of type ```*T```.
-In Go terminology, it returns a pointer to a newly allocated zero value of type ```T```.
-
+К примеру ```new(T)``` резервирует память нулями для нового элемента типа ```T``` и возвращает его указатель, а значение типа ```*T```. В терминологии Go, он возвращает указатель на новый зарезирвируемую память заполненная нулями с типом ```T```.
 
 
-Since the memory returned by ```new``` is zeroed, it's helpful to arrange
-when designing your data structures that the zero value of each type can be used without further initialization.  This means a user of the data structure can create one with ```new``` and get right to work.
+**TODO**
+Since the memory returned by ```new``` is zeroed, it's helpful to arrange when designing your data structures that the zero value of each type can be used without further initialization.  This means a user of the data structure can create one with ```new``` and get right to work.
 For example, the documentation for ```bytes.Buffer``` states that "the zero value for ```Buffer``` is an empty buffer ready to use."
 Similarly, ```sync.Mutex``` does not have an explicit constructor or ```Init``` method.
 Instead, the zero value for a ```sync.Mutex``` is defined to be an unlocked mutex.
-
-
-
 The zero-value-is-useful property works transitively. Consider this type declaration.
-
+**-**
 
 ```golang
 type SyncedBuffer struct {
@@ -801,24 +796,18 @@ type SyncedBuffer struct {
 }
 ```
 
-
-Values of type ```SyncedBuffer``` are also ready to use immediately upon allocation
-or just declaration.  In the next snippet, both ```p``` and ```v``` will work
-correctly without further arrangement.
-
+**TODO**
+Values of type ```SyncedBuffer``` are also ready to use immediately upon allocation or just declaration.  In the next snippet, both ```p``` and ```v``` will work correctly without further arrangement.
+**-**
 
 ```golang
 p := new(SyncedBuffer)  // type *SyncedBuffer
 var v SyncedBuffer      // type  SyncedBuffer
 ```
 
-### "composite_literals">Constructors and composite literals
+### Конструкторы и сложные литералы
 
-
-Sometimes the zero value isn't good enough and an initializing
-constructor is necessary, as in this example derived from
-package ```os```.
-
+Иногда нулевое значение не достаточно и необходимо иметь конструктор, следующий пример взят из пакета ```os```.
 
 ```golang
 func NewFile(fd int, name string) *File {
@@ -834,12 +823,7 @@ func NewFile(fd int, name string) *File {
 }
 ```
 
-
-There's a lot of boiler plate in there.  We can simplify it
-using a *composite literal*, which is
-an expression that creates a
-new instance each time it is evaluated.
-
+Существует много шаблонов. Мы просто можем использовать *сложные литералы*, которые будут создавать новые сущности каждый раз.
 
 ```golang
 func NewFile(fd int, name string) *File {
@@ -851,39 +835,27 @@ func NewFile(fd int, name string) *File {
 }
 ```
 
-
-Note that, unlike in C, it's perfectly OK to return the address of a local variable;
-the storage associated with the variable survives after the function
-returns.
-In fact, taking the address of a composite literal
-allocates a fresh instance each time it is evaluated,
-so we can combine these last two lines.
-
+Обратите внимание что в отличии от С, это нормально возвращать адресс локальных переменных, так как переменная существует после возвращения из функции.
+На самом деле, возвращение адрессов сложных литералов создает новую сущность каждый раз, как он вычисляется.
+итак мы можем объединить последние две строки:
 
 ```golang
     return &File{fd, name, nil, 0}
 ```
 
-
-The fields of a composite literal are laid out in order and must all be present.
-However, by labeling the elements explicitly as *field*```:```*value*
-pairs, the initializers can appear in any
-order, with the missing ones left as their respective zero values.  Thus we could say
-
+Поля сложных литералов должны быть в порядке объявления и должны все присутствовать.
+Однако, используя маркировку как *поле*```:```*значение* пара, может инициализируеться в любом порядке, с пропущенными полями заполняемые нулями.
+Таким образом, можно объявить:
 
 ```golang
     return &File{fd: fd, name: name}
 ```
 
-
-As a limiting case, if a composite literal contains no fields at all, it creates
-a zero value for the type.  The expressions ```new(File)``` and ```&File{}``` are equivalent.
+В предельном случаи, когда сложный литерал без полей вообще, то создание нулевым значением будет тип. Выражения ```new(File)``` и ```&File{}``` одинаковы.
 
 
-
-Composite literals can also be created for arrays, slices, and maps,
-with the field labels being indices or map keys as appropriate.
-In these examples, the initializations work regardless of the values of ```Enone```, ```Eio```, and ```Einval```, as long as they are distinct.
+Сложные литералы могут также создавать массивы, слайсы, карты, с пометкой полей как индексов или ключами карт.
+К примеру, инициализированные значения ```Enone```, ```Eio```, и ```Einval``` разные.
 
 
 ```golang
@@ -892,41 +864,27 @@ s := []string      {Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
 m := map[int]string{Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
 ```
 
-### "allocation_make">Allocation with ```make```
+### Создание с помощью ```make```
 
+Возвращаясь к созданию элементов.
+Встроенная функция ```make(T, ```*args*```)``` служит для других целей нежели ```new(T)```.
+Он создает только слайсы, карты и каналы, и возвращают *инициализированные* (не нулями) значение типа ```T``` (а не ```*T```).
+Причиной различия для этих трех типов в том что внутри они представляют из себя структуры данных, которые необходимо инициализировать перед использованием.
+К примеру, слайсы - это трехэлементная структура, содержающий указатель на данные(внутри массив), длину, и емкость, причем пока все элементы не инициализированы - слайс *Нулевой* ```nil```.
+Для слайсов, карт и каналов, встроенная команда ```make``` инииализирует внутреннюю структуру данных и подготавливает значения к использованию.
 
-Back to allocation.
-The built-in function ```make(T, ```*args*```)``` serves
-a purpose different from ```new(T)```.
-It creates slices, maps, and channels only, and it returns an *initialized*
-(not *zeroed*)
-value of type ```T``` (not ```*T```).
-The reason for the distinction
-is that these three types represent, under the covers, references to data structures that
-must be initialized before use.
-A slice, for example, is a three-item descriptor
-containing a pointer to the data (inside an array), the length, and the
-capacity, and until those items are initialized, the slice is ```nil```.
-For slices, maps, and channels, ```make``` initializes the internal data structure and preparesthe value for use.
-For instance,
-
+К примеру:
 
 ```golang
 make([]int, 10, 100)
 ```
 
-
-allocates an array of 100 ints and then creates a slice
-structure with length 10 and a capacity of 100 pointing at the first
-10 elements of the array.
-(When making a slice, the capacity can be omitted; see the section on slices
-for more information.)
-In contrast, ```new([]int)``` returns a pointer to a newly allocated, zeroed slice
-structure, that is, a pointer to a ```nil``` slice value.
+создает массив из 100 значений типа ```int``` и затем создает структуру слайс длинной 10 и емкотью 100 со ссылкой только на первые 10 элементов.
+(Когда создается слайс, его емкость задавать не обязательно, смотрите раздел посвященный слайсом.)
+В противоположность, ```new([]int)``` возвращает указатель на новый, созданный, запоненный нулями слайс, это указатель на ```nil``` значение слайса.
 
 
-
-These examples illustrate the difference between ```new``` and ```make```.
+Эти примеры показывают различие между ```new``` и ```make```.
 
 
 ```golang
