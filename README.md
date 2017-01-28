@@ -899,42 +899,24 @@ var p *[]int = new([]int)
 v := make([]int, 100)
 ```
 
+Помните что ```make``` используеться только для карт, слайсов и каналов и не возвращают указатель.
+Для получения указателя в явном виде используйте ```new``` или  возьмите указатель в явном виде.
 
-Remember that ```make``` applies only to maps, slices and channels
-and does not return a pointer.
-To obtain an explicit pointer allocate with ```new``` or take the address
-of a variable explicitly.
+### Массивы
 
+Массивы популярны когда точно известно необходимое количество памяти и не делать излишних пересозданий, но в первую очередь они являються составной частью для слайсов, о которых будет описано в следующем разделе.
 
-### "arrays">Arrays
-
-
-Arrays are useful when planning the detailed layout of memory and sometimes
-can help avoid allocation, but primarily
-they are a building block for slices, the subject of the next section.
-To lay the foundation for that topic, here are a few words about arrays.
-
+Какие основные отличия между обращением с массивами между языками Go и C.
 
 
 There are major differences between the ways arrays work in Go and C.
 In Go,
 
-<ul>
-<li>
-Arrays are values. Assigning one array to another copies all the elements.
-</li>
-<li>
-In particular, if you pass an array to a function, it
-will receive a *copy* of the array, not a pointer to it.
-<li>
-The size of an array is part of its type.  The types ```[10]int```
-and ```[20]int``` are distinct.
-</li>
-</ul>
+* Массивы значений. Присвоение одно массива другому копирует все элементы.
+* Если вы передаете массив в функцию, то передается копия массива, а не указатель на него.
+* Размер массива является частью массива. Типы ```[10]int``` и ```[20]int``` разные.
 
-
-The value property can be useful but also expensive; if you want C-like behavior and efficiency,
-you can pass a pointer to the array.
+Массивы могут быть полезными, но дорогими(с точки зрения производительности) и если Вы хотите поведение и эффективность схожее с поведением в языке C-like, то необходимо использвать в функциях указатели.
 
 
 ```golang
@@ -949,12 +931,11 @@ array := [...]float64{7.0, 8.5, 9.1}
 x := Sum(&array)  // Note the explicit address-of operator
 ```
 
+Но данный стиль не подходит Go.
+Используйте слайсы вместо массивов.
 
-But even this style isn't idiomatic Go.
-Use slices instead.
 
-
-### "slices">Slices
+### Слайсы(Slices)
 
 
 Slices wrap arrays to give a more general, powerful, and convenient
