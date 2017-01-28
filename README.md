@@ -426,7 +426,7 @@ for key, value := range oldMap {
 
 If you only need the first item in the range (the key or index), drop the second:
 
-```
+```golang
 for key := range m {
     if key.expired() {
         delete(m, key)
@@ -437,7 +437,7 @@ for key := range m {
 
 If you only need the second item in the range (the value), use the <em>blank identifier</em>, an underscore, to discard the first:
 
-```
+```golang
 sum := 0
 for _ , value := range array {
     sum += value
@@ -459,7 +459,7 @@ See <a href="/ref/spec#Rune_literals">the language specification</a>
 for details.)
 The loop
 
-```
+```golang
 for pos, char := range "日本\x80語" { // \x80 is an illegal UTF-8 encoding
     fmt.Printf("character %#U starts at byte position %d\n", char, pos)
 }
@@ -467,7 +467,7 @@ for pos, char := range "日本\x80語" { // \x80 is an illegal UTF-8 encoding
 
 prints
 
-```
+```command
 character U+65E5 '日' starts at byte position 0
 character U+672C '本' starts at byte position 3
 character U+FFFD '�' starts at byte position 6
@@ -480,7 +480,7 @@ are statements not expressions.
 Thus if you want to run multiple variables in a ```for```
 you should use parallel assignment (although that precludes ```++``` and ```--```).
 
-```
+```golang
 // Reverse a
 for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
     a[i], a[j] = a[j], a[i]
@@ -493,14 +493,12 @@ for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
 Go's ```switch``` is more general than C's.
 The expressions need not be constants or even integers,
 the cases are evaluated top to bottom until a match is found,
-and if the ```switch``` has no expression it switches on
-```true```.
-It's therefore possible and idiomatic to write an
-```if```-```else```-```if```-```else```
+and if the ```switch``` has no expression it switches on ```true```.
+It's therefore possible and idiomatic to write an ```if``` -```else```-```if```-```else```
 chain as a ```switch```.
 
 
-```
+```golang
 func unhex(c byte) byte {
     switch {
     case '0' <= c &amp;&amp; c <= '9':
@@ -518,7 +516,7 @@ func unhex(c byte) byte {
 There is no automatic fall through, but cases can be presented
 in comma-separated lists.
 
-```
+```golang
 func shouldEscape(c byte) bool {
     switch c {
     case ' ', '?', '&amp;', '=', '#', '+', '%':
@@ -538,7 +536,7 @@ on the loop and "breaking" to that label.
 This example shows both uses.
 
 
-```
+```golang
 Loop:
 	for n := 0; n < len(src); n += size {
 		switch {
@@ -569,10 +567,9 @@ but it applies only to loops.
 
 
 
-To close this section, here's a comparison routine for byte slices that uses two
-```switch``` statements:
+To close this section, here's a comparison routine for byte slices that uses two ```switch``` statements:
 
-```
+```golang
 // Compare returns an integer comparing the two byte slices,
 // lexicographically.
 // The result will be 0 if a == b, -1 if a < b, and +1 if a &gt; b
@@ -606,7 +603,7 @@ have the corresponding type in each clause.
 It's also idiomatic to reuse the name in such cases, in effect declaring
 a new variable with the same name but a different type in each case.
 
-```
+```golang
 var t interface{}
 t = functionOfSomeType()
 switch t := t.(type) {
@@ -645,14 +642,13 @@ The signature of the ```Write``` method on files from
 package ```os``` is:
 
 
-```
+```golang
 func (file *File) Write(b []byte) (n int, err error)
 ```
 
 
 and as the documentation says, it returns the number of bytes
-written and a non-nil ```error``` when ```n```
-```!=``` ```len(b)```.
+written and a non-nil ```error``` when ```n``` ```!=``` ```len(b)```.
 This is a common style; see the section on error handling for more examples.
 
 
@@ -664,7 +660,7 @@ grab a number from a position in a byte slice, returning the number
 and the next position.
 
 
-```
+```golang
 func nextInt(b []byte, i int) (int, int) {
     for ; i < len(b) &amp;&amp; !isDigit(b[i]); i++ {
     }
@@ -680,7 +676,7 @@ func nextInt(b []byte, i int) (int, int) {
 You could use it to scan the numbers in an input slice ```b``` like this:
 
 
-```
+```golang
     for i := 0; i < len(b); {
         x, i = nextInt(b, i)
         fmt.Println(x)
@@ -706,7 +702,7 @@ obvious which returned ```int```
 is which.
 
 
-```
+```golang
 func nextInt(b []byte, pos int) (value, nextPos int) {
 ```
 
@@ -716,7 +712,7 @@ as well as clarify.  Here's a version
 of ```io.ReadFull``` that uses them well:
 
 
-```
+```golang
 func ReadFull(r Reader, buf []byte) (n int, err error) {
     for len(buf) &gt; 0 &amp;&amp; err == nil {
         var nr int
@@ -739,7 +735,7 @@ released regardless of which path a function takes to return.  The
 canonical examples are unlocking a mutex or closing a file.
 
 
-```
+```golang
 // Contents returns the file's contents as a string.
 func Contents(filename string) (string, error) {
     f, err := os.Open(filename)
@@ -781,21 +777,18 @@ that a single deferred call site can defer multiple function
 executions.  Here's a silly example.
 
 
-```
+```golang
 for i := 0; i < 5; i++ {
     defer fmt.Printf("%d ", i)
 }
 ```
 
 
-Deferred functions are executed in LIFO order, so this code will cause
-```4 3 2 1 0``` to be printed when the function returns.  A
-more plausible example is a simple way to trace function execution
-through the program.  We could write a couple of simple tracing
+Deferred functions are executed in LIFO order, so this code will cause ```4 3 2 1 0``` to be printed when the function returns.  A more plausible example is a simple way to trace function execution through the program.  We could write a couple of simple tracing
 routines like this:
 
 
-```
+```golang
 func trace(s string)   { fmt.Println("entering:", s) }
 func untrace(s string) { fmt.Println("leaving:", s) }
 
@@ -814,7 +807,7 @@ tracing routine can set up the argument to the untracing routine.
 This example:
 
 
-```
+```golang
 func trace(s string) string {
     fmt.Println("entering:", s)
     return s
@@ -857,8 +850,7 @@ leaving: b
 For programmers accustomed to block-level resource management from
 other languages, ```defer``` may seem peculiar, but its most
 interesting and powerful applications come precisely from the fact
-that it's not block-based but function-based.  In the section on
-```panic``` and ```recover``` we'll see another
+that it's not block-based but function-based.  In the section on ```panic``` and ```recover``` we'll see another
 example of its possibilities.
 
 
@@ -867,19 +859,15 @@ example of its possibilities.
 <h3 id="allocation_new">Allocation with ```new```</h3>
 
 
-Go has two allocation primitives, the built-in functions
-```new``` and ```make```.
+Go has two allocation primitives, the built-in functions ```new``` and ```make```.
 They do different things and apply to different types, which can be confusing,
 but the rules are simple.
 Let's talk about ```new``` first.
 It's a built-in function that allocates memory, but unlike its namesakes
 in some other languages it does not <em>initialize</em> the memory,
 it only <em>zeros</em> it.
-That is,
-```new(T)``` allocates zeroed storage for a new item of type
-```T``` and returns its address, a value of type ```*T```.
-In Go terminology, it returns a pointer to a newly allocated zero value of type
-```T```.
+That is, ```new(T)``` allocates zeroed storage for a new item of type ```T``` and returns its address, a value of type ```*T```.
+In Go terminology, it returns a pointer to a newly allocated zero value of type ```T```.
 
 
 
@@ -900,7 +888,7 @@ is defined to be an unlocked mutex.
 The zero-value-is-useful property works transitively. Consider this type declaration.
 
 
-```
+```golang
 type SyncedBuffer struct {
     lock    sync.Mutex
     buffer  bytes.Buffer
@@ -913,7 +901,7 @@ or just declaration.  In the next snippet, both ```p``` and ```v``` will work
 correctly without further arrangement.
 
 
-```
+```golang
 p := new(SyncedBuffer)  // type *SyncedBuffer
 var v SyncedBuffer      // type  SyncedBuffer
 ```
@@ -926,7 +914,7 @@ constructor is necessary, as in this example derived from
 package ```os```.
 
 
-```
+```golang
 func NewFile(fd int, name string) *File {
     if fd < 0 {
         return nil
@@ -947,7 +935,7 @@ an expression that creates a
 new instance each time it is evaluated.
 
 
-```
+```golang
 func NewFile(fd int, name string) *File {
     if fd < 0 {
         return nil
@@ -966,7 +954,7 @@ allocates a fresh instance each time it is evaluated,
 so we can combine these last two lines.
 
 
-```
+```golang
     return &amp;File{fd, name, nil, 0}
 ```
 
@@ -977,7 +965,7 @@ pairs, the initializers can appear in any
 order, with the missing ones left as their respective zero values.  Thus we could say
 
 
-```
+```golang
     return &amp;File{fd: fd, name: name}
 ```
 
@@ -989,11 +977,10 @@ a zero value for the type.  The expressions ```new(File)``` and ```&amp;File{}``
 
 Composite literals can also be created for arrays, slices, and maps,
 with the field labels being indices or map keys as appropriate.
-In these examples, the initializations work regardless of the values of ```Enone```,
-```Eio```, and ```Einval```, as long as they are distinct.
+In these examples, the initializations work regardless of the values of ```Enone```, ```Eio```, and ```Einval```, as long as they are distinct.
 
 
-```
+```golang
 a := [...]string   {Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
 s := []string      {Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
 m := map[int]string{Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
@@ -1014,13 +1001,11 @@ must be initialized before use.
 A slice, for example, is a three-item descriptor
 containing a pointer to the data (inside an array), the length, and the
 capacity, and until those items are initialized, the slice is ```nil```.
-For slices, maps, and channels,
-```make``` initializes the internal data structure and prepares
-the value for use.
+For slices, maps, and channels, ```make``` initializes the internal data structure and preparesthe value for use.
 For instance,
 
 
-```
+```golang
 make([]int, 10, 100)
 ```
 
@@ -1035,11 +1020,10 @@ structure, that is, a pointer to a ```nil``` slice value.
 
 
 
-These examples illustrate the difference between ```new``` and
-```make```.
+These examples illustrate the difference between ```new``` and ```make```.
 
 
-```
+```golang
 var p *[]int = new([]int)       // allocates slice structure; *p == nil; rarely useful
 var v  []int = make([]int, 100) // the slice v now refers to a new array of 100 ints
 
@@ -1089,7 +1073,7 @@ The value property can be useful but also expensive; if you want C-like behavior
 you can pass a pointer to the array.
 
 
-```
+```golang
 func Sum(a *[3]float64) (sum float64) {
     for _, v := range *a {
         sum += v
@@ -1124,23 +1108,22 @@ function can therefore accept a slice argument rather than a pointer
 and a count; the length within the slice sets an upper
 limit of how much data to read.  Here is the signature of the ```Read``` method of the ```File``` type in package ```os```:
 
-```
+```golang
 func (f * File) Read(buf []byte) (n int, err error)
 ```
 
 The method returns the number of bytes read and an error value, if
 any.
-To read into the first 32 bytes of a larger buffer
-```buf```, *slice* (here used as a verb) the buffer.
+To read into the first 32 bytes of a larger buffer ```buf```, *slice* (here used as a verb) the buffer.
 
-```
+```golang
     n, err := f.Read(buf[0:32])
 ```
 
 Such slicing is common and efficient.  In fact, leaving efficiency aside for
 the moment, the following snippet would also read the first 32 bytes of the buffer.
 
-```
+```golang
     var n int
     var err error
     for i := 0; i < 32; i++ {
@@ -1159,11 +1142,9 @@ itself.  The *capacity* of a slice, accessible by the built-in
 function ```cap```, reports the maximum length the slice may
 assume.  Here is a function to append data to a slice.  If the data
 exceeds the capacity, the slice is reallocated.  The
-resulting slice is returned.  The function uses the fact that
-```len``` and ```cap``` are legal when applied to the
-```nil``` slice, and return 0.
+resulting slice is returned.  The function uses the fact that ```len``` and ```cap``` are legal when applied to the ```nil``` slice, and return 0.
 
-```
+```golang
 func Append(slice, data []byte) []byte {
     l := len(slice)
     if l + len(data) &gt; cap(slice) {  // reallocate
@@ -1187,8 +1168,7 @@ structure holding the pointer, length, and capacity) is passed by value.
 
 
 
-The idea of appending to a slice is so useful it's captured by the
-```append``` built-in function.  To understand that function's
+The idea of appending to a slice is so useful it's captured by the ```append``` built-in function.  To understand that function's
 design, though, we need a little more information, so we'll return
 to it later.
 
@@ -1201,7 +1181,7 @@ To create the equivalent of a 2D array or slice, it is necessary to define an ar
 or slice-of-slices, like this:
 
 
-```
+```golang
 type Transform [3][3]float64  // A 3x3 array, really an array of arrays.
 type LinesOfText [][]byte     // A slice of byte slices.
 ```
@@ -1213,7 +1193,7 @@ That can be a common situation, as in our ```LinesOfText```
 example: each line has an independent length.
 
 
-```
+```golang
 text := LinesOfText{
 	[]byte("Now is the time"),
 	[]byte("for all good gophers"),
@@ -1235,7 +1215,7 @@ For reference, here are sketches of the two methods.
 First, a line at a time:
 
 
-```
+```golang
 // Allocate the top-level slice.
 picture := make([][]uint8, YSize) // One row per unit of y.
 // Loop over the rows, allocating the slice for each row.
@@ -1248,7 +1228,7 @@ for i := range picture {
 And now as one allocation, sliced into lines:
 
 
-```
+```golang
 // Allocate the top-level slice, the same as before.
 picture := make([][]uint8, YSize) // One row per unit of y.
 // Allocate one large slice to hold all the pixels.
@@ -1282,7 +1262,7 @@ Maps can be constructed using the usual composite literal syntax
 with colon-separated key-value pairs,
 so it's easy to build them during initialization.
 
-```
+```golang
 var timeZone = map[string]int{
     "UTC":  0*60*60,
     "EST": -5*60*60,
@@ -1296,7 +1276,7 @@ Assigning and fetching map values looks syntactically just like
 doing the same for arrays and slices except that the index doesn't
 need to be an integer.
 
-```
+```golang
 offset := timeZone["EST"]
 ```
 
@@ -1309,7 +1289,7 @@ A set can be implemented as a map with value type ```bool```.
 Set the map entry to ```true``` to put the value in the set, and then
 test it by simple indexing.
 
-```
+```golang
 attended := map[string]bool{
     "Ann": true,
     "Joe": true,
@@ -1326,7 +1306,7 @@ a zero value.  Is there an entry for ```"UTC"```
 or is that the empty string because it's not in the map at all?
 You can discriminate with a form of multiple assignment.
 
-```
+```golang
 var seconds int
 var ok bool
 seconds, ok = timeZone[tz]
@@ -1334,12 +1314,11 @@ seconds, ok = timeZone[tz]
 
 For obvious reasons this is called the &ldquo;comma ok&rdquo; idiom.
 In this example, if ```tz``` is present, ```seconds```
-will be set appropriately and ```ok``` will be true; if not,
-```seconds``` will be set to zero and ```ok``` will
+will be set appropriately and ```ok``` will be true; if not, ```seconds``` will be set to zero and ```ok``` will
 be false.
 Here's a function that puts it together with a nice error report:
 
-```
+```golang
 func offset(tz string) int {
     if seconds, ok := timeZone[tz]; ok {
         return seconds
@@ -1353,7 +1332,7 @@ To test for presence in the map without worrying about the actual value,
 you can use the <a href="#blank">blank identifier</a> (```_```)
 in place of the usual variable for the value.
 
-```
+```golang
 _ , present := timeZone[tz]
 ```
 
@@ -1362,7 +1341,7 @@ built-in function, whose arguments are the map and the key to be deleted.
 It's safe to do this even if the key is already absent
 from the map.
 
-```
+```golang
 delete(timeZone, "PDT")  // Now on Standard Time
 ```
 
@@ -1371,13 +1350,11 @@ delete(timeZone, "PDT")  // Now on Standard Time
 
 Formatted printing in Go uses a style similar to C's ```printf```
 family but is richer and more general. The functions live in the ```fmt```
-package and have capitalized names: ```fmt.Printf```, ```fmt.Fprintf```,
-```fmt.Sprintf``` and so on.  The string functions (```Sprintf``` etc.)
+package and have capitalized names: ```fmt.Printf```, ```fmt.Fprintf```, ```fmt.Sprintf``` and so on.  The string functions (```Sprintf``` etc.)
 return a string rather than filling in a provided buffer.
 
 
-You don't need to provide a format string.  For each of ```Printf```,
-```Fprintf``` and ```Sprintf``` there is another pair
+You don't need to provide a format string.  For each of ```Printf```, ```Fprintf``` and ```Sprintf``` there is another pair
 of functions, for instance ```Print``` and ```Println```.
 These functions do not take a format string but instead generate a default
 format for each argument. The ```Println``` versions also insert a blank
@@ -1385,7 +1362,7 @@ between arguments and append a newline to the output while
 the ```Print``` versions add blanks only if the operand on neither side is a string.
 In this example each line produces the same output.
 
-```
+```golang
 fmt.Printf("Hello %d\n", 23)
 fmt.Fprint(os.Stdout, "Hello ", 23, "\n")
 fmt.Println("Hello", 23)
@@ -1402,7 +1379,7 @@ Here things start to diverge from C.  First, the numeric formats such as ```%d``
 do not take flags for signedness or size; instead, the printing routines use the
 type of the argument to decide these properties.
 
-```
+```golang
 var x uint64 = 1<<64 - 1
 fmt.Printf("%d %x; %d %x\n", x, x, int64(x), int64(x))
 ```
@@ -1419,7 +1396,7 @@ what ```Print``` and ```Println``` would produce.
 Moreover, that format can print <em>any</em> value, even arrays, slices, structs, and
 maps.  Here is a print statement for the time zone map defined in the previous section.
 
-```
+```golang
 fmt.Printf("%v\n", timeZone)  // or just fmt.Println(timeZone)
 ```
 
@@ -1434,7 +1411,7 @@ When printing a struct, the modified format ```%+v``` annotates the
 fields of the structure with their names, and for any value the alternate
 format ```%#v``` prints the value in full Go syntax.
 
-```
+```golang
 type T struct {
     a int
     b float64
@@ -1469,7 +1446,7 @@ a space in the format (```%&nbsp;x```) it puts spaces between the bytes.
 
 Another handy format is ```%T```, which prints the <em>type</em> of a value.
 
-```
+```golang
 fmt.Printf(&quot;%T\n&quot;, timeZone)
 ```
 
@@ -1483,7 +1460,7 @@ If you want to control the default format for a custom type, all that's required
 a method with the signature ```String() string``` on the type.
 For our simple type ```T```, that might look like this.
 
-```
+```golang
 func (t * T) String() string {
     return fmt.Sprintf("%d/%g/%q", t.a, t.b, t.c)
 }
@@ -1506,15 +1483,14 @@ See the section below on <a href="#pointers_vs_values">pointers vs. value receiv
 Our ```String``` method is able to call ```Sprintf``` because the
 print routines are fully reentrant and can be wrapped this way.
 There is one important detail to understand about this approach,
-however: don't construct a ```String``` method by calling
-```Sprintf``` in a way that will recur into your ```String```
+however: don't construct a ```String``` method by calling ```Sprintf``` in a way that will recur into your ```String```
 method indefinitely.  This can happen if the ```Sprintf```
 call attempts to print the receiver directly as a string, which in
 turn will invoke the method again.  It's a common and easy mistake
 to make, as this example shows.
 
 
-```
+```golang
 type MyString string
 
 func (m MyString) String() string {
@@ -1527,7 +1503,7 @@ It's also easy to fix: convert the argument to the basic string type, which does
 method.
 
 
-```
+```golang
 type MyString string
 func (m MyString) String() string {
     return fmt.Sprintf("MyString=%s", string(m)) // OK: note conversion.
@@ -1544,18 +1520,16 @@ The signature of ```Printf``` uses the type ```...interface{}```
 for its final argument to specify that an arbitrary number of parameters (of arbitrary type)
 can appear after the format.
 
-```
+```golang
 func Printf(format string, v ...interface{}) (n int, err error) {
 ```
 
-Within the function ```Printf```, ```v``` acts like a variable of type
-```[]interface{}``` but if it is passed to another variadic function, it acts like
+Within the function ```Printf```, ```v``` acts like a variable of type ```[]interface{}``` but if it is passed to another variadic function, it acts like
 a regular list of arguments.
 Here is the implementation of the
-function ```log.Println``` we used above. It passes its arguments directly to
-```fmt.Sprintln``` for the actual formatting.
+function ```log.Println``` we used above. It passes its arguments directly to ```fmt.Sprintln``` for the actual formatting.
 
-```
+```golang
 // Println prints to the standard logger in the manner of fmt.Println.
 func Println(v ...interface{}) {
     std.Output(2, fmt.Sprintln(v...))  // Output takes parameters (int, string)
@@ -1563,8 +1537,7 @@ func Println(v ...interface{}) {
 ```
 
 We write ```...``` after ```v``` in the nested call to ```Sprintln``` to tell the
-compiler to treat ```v``` as a list of arguments; otherwise it would just pass
-```v``` as a single slice argument.
+compiler to treat ```v``` as a list of arguments; otherwise it would just pass ```v``` as a single slice argument.
 
 
 There's even more to printing than we've covered here.  See the ```godoc``` documentation
@@ -1574,7 +1547,7 @@ for package ```fmt``` for the details.
 By the way, a ```...``` parameter can be of a specific type, for instance ```...int```
 for a min function that chooses the least of a list of integers:
 
-```
+```golang
 func Min(a ...int) int {
     min := int(^uint(0) >> 1)  // largest int
     for _ , i := range a {
@@ -1593,7 +1566,7 @@ the ```append``` built-in function.  The signature of ```append```
 is different from our custom ```Append``` function above.
 Schematically, it's like this:
 
-```
+```golang
 func append(slice []*T*, elements ...*T*) []*T*
 ```
 
@@ -1609,7 +1582,7 @@ the slice and return the result.  The result needs to be returned
 because, as with our hand-written ```Append```, the underlying
 array may change.  This simple example
 
-```
+```golang
 x := []int{1,2,3}
 x = append(x, 4, 5, 6)
 fmt.Println(x)
@@ -1625,7 +1598,7 @@ append a slice to a slice?  Easy: use ```...``` at the call
 site, just as we did in the call to ```Output``` above.  This
 snippet produces identical output to the one above.
 
-```
+```golang
 x := []int{1,2,3}
 y := []int{4,5,6}
 x = append(x, y...)
@@ -1655,9 +1628,7 @@ locals in functions,
 and can only be numbers, characters (runes), strings or booleans.
 Because of the compile-time restriction, the expressions
 that define them must be constant expressions,
-evaluatable by the compiler.  For instance,
-```1<<3``` is a constant expression, while
-```math.Sin(math.Pi/4)``` is not because
+evaluatable by the compiler.  For instance, ```1<<3``` is a constant expression, while ```math.Sin(math.Pi/4)``` is not because
 the function call to ```math.Sin``` needs
 to happen at run time.
 
@@ -1698,7 +1669,7 @@ wants a floating-point value.
 Variables can be initialized just like constants but the
 initializer can be a general expression computed at run time.
 
-```
+```golang
 var (
     home   = os.Getenv("HOME")
     user   = os.Getenv("USER")
@@ -1710,8 +1681,7 @@ var (
 
 
 Finally, each source file can define its own niladic ```init``` function to
-set up whatever state is required.  (Actually each file can have multiple
-```init``` functions.)
+set up whatever state is required.  (Actually each file can have multiple ```init``` functions.)
 And finally means finally: ```init``` is called after all the
 variable declarations in the package have evaluated their initializers,
 and those are evaluated only after all the imported packages have been
@@ -1723,7 +1693,7 @@ a common use of ```init``` functions is to verify or repair
 correctness of the program state before real execution begins.
 
 
-```
+```golang
 func init() {
     if user == "" {
         log.Fatal("$USER not set")
@@ -1753,7 +1723,7 @@ function.  We can define it as a method on slices instead.  To do
 this, we first declare a named type to which we can bind the method, and
 then make the receiver for the method a value of that type.
 
-```
+```golang
 type ByteSlice []byte
 
 func (slice ByteSlice) Append(data []byte) []byte {
@@ -1766,7 +1736,7 @@ eliminate that clumsiness by redefining the method to take a
 *pointer* to a ```ByteSlice``` as its receiver, so the
 method can overwrite the caller's slice.
 
-```
+```golang
 func (p *ByteSlice) Append(data []byte) {
     slice := *p
     // Body as above, without the return.
@@ -1777,7 +1747,7 @@ func (p *ByteSlice) Append(data []byte) {
 In fact, we can do even better.  If we modify our function so it looks
 like a standard ```Write``` method, like this,
 
-```
+```golang
 func (p *ByteSlice) Write(data []byte) (n int, err error) {
     slice := *p
     // Again as above.
@@ -1786,11 +1756,10 @@ func (p *ByteSlice) Write(data []byte) (n int, err error) {
 }
 ```
 
-then the type ```*ByteSlice``` satisfies the standard interface
-```io.Writer```, which is handy.  For instance, we can
+then the type ```*ByteSlice``` satisfies the standard interface ```io.Writer```, which is handy.  For instance, we can
 print into one.
 
-```
+```golang
     var b ByteSlice
     fmt.Fprintf(&amp;b, "This hour has %d days\n", 7)
 ```
@@ -1837,9 +1806,7 @@ for something that implements ```Write```.
 
 A type can implement multiple interfaces.
 For instance, a collection can be sorted
-by the routines in package ```sort``` if it implements
-```sort.Interface```, which contains ```Len()```,
-```Less(i, j int) bool```, and ```Swap(i, j int)```,
+by the routines in package ```sort``` if it implements ```sort.Interface```, which contains ```Len()```, ```Less(i, j int) bool```, and ```Swap(i, j int)```,
 and it could also have a custom formatter.
 In this contrived example ```Sequence``` satisfies both.
 
@@ -1850,18 +1817,16 @@ In this contrived example ```Sequence``` satisfies both.
 
 The ```String``` method of ```Sequence``` is recreating the
 work that ```Sprint``` already does for slices.  We can share the
-effort if we convert the ```Sequence``` to a plain
-```[]int``` before calling ```Sprint```.
+effort if we convert the ```Sequence``` to a plain ```[]int``` before calling ```Sprint```.
 
-```
+```golang
 func (s Sequence) String() string {
     sort.Sort(s)
     return fmt.Sprint([]int(s))
 }
 ```
 
-This method is another example of the conversion technique for calling
-```Sprintf``` safely from a ```String``` method.
+This method is another example of the conversion technique for calling ```Sprintf``` safely from a ```String``` method.
 Because the two types (```Sequence``` and ```[]int```)
 are the same if we ignore the type name, it's legal to convert between them.
 The conversion doesn't create a new value, it just temporarily acts
@@ -1876,7 +1841,7 @@ set of methods. As an example, we could use the existing
 type ```sort.IntSlice``` to reduce the entire example
 to this:
 
-```
+```golang
 type Sequence []int
 
 // Method for printing - sorts the elements before printing
@@ -1900,11 +1865,10 @@ That's more unusual in practice but can be effective.
 each case in the switch, in a sense convert it to the type of that case.
 Here's a simplified version of how the code under ```fmt.Printf``` turns a value into
 a string using a type switch.
-If it's already a string, we want the actual string value held by the interface, while if it has a
-```String``` method we want the result of calling the method.
+If it's already a string, we want the actual string value held by the interface, while if it has a ```String``` method we want the result of calling the method.
 
 
-```
+```golang
 type Stringer interface {
     String() string
 }
@@ -1932,7 +1896,7 @@ The syntax borrows from the clause opening a type switch, but with an explicit
 type rather than the ```type``` keyword:
 
 
-```
+```golang
 value.(typeName)
 ```
 
@@ -1943,7 +1907,7 @@ type that the value can be converted to.
 To extract the string we know is in the value, we could write:
 
 
-```
+```golang
 str := value.(string)
 ```
 
@@ -1952,7 +1916,7 @@ But if it turns out that the value does not contain a string, the program will c
 To guard against that, use the "comma, ok" idiom to test, safely, whether the value is a string:
 
 
-```
+```golang
 str, ok := value.(string)
 if ok {
     fmt.Printf("string value is: %q\n", str)
@@ -1971,7 +1935,7 @@ As an illustration of the capability, here's an ```if```-```else```
 statement that's equivalent to the type switch that opened this section.
 
 
-```
+```golang
 if str, ok := value.(string); ok {
     return str
 } else if str, ok := value.(Stringer); ok {
@@ -2017,7 +1981,7 @@ knowing the details of the block encryption.
 
 The  ```crypto/cipher``` interfaces look like this:
 
-```
+```golang
 type Block interface {
     BlockSize() int
     Encrypt(src, dst []byte)
@@ -2041,10 +2005,9 @@ that the block cipher's details are abstracted away:
 func NewCTR(block Block, iv []byte) Stream
 ```
 
-```NewCTR``` applies not
+_ ```NewCTR``` applies not
 just to one specific encryption algorithm and data source but to any
-implementation of the ```Block``` interface and any
-```Stream```.  Because they return
+implementation of the ```Block``` interface and any ```Stream```.  Because they return
 interface values, replacing CTR
 encryption with other encryption modes is a localized change.  The constructor
 calls must be edited, but because the surrounding code must treat the result only
@@ -2058,18 +2021,16 @@ satisfy an interface.  One illustrative example is in the ```http```
 package, which defines the ```Handler``` interface.  Any object
 that implements ```Handler``` can serve HTTP requests.
 
-```
+```golang
 type Handler interface {
     ServeHTTP(ResponseWriter, *Request)
 }
 ```
 
-```ResponseWriter``` is itself an interface that provides access
+ _ ```ResponseWriter``` is itself an interface that provides access
 to the methods needed to return the response to the client.
-Those methods include the standard ```Write``` method, so an
-```http.ResponseWriter``` can be used wherever an ```io.Writer```
-can be used.
-```Request``` is a struct containing a parsed representation
+Those methods include the standard ```Write``` method, so an ```http.ResponseWriter``` can be used wherever an ```io.Writer```
+can be used. ```Request``` is a struct containing a parsed representation
 of the request from the client.
 
 
@@ -2079,7 +2040,7 @@ set up.  Here's a trivial but complete implementation of a handler to
 count the number of times the
 page is visited.
 
-```
+```golang
 // Simple counter server.
 type Counter struct {
     n int
@@ -2091,11 +2052,10 @@ func (ctr *Counter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 ```
 
-(Keeping with our theme, note how ```Fprintf``` can print to an
-```http.ResponseWriter```.)
+(Keeping with our theme, note how ```Fprintf``` can print to an ```http.ResponseWriter```.)
 For reference, here's how to attach such a server to a node on the URL tree.
 
-```
+```golang
 import "net/http"
 ...
 ctr := new(Counter)
@@ -2105,7 +2065,7 @@ http.Handle("/counter", ctr)
 But why make ```Counter``` a struct?  An integer is all that's needed.
 (The receiver needs to be a pointer so the increment is visible to the caller.)
 
-```
+```golang
 // Simpler counter server.
 type Counter int
 
@@ -2118,7 +2078,7 @@ func (ctr *Counter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 What if your program has some internal state that needs to be notified that a page
 has been visited?  Tie a channel to the web page.
 
-```
+```golang
 // A channel that sends a notification on each visit.
 // (Probably want the channel to be buffered.)
 type Chan chan *http.Request
@@ -2133,7 +2093,7 @@ Finally, let's say we wanted to present on ```/args``` the arguments
 used when invoking the server binary.
 It's easy to write a function to print the arguments.
 
-```
+```golang
 func ArgServer() {
     fmt.Println(os.Args)
 }
@@ -2145,7 +2105,7 @@ Since we can define a method for any type except pointers and interfaces,
 we can write a method for a function.
 The ```http``` package contains this code:
 
-```
+```golang
 // The HandlerFunc type is an adapter to allow the use of
 // ordinary functions as HTTP handlers.  If f is a function
 // with the appropriate signature, HandlerFunc(f) is a
@@ -2158,7 +2118,7 @@ func (f HandlerFunc) ServeHTTP(w ResponseWriter, req *Request) {
 }
 ```
 
-```HandlerFunc``` is a type with a method, ```ServeHTTP```,
+_ ```HandlerFunc``` is a type with a method, ```ServeHTTP```,
 so values of that type can serve HTTP requests.  Look at the implementation
 of the method: the receiver is a function, ```f```, and the method
 calls ```f```.  That may seem odd but it's not that different from, say,
@@ -2168,20 +2128,20 @@ the receiver being a channel and the method sending on the channel.
 To make ```ArgServer``` into an HTTP server, we first modify it
 to have the right signature.
 
-```
+```golang
 // Argument server.
 func ArgServer(w http.ResponseWriter, req *http.Request) {
     fmt.Fprintln(w, os.Args)
 }
 ```
 
-```ArgServer``` now has same signature as ```HandlerFunc```,
+_ ```ArgServer``` now has same signature as ```HandlerFunc```,
 so it can be converted to that type to access its methods,
 just as we converted ```Sequence``` to ```IntSlice```
 to access ```IntSlice.Sort```.
 The code to set it up is concise:
 
-```
+```golang
 http.Handle("/args", http.HandlerFunc(ArgServer))
 ```
 
@@ -2189,8 +2149,7 @@ When someone visits the page ```/args```,
 the handler installed at that page has value ```ArgServer```
 and type ```HandlerFunc```.
 The HTTP server will invoke the method ```ServeHTTP```
-of that type, with ```ArgServer``` as the receiver, which will in turn call
-```ArgServer``` (via the invocation ```f(c, req)```
+of that type, with ```ArgServer``` as the receiver, which will in turn call ```ArgServer``` (via the invocation ```f(c, req)```
 inside ```HandlerFunc.ServeHTTP```).
 The arguments will then be displayed.
 
@@ -2234,7 +2193,7 @@ a value and an error, but only the error is important,
 use the blank identifier to discard the irrelevant value.
 
 
-```
+```golang
 if _, err := os.Stat(path); os.IsNotExist(err) {
 	fmt.Printf("%s does not exist\n", path)
 }
@@ -2246,7 +2205,7 @@ to ignore the error; this is terrible practice. Always check error returns;
 they're provided for a reason.
 
 
-```
+```golang
 // Bad! This code will crash if path does not exist.
 fi, _ := os.Stat(path)
 if fi.IsDir() {
@@ -2308,7 +2267,7 @@ access the data through a web page.
 To import the package only for its side effects, rename the package
 to the blank identifier:
 
-```
+```golang
 import _ "net/http/pprof"
 ```
 
@@ -2326,8 +2285,7 @@ a type need not declare explicitly that it implements an interface.
 Instead, a type implements the interface just by implementing the interface's methods.
 In practice, most interface conversions are static and therefore checked at compile time.
 For example, passing an ```*os.File``` to a function
-expecting an ```io.Reader``` will not compile unless
-```*os.File``` implements the ```io.Reader``` interface.
+expecting an ```io.Reader``` will not compile unless ```*os.File``` implements the ```io.Reader``` interface.
 
 
 
@@ -2340,7 +2298,7 @@ instead of doing the standard conversion.
 The encoder checks this property at run time with a <a href="#interface_conversions">type assertion</a> like:
 
 
-```
+```golang
 m, ok := val.(json.Marshaler)
 ```
 
@@ -2350,7 +2308,7 @@ actually using the interface itself, perhaps as part of an error check, use the 
 identifier to ignore the type-asserted value:
 
 
-```
+```golang
 if _, ok := val.(json.Marshaler); ok {
     fmt.Printf("value %v of type %T implements json.Marshaler\n", val, val)
 }
@@ -2359,23 +2317,19 @@ if _, ok := val.(json.Marshaler); ok {
 
 One place this situation arises is when it is necessary to guarantee within the package implementing the type that
 it actually satisfies the interface.
-If a type—for example,
-```<a href="/pkg/encoding/json/#RawMessage">json.RawMessage</a>```—needs
-a custom JSON representation, it should implement
-```json.Marshaler```, but there are no static conversions that would
+If a type—for example, ```<a href="/pkg/encoding/json/#RawMessage">json.RawMessage</a>```—needs
+a custom JSON representation, it should implement ```json.Marshaler```, but there are no static conversions that would
 cause the compiler to verify this automatically.
 If the type inadvertently fails to satisfy the interface, the JSON encoder will still work,
 but will not use the custom implementation.
 To guarantee that the implementation is correct,
 a global declaration using the blank identifier can be used in the package:
 
-```
+```golang
 var _ json.Marshaler = (*RawMessage)(nil)
 ```
 
-In this declaration, the assignment involving a conversion of a
-```*RawMessage``` to a ```Marshaler```
-requires that ```*RawMessage``` implements ```Marshaler```,
+In this declaration, the assignment involving a conversion of a ```*RawMessage``` to a ```Marshaler``` requires that ```*RawMessage``` implements ```Marshaler```,
 and that property will be checked at compile time.
 Should the ```json.Marshaler``` interface change, this package
 will no longer compile and we will be on notice that it needs to be updated.
@@ -2405,7 +2359,7 @@ Interface embedding is very simple.
 We've mentioned the ```io.Reader``` and ```io.Writer``` interfaces before;
 here are their definitions.
 
-```
+```golang
 type Reader interface {
     Read(p []byte) (n int, err error)
 }
@@ -2423,7 +2377,7 @@ We could specify ```io.ReadWriter``` by listing the
 two methods explicitly, but it's easier and more evocative
 to embed the two interfaces to form the new one, like this:
 
-```
+```golang
 // ReadWriter is the interface that combines the Reader and Writer interfaces.
 type ReadWriter interface {
     Reader
@@ -2439,16 +2393,14 @@ Only interfaces can be embedded within interfaces.
 
 
 The same basic idea applies to structs, but with more far-reaching
-implications.  The ```bufio``` package has two struct types,
-```bufio.Reader``` and ```bufio.Writer```, each of
-which of course implements the analogous interfaces from package
-```io```.
+implications.  The ```bufio``` package has two struct types, ```bufio.Reader``` and ```bufio.Writer```, each of
+which of course implements the analogous interfaces from package ```io```.
 And ```bufio``` also implements a buffered reader/writer,
 which it does by combining a reader and a writer into one struct
 using embedding: it lists the types within the struct
 but does not give them field names.
 
-```
+```golang
 // ReadWriter stores pointers to a Reader and a Writer.
 // It implements io.ReadWriter.
 type ReadWriter struct {
@@ -2462,7 +2414,7 @@ must be initialized to point to valid structs before they
 can be used.
 The ```ReadWriter``` struct could be written as
 
-```
+```golang
 type ReadWriter struct {
     reader *Reader
     writer *Writer
@@ -2473,7 +2425,7 @@ but then to promote the methods of the fields and to
 satisfy the ```io``` interfaces, we would also need
 to provide forwarding methods, like this:
 
-```
+```golang
 func (rw *ReadWriter) Read(p []byte) (n int, err error) {
     return rw.reader.Read(p)
 }
@@ -2483,9 +2435,9 @@ By embedding the structs directly, we avoid this bookkeeping.
 The methods of embedded types come along for free, which means that ```bufio.ReadWriter```
 not only has the methods of ```bufio.Reader``` and ```bufio.Writer```,
 it also satisfies all three interfaces:
-```io.Reader```,
-```io.Writer```, and
-```io.ReadWriter```.
+* ```io.Reader```,
+* ```io.Writer```, and
+* ```io.ReadWriter```.
 
 
 There's an important way in which embedding differs from subclassing.  When we embed a type,
@@ -2493,14 +2445,13 @@ the methods of that type become methods of the outer type,
 but when they are invoked the receiver of the method is the inner type, not the outer one.
 In our example, when the ```Read``` method of a ```bufio.ReadWriter``` is
 invoked, it has exactly the same effect as the forwarding method written out above;
-the receiver is the ```reader``` field of the ```ReadWriter```, not the
-```ReadWriter``` itself.
+the receiver is the ```reader``` field of the ```ReadWriter```, not the ```ReadWriter``` itself.
 
 
 Embedding can also be a simple convenience.
 This example shows an embedded field alongside a regular, named field.
 
-```
+```golang
 type Job struct {
     Command string
     *log.Logger
@@ -2514,14 +2465,14 @@ a field name, of course, but it's not necessary to do so.  And now, once
 initialized, we can
 log to the ```Job```:
 
-```
+```golang
 job.Log("starting now...")
 ```
 
 The ```Logger``` is a regular field of the ```Job``` struct,
 so we can initialize it in the usual way inside the constructor for ```Job```, like this,
 
-```
+```golang
 func NewJob(command string, logger *log.Logger) *Job {
     return &amp;Job{command, logger}
 }
@@ -2529,19 +2480,18 @@ func NewJob(command string, logger *log.Logger) *Job {
 
 or with a composite literal,
 
-```
+```golang
 job := &amp;Job{command, log.New(os.Stderr, "Job: ", log.Ldate)}
 ```
 
 If we need to refer to an embedded field directly, the type name of the field,
 ignoring the package qualifier, serves as a field name, as it did
 in the ```Read``` method of our ```ReaderWriter``` struct.
-Here, if we needed to access the
-```*log.Logger``` of a ```Job``` variable ```job```,
+Here, if we needed to access the ```*log.Logger``` of a ```Job``` variable ```job```,
 we would write ```job.Logger```,
 which would be useful if we wanted to refine the methods of ```Logger```.
 
-```
+```golang
 func (job *Job) Logf(format string, args ...interface{}) {
     job.Logger.Logf("%q: %s", job.Command, fmt.Sprintf(format, args...))
 }
@@ -2625,17 +2575,16 @@ management.
 Prefix a function or method call with the ```go```
 keyword to run the call in a new goroutine.
 When the call completes, the goroutine
-exits, silently.  (The effect is similar to the Unix shell's
-```&amp;``` notation for running a command in the
+exits, silently.  (The effect is similar to the Unix shell's ```&amp;``` notation for running a command in the
 background.)
 
-```
+```golang
 go list.Sort()  // run list.Sort concurrently; don't wait for it.
 ```
 
 A function literal can be handy in a goroutine invocation.
 
-```
+```golang
 func Announce(message string, delay time.Duration) {
     go func() {
         time.Sleep(delay)
@@ -2660,7 +2609,7 @@ the resulting value acts as a reference to an underlying data structure.
 If an optional integer parameter is provided, it sets the buffer size for the channel.
 The default is zero, for an unbuffered or synchronous channel.
 
-```
+```golang
 ci := make(chan int)            // unbuffered channel of integers
 cj := make(chan int, 0)         // unbuffered channel of integers
 cs := make(chan *os.File, 100)  // buffered channel of pointers to Files
@@ -2675,7 +2624,7 @@ There are lots of nice idioms using channels.  Here's one to get us started.
 In the previous section we launched a sort in the background. A channel
 can allow the launching goroutine to wait for the sort to complete.
 
-```
+```golang
 c := make(chan int)  // Allocate a channel.
 // Start the sort in a goroutine; when it completes, signal on the channel.
 go func() {
@@ -2702,7 +2651,7 @@ to ready the &ldquo;semaphore&rdquo; for the next consumer.
 The capacity of the channel buffer limits the number of
 simultaneous calls to ```process```.
 
-```
+```golang
 var sem = make(chan int, MaxOutstanding)
 
 func handle(r *Request) {
@@ -2736,7 +2685,7 @@ gate the creation of the goroutines.
 Here's an obvious solution, but beware it has a bug we'll fix subsequently:
 
 
-```
+```golang
 func Serve(queue chan *Request) {
     for req := range queue {
         sem <- 1
@@ -2745,7 +2694,8 @@ func Serve(queue chan *Request) {
             <-sem
         }()
     }
-}```
+}
+```
 
 
 The bug is that in a Go ```for``` loop, the loop variable
@@ -2757,7 +2707,7 @@ Here's one way to do that, passing the value of ```req``` as an argument
 to the closure in the goroutine:
 
 
-```
+```golang
 func Serve(queue chan *Request) {
     for req := range queue {
         sem <- 1
@@ -2766,7 +2716,8 @@ func Serve(queue chan *Request) {
             <-sem
         }(req)
     }
-}```
+}
+```
 
 
 Compare this version with the previous to see the difference in how
@@ -2775,7 +2726,7 @@ Another solution is just to create a new variable with the same
 name, as in this example:
 
 
-```
+```golang
 func Serve(queue chan *Request) {
     for req := range queue {
         req := req // Create new instance of req for the goroutine.
@@ -2785,13 +2736,14 @@ func Serve(queue chan *Request) {
             <-sem
         }()
     }
-}```
+}
+```
 
 
 It may seem odd to write
 
 
-```
+```golang
 req := req
 ```
 
@@ -2813,7 +2765,7 @@ it will be told to exit; after launching the goroutines it blocks
 receiving from that channel.
 
 
-```
+```golang
 func handle(queue chan *Request) {
     for r := range queue {
         process(r)
@@ -2843,7 +2795,7 @@ type it was handling.  If that type includes a channel on which
 to reply, each client can provide its own path for the answer.
 Here's a schematic definition of type ```Request```.
 
-```
+```golang
 type Request struct {
     args        []int
     f           func([]int) int
@@ -2854,7 +2806,7 @@ type Request struct {
 The client provides a function and its arguments, as well as
 a channel inside the request object on which to receive the answer.
 
-```
+```golang
 func sum(a []int) (s int) {
     for _, v := range a {
         s += v
@@ -2871,7 +2823,7 @@ fmt.Printf("answer: %d\n", <-request.resultChan)
 
 On the server side, the handler function is the only thing that changes.
 
-```
+```golang
 func handle(queue chan *Request) {
     for req := range queue {
         req.resultChan <- req.f(req.args)
@@ -2896,7 +2848,7 @@ Let's say we have an expensive operation to perform on a vector of items,
 and that the value of the operation on each item is independent,
 as in this idealized example.
 
-```
+```golang
 type Vector []float64
 
 // Apply the operation to v[i], v[i+1] ... up to v[n-1].
@@ -2913,7 +2865,7 @@ They can complete in any order but it doesn't matter; we just
 count the completion signals by draining the channel after
 launching all the goroutines.
 
-```
+```golang
 const numCPU = 4 // number of CPU cores
 
 func (v Vector) DoAll(u Vector) {
@@ -2934,12 +2886,11 @@ value is appropriate.
 The function ```<a href="/pkg/runtime#NumCPU">runtime.NumCPU</a>```
 returns the number of hardware CPU cores in the machine, so we could write
 
-```
+```golang
 var numCPU = runtime.NumCPU()
 ```
 
-There is also a function
-```<a href="/pkg/runtime#GOMAXPROCS">runtime.GOMAXPROCS</a>```,
+There is also a function ```<a href="/pkg/runtime#GOMAXPROCS">runtime.GOMAXPROCS</a>```,
 which reports (or sets)
 the user-specified number of cores that a Go program can have running
 simultaneously.
@@ -2949,7 +2900,7 @@ or by calling the function with a positive number.  Calling it with
 zero just queries the value.
 Therefore if we want to honor the user's resource request, we should write
 
-```
+```golang
 var numCPU = runtime.GOMAXPROCS(0)
 ```
 
@@ -2972,10 +2923,9 @@ package.  The client goroutine loops receiving data from some source,
 perhaps a network.  To avoid allocating and freeing buffers, it keeps
 a free list, and uses a buffered channel to represent it.  If the
 channel is empty, a new buffer gets allocated.
-Once the message buffer is ready, it's sent to the server on
-```serverChan```.
+Once the message buffer is ready, it's sent to the server on ```serverChan```.
 
-```
+```golang
 var freeList = make(chan *Buffer, 100)
 var serverChan = make(chan *Buffer)
 
@@ -2999,7 +2949,7 @@ func client() {
 The server loop receives each message from the client, processes it,
 and returns the buffer to the free list.
 
-```
+```golang
 func server() {
     for {
         b := <-serverChan    // Wait for work.
@@ -3047,7 +2997,7 @@ error value that describes what went wrong.
 By convention, errors have type ```error```,
 a simple built-in interface.
 
-```
+```golang
 type error interface {
     Error() string
 }
@@ -3060,10 +3010,9 @@ As mentioned, alongside the usual ```*os.File```
 return value, ```os.Open``` also returns an
 error value.
 If the file is opened successfully, the error will be ```nil```,
-but when there is a problem, it will hold an
-```os.PathError```:
+but when there is a problem, it will hold an ```os.PathError```:
 
-```
+```golang
 // PathError records an error and the operation and
 // file path that caused it.
 type PathError struct {
@@ -3072,15 +3021,15 @@ type PathError struct {
     Err error    // Returned by the system call.
 }
 
-func (e *PathError) Error() string {
+func (e * PathError) Error() string {
     return e.Op + " " + e.Path + ": " + e.Err.Error()
 }
 ```
 
-```PathError```'s ```Error``` generates
+_ ```PathError```'s ```Error``` generates
 a string like this:
 
-```
+```command
 open /etc/passwx: no such file or directory
 ```
 
@@ -3093,8 +3042,7 @@ it is much more informative than the plain
 
 
 When feasible, error strings should identify their origin, such as by having
-a prefix naming the operation or package that generated the error.  For example, in package
-```image```, the string representation for a decoding error due to an
+a prefix naming the operation or package that generated the error.  For example, in package ```image```, the string representation for a decoding error due to an
 unknown format is "image: unknown format".
 
 
@@ -3106,7 +3054,7 @@ this might include examining the internal ```Err```
 field for recoverable failures.
 
 
-```
+```golang
 for try := 0; try < 2; try++ {
     file, err = os.Create(filename)
     if err == nil {
@@ -3132,9 +3080,7 @@ which we can examine for more information about the error.
 <h3 id="panic">Panic</h3>
 
 
-The usual way to report an error to a caller is to return an
-```error``` as an extra return value.  The canonical
-```Read``` method is a well-known instance; it returns a byte
+The usual way to report an error to a caller is to return an ```error``` as an extra return value.  The canonical ```Read``` method is a well-known instance; it returns a byte
 count and an ```error```.  But what if the error is
 unrecoverable?  Sometimes the program simply cannot continue.
 
@@ -3149,7 +3095,7 @@ happened, such as exiting an infinite loop.
 
 
 
-```
+```golang
 // A toy implementation of cube root using Newton's method.
 func CubeRoot(x float64) float64 {
     z := x/3   // Arbitrary initial value
@@ -3174,7 +3120,7 @@ is during initialization: if the library truly cannot set itself up,
 it might be reasonable to panic, so to speak.
 
 
-```
+```golang
 var user = os.Getenv("USER")
 
 func init() {
@@ -3209,7 +3155,7 @@ One application of ```recover``` is to shut down a failing goroutine
 inside a server without killing the other executing goroutines.
 
 
-```
+```golang
 func server(workChan <-chan *Work) {
     for work := range workChan {
         go safelyDo(work)
@@ -3253,7 +3199,7 @@ error type.  Here's the definition of ```Error```,
 an ```error``` method, and the ```Compile``` function.
 
 
-```
+```golang
 // Error is the type of a parse error; it satisfies the error interface.
 type Error string
 func (e Error) Error() string {
@@ -3303,16 +3249,14 @@ makes it easy to report parse errors without worrying about unwinding
 the parse stack by hand:
 
 
-```
+```golang
 if pos == 0 {
     re.error("'*' illegal at start of expression")
 }
 ```
 
 
-Useful though this pattern is, it should be used only within a package.
-```Parse``` turns its internal ```panic``` calls into
-```error``` values; it does not expose ```panics```
+Useful though this pattern is, it should be used only within a package. ```Parse``` turns its internal ```panic``` calls into ```error``` values; it does not expose ```panics```
 to its client.  That is a good rule to follow.
 
 
@@ -3363,7 +3307,7 @@ for the server.  Then ```http.ListenAndServe``` is called to start the
 server; it blocks while the server runs.
 
 
-```QR``` just receives the request, which contains form data, and
+_ ```QR``` just receives the request, which contains form data, and
 executes the template on the data in the form value named ```s```.
 
 
