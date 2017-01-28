@@ -635,25 +635,22 @@ func nextInt(b []byte, i int) (int, int) {
 
 ### Именование параметров результата
 
+Возвращаемым "параметрам" в языке Go можно давать имена и это часто используется как входные параметры.
+Когда они именованы, то они инициализируються нулевым значением необходимого типа в самом начале функции.
+**TODO**
+ if the function executes a return statement with no arguments, the current values of the result parameters are used as the returned values.
+**-**
 
-The return or result "parameters" of a Go function can be given names and used as regular variables, just like the incoming parameters.
-When named, they are initialized to the zero values for their types when the function begins; if the function executes a ```return``` statement with no arguments, the current values of the result parameters are used as the returned values.
 
-
-
-The names are not mandatory but they can make code shorter and clearer:
-they're documentation.
-If we name the results of ```nextInt``` it becomes obvious which returned ```int``` is which.
+Именование не обязательное, но оно может сделать код короче и чище, самодокументируемым.
+Ели имя результата будет ```nextInt```, то очевидно что тип результата ```int```.
 
 
 ```golang
 func nextInt(b []byte, pos int) (value, nextPos int) {
 ```
 
-
-Because named results are initialized and tied to an unadorned return, they can simplify
-as well as clarify.  Here's a version
-of ```io.ReadFull``` that uses them well:
+На примере ```io.ReadFull```:
 
 
 ```golang
@@ -668,16 +665,11 @@ func ReadFull(r Reader, buf []byte) (n int, err error) {
 }
 ```
 
-### "defer">Defer
+### Отсроченный вызов (Defer)
 
-
-Go's ```defer``` statement schedules a function call (the
-*deferred* function) to be run immediately before the function
-executing the ```defer``` returns.  It's an unusual but
-effective way to deal with situations such as resources that must be
-released regardless of which path a function takes to return.  The
-canonical examples are unlocking a mutex or closing a file.
-
+В языке Go есть оператор ```defer``` для управления отложенного вызова функции, которые будут вызваны как только функция имеющая ```defer``` окончаться.
+Это не типичный но эффективный способ, когда необходимо закрыть ресурс после окончания функции.
+Канонические примеры - работа с mutex или закрытие файла.
 
 ```golang
 // Contents returns the file's contents as a string.
@@ -704,22 +696,12 @@ func Contents(filename string) (string, error) {
 }
 ```
 
+Отложенный вызов функции ```Close``` имеет 2 преимущества. Во-певых, гарантирует что не будет забыто закрытие файла - ошибка которое легко сделать если в последствии будет в функции будет изменено не другой папку. Во-вторых,  закрытие близко расположено к открытию, что более ясно чем распологать в конце функции.
 
-Deferring a call to a function such as ```Close``` has two advantages.  First, it
-guarantees that you will never forget to close the file, a mistake
-that's easy to make if you later edit the function to add a new return
-path.  Second, it means that the close sits near the open,
-which is much clearer than placing it at the end of the function.
+Аргументы отложенной функции выполняються когда выполняется ```defer```, а не когда функция вызвана.
+Кроме того , во избежания беспокойства по поводу изменяющихся переменных в функции, одна отложенная функция может отложить вызов множества функций.
 
-
-
-The arguments to the deferred function (which include the receiver if
-the function is a method) are evaluated when the *defer*
-executes, not when the *call* executes.  Besides avoiding worries
-about variables changing values as the function executes, this means
-that a single deferred call site can defer multiple function
-executions.  Here's a silly example.
-
+Вот простой пример:
 
 ```golang
 for i := 0; i < 5; i++ {
@@ -727,9 +709,7 @@ for i := 0; i < 5; i++ {
 }
 ```
 
-
-Deferred functions are executed in LIFO order, so this code will cause ```4 3 2 1 0``` to be printed when the function returns.  A more plausible example is a simple way to trace function execution through the program.  We could write a couple of simple tracing
-routines like this:
+Откладывание функции в LIFO очередь, приведет к следующей работе функции при печати на экран ```4 3 2 1 0``` . Более интересный пример - простое отслеживание функции в программе. Мы могли бы написать простое отслеживание как это:
 
 
 ```golang
@@ -744,12 +724,8 @@ func a() {
 }
 ```
 
-
-We can do better by exploiting the fact that arguments to deferred
-functions are evaluated when the ```defer``` executes.  The
-tracing routine can set up the argument to the untracing routine.
-This example:
-
+Мы могли бы сделать лучше - используя факт отложенных функций для оценки когда будет запущен ```defer```. Отслеживаемая функция может настроить агрументы неотслеживаемой функции.
+К примеру:
 
 ```golang
 func trace(s string) string {
@@ -778,7 +754,7 @@ func main() {
 ```
 
 
-prints
+выводит:
 
 
 ```
@@ -790,42 +766,28 @@ leaving: a
 leaving: b
 ```
 
-
-For programmers accustomed to block-level resource management from
-other languages, ```defer``` may seem peculiar, but its most
-interesting and powerful applications come precisely from the fact
-that it's not block-based but function-based.  In the section on ```panic``` and ```recover``` we'll see another
-example of its possibilities.
+Для программистов привыкших к блочному управлению ресерсами в других языках, функция ```defer``` может показаться странной, но интересной и мощной, так как позволяет перейти от блочного управления к управления в функции. В разделах ```panic``` и ```recover``` будут также рассматриваться несколько примеров.
 
 
-## "data">Data
+## Данные
 
-### "allocation_new">Allocation with ```new```
+### Созданные с помощью ```new```
 
 
 Go has two allocation primitives, the built-in functions ```new``` and ```make```.
-They do different things and apply to different types, which can be confusing,
-but the rules are simple.
+They do different things and apply to different types, which can be confusing, but the rules are simple.
 Let's talk about ```new``` first.
-It's a built-in function that allocates memory, but unlike its namesakes
-in some other languages it does not *initialize* the memory,
-it only *zeros* it.
+It's a built-in function that allocates memory, but unlike its namesakes in some other languages it does not *initialize* the memory, it only *zeros* it.
 That is, ```new(T)``` allocates zeroed storage for a new item of type ```T``` and returns its address, a value of type ```*T```.
 In Go terminology, it returns a pointer to a newly allocated zero value of type ```T```.
 
 
 
 Since the memory returned by ```new``` is zeroed, it's helpful to arrange
-when designing your data structures that the
-zero value of each type can be used without further initialization.  This means a user of
-the data structure can create one with ```new``` and get right to
-work.
-For example, the documentation for ```bytes.Buffer``` states that
-"the zero value for ```Buffer``` is an empty buffer ready to use."
-Similarly, ```sync.Mutex``` does not
-have an explicit constructor or ```Init``` method.
-Instead, the zero value for a ```sync.Mutex```
-is defined to be an unlocked mutex.
+when designing your data structures that the zero value of each type can be used without further initialization.  This means a user of the data structure can create one with ```new``` and get right to work.
+For example, the documentation for ```bytes.Buffer``` states that "the zero value for ```Buffer``` is an empty buffer ready to use."
+Similarly, ```sync.Mutex``` does not have an explicit constructor or ```Init``` method.
+Instead, the zero value for a ```sync.Mutex``` is defined to be an unlocked mutex.
 
 
 
