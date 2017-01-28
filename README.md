@@ -414,8 +414,7 @@ for i := 0; i < 10; i++ {
 }
 ```
 
-
-If you're looping over an array, slice, string, or map, or reading from a channel, a ```range``` clause can manage the loop.
+Если Вы используете цикл по массиву, слайсу, строке или маппу(карте, map) или читаете из канала, то для управления можно использовать ```range```.
 
 ```golang
 for key, value := range oldMap {
@@ -423,8 +422,7 @@ for key, value := range oldMap {
 }
 ```
 
-
-If you only need the first item in the range (the key or index), drop the second:
+Если Вы будете использовать только по первому элементу в *range* (ключ или индекс), можете пропустить второй элемент:
 
 ```golang
 for key := range m {
@@ -435,7 +433,7 @@ for key := range m {
 ```
 
 
-If you only need the second item in the range (the value), use the <em>blank identifier</em>, an underscore, to discard the first:
+If you only need the second item in the range (the value), use the *blank identifier*, an underscore, to discard the first:
 
 ```golang
 sum := 0
@@ -444,20 +442,11 @@ for _ , value := range array {
 }
 ```
 
+Использование в цикле по строке```range``` делает для Вас намного большее, к примеру разделяет строку по символам Unicode в соответствии с UTF-8.
+При ошибочном использование кодировки по-байтово и заменяет рунами(*rune*) U+FFFD.
+(```rune``` в терминологии Go используеться для работы с символами Unicode. Смотрите детальную информацию [Спецификацию языка](https://golang.org/ref/spec#Rune_literals)).
 
-The blank identifier has many uses, as described in <a href="#blank">a later section</a>.
-
-
-
-For strings, the ```range``` does more work for you, breaking out individual
-Unicode code points by parsing the UTF-8.
-Erroneous encodings consume one byte and produce the
-replacement rune U+FFFD.
-(The name (with associated builtin type) ```rune``` is Go terminology for a
-single Unicode code point.
-See <a href="/ref/spec#Rune_literals">the language specification</a>
-for details.)
-The loop
+Данный цикл:
 
 ```golang
 for pos, char := range "日本\x80語" { // \x80 is an illegal UTF-8 encoding
@@ -465,7 +454,7 @@ for pos, char := range "日本\x80語" { // \x80 is an illegal UTF-8 encoding
 }
 ```
 
-prints
+Выводит:
 
 ```command
 character U+65E5 '日' starts at byte position 0
@@ -474,11 +463,8 @@ character U+FFFD '�' starts at byte position 6
 character U+8A9E '語' starts at byte position 7
 ```
 
-
-Finally, Go has no comma operator and ```++``` and ```--```
-are statements not expressions.
-Thus if you want to run multiple variables in a ```for```
-you should use parallel assignment (although that precludes ```++``` and ```--```).
+В языке Go не используються операторы запятая, ```++```, ```--```.
+Если Вам необходимо использовать несколько переменных в цикле ```for```, то Вы можете использовать параллельное определение переменных (без использования ```++``` и ```--```).
 
 ```golang
 // Reverse a
@@ -487,15 +473,11 @@ for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
 }
 ```
 
-<h3 id="switch">Switch</h3>
+### Switch(переключатель)
 
-
-Go's ```switch``` is more general than C's.
-The expressions need not be constants or even integers,
-the cases are evaluated top to bottom until a match is found,
-and if the ```switch``` has no expression it switches on ```true```.
-It's therefore possible and idiomatic to write an ```if``` -```else```-```if```-```else```
-chain as a ```switch```.
+В языке Go ```switch``` в основном такой же как в языке C.
+The expressions need not be constants or even integers, the cases are evaluated top to bottom until a match is found, and if the ```switch``` has no expression it switches on ```true```.
+It's therefore possible and idiomatic to write an ```if``` - ```else``` - ```if``` - ```else``` chain as a ```switch```.
 
 
 ```golang
@@ -596,7 +578,7 @@ func Compare(a, b []byte) int {
 
 
 A switch can also be used to discover the dynamic type of an interface
-variable.  Such a <em>type switch</em> uses the syntax of a type
+variable.  Such a *type switch* uses the syntax of a type
 assertion with the keyword ```type``` inside the parentheses.
 If the switch declares a variable in the expression, the variable will
 have the corresponding type in each clause.
@@ -864,8 +846,8 @@ They do different things and apply to different types, which can be confusing,
 but the rules are simple.
 Let's talk about ```new``` first.
 It's a built-in function that allocates memory, but unlike its namesakes
-in some other languages it does not <em>initialize</em> the memory,
-it only <em>zeros</em> it.
+in some other languages it does not *initialize* the memory,
+it only *zeros* it.
 That is, ```new(T)``` allocates zeroed storage for a new item of type ```T``` and returns its address, a value of type ```*T```.
 In Go terminology, it returns a pointer to a newly allocated zero value of type ```T```.
 
@@ -992,8 +974,8 @@ m := map[int]string{Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
 Back to allocation.
 The built-in function ```make(T, ```*args*```)``` serves
 a purpose different from ```new(T)```.
-It creates slices, maps, and channels only, and it returns an <em>initialized</em>
-(not <em>zeroed</em>)
+It creates slices, maps, and channels only, and it returns an *initialized*
+(not *zeroed*)
 value of type ```T``` (not ```*T```).
 The reason for the distinction
 is that these three types represent, under the covers, references to data structures that
@@ -1243,8 +1225,8 @@ for i := range picture {
 
 
 Maps are a convenient and powerful built-in data structure that associate
-values of one type (the <em>key</em>) with values of another type
-(the <em>element</em> or <em>value</em>)
+values of one type (the *key*) with values of another type
+(the *element* or *value*)
 The key can be of any type for which the equality operator is defined,
 such as integers,
 floating point and complex numbers,
@@ -1393,7 +1375,7 @@ prints
 If you just want the default conversion, such as decimal for integers, you can use
 the catchall format ```%v``` (for &ldquo;value&rdquo;); the result is exactly
 what ```Print``` and ```Println``` would produce.
-Moreover, that format can print <em>any</em> value, even arrays, slices, structs, and
+Moreover, that format can print *any* value, even arrays, slices, structs, and
 maps.  Here is a print statement for the time zone map defined in the previous section.
 
 ```golang
@@ -1444,7 +1426,7 @@ on integers, generating a long hexadecimal string, and with
 a space in the format (```%&nbsp;x```) it puts spaces between the bytes.
 
 
-Another handy format is ```%T```, which prints the <em>type</em> of a value.
+Another handy format is ```%T```, which prints the *type* of a value.
 
 ```golang
 fmt.Printf(&quot;%T\n&quot;, timeZone)
@@ -1473,7 +1455,7 @@ to print in the format
 7/-2.35/"abc\tdef"
 ```
 
-(If you need to print <em>values</em> of type ```T``` as well as pointers to ```T```,
+(If you need to print *values* of type ```T``` as well as pointers to ```T```,
 the receiver for ```String``` must be of value type; this example used a pointer because
 that's more efficient and idiomatic for struct types.
 See the section below on <a href="#pointers_vs_values">pointers vs. value receivers</a> for more information.)
@@ -1794,8 +1776,8 @@ is central to the implementation of ```bytes.Buffer```.
 <h3 id="interfaces">Interfaces</h3>
 
 Interfaces in Go provide a way to specify the behavior of an
-object: if something can do <em>this</em>, then it can be used
-<em>here</em>.  We've seen a couple of simple examples already;
+object: if something can do *this*, then it can be used
+*here*.  We've seen a couple of simple examples already;
 custom printers can be implemented by a ```String``` method
 while ```Fprintf``` can generate output to anything
 with a ```Write``` method.
@@ -1890,7 +1872,7 @@ It's perfectly fine to mix types this way.
 
 What if there's only one type we care about? If we know the value holds a ```string```
 and we just want to extract it?
-A one-case type switch would do, but so would a <em>type assertion</em>.
+A one-case type switch would do, but so would a *type assertion*.
 A type assertion takes an interface value and extracts from it a value of the specified explicit type.
 The syntax borrows from the clause opening a type switch, but with an explicit
 type rather than the ```type``` keyword:
@@ -2351,7 +2333,7 @@ which is a rare event.
 
 Go does not provide the typical, type-driven notion of subclassing,
 but it does have the ability to &ldquo;borrow&rdquo; pieces of an
-implementation by <em>embedding</em> types within a struct or
+implementation by *embedding* types within a struct or
 interface.
 
 
@@ -2386,7 +2368,7 @@ type ReadWriter interface {
 ```
 
 This says just what it looks like: A ```ReadWriter``` can do
-what a ```Reader``` does <em>and</em> what a ```Writer```
+what a ```Reader``` does *and* what a ```Writer```
 does; it is a union of the embedded interfaces (which must be disjoint
 sets of methods).
 Only interfaces can be embedded within interfaces.
@@ -2556,7 +2538,7 @@ it can also be seen as a type-safe generalization of Unix pipes.
 <h3 id="goroutines">Goroutines</h3>
 
 
-They're called <em>goroutines</em> because the existing
+They're called *goroutines* because the existing
 terms threads, coroutines, processes, and so on convey
 inaccurate connotations.  A goroutine has a simple model: it is a
 function executing concurrently with other goroutines in the same
