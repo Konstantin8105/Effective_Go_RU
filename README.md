@@ -522,7 +522,7 @@ Loop:
 			update(src[n])
 
 		case src[n] < sizeTwo:
-			if n+1 &gt;= len(src) {
+			if n+1 >= len(src) {
 				err = errShortInput
 				break Loop
 			}
@@ -541,18 +541,18 @@ Loop:
 ```golang
 // Compare returns an integer comparing the two byte slices,
 // lexicographically.
-// The result will be 0 if a == b, -1 if a < b, and +1 if a &gt; b
+// The result will be 0 if a == b, -1 if a < b, and +1 if a > b
 func Compare(a, b []byte) int {
     for i := 0; i < len(a) && i < len(b); i++ {
         switch {
-        case a[i] &gt; b[i]:
+        case a[i] > b[i]:
             return 1
         case a[i] < b[i]:
             return -1
         }
     }
     switch {
-    case len(a) &gt; len(b):
+    case len(a) > len(b):
         return 1
     case len(a) < len(b):
         return -1
@@ -561,16 +561,13 @@ func Compare(a, b []byte) int {
 }
 ```
 
-<h3 id="type_switch">Type switch</h3>
+### Переключатель типов (Type switch)
 
-
-A switch can also be used to discover the dynamic type of an interface
-variable.  Such a *type switch* uses the syntax of a type
-assertion with the keyword ```type``` inside the parentheses.
-If the switch declares a variable in the expression, the variable will
-have the corresponding type in each clause.
-It's also idiomatic to reuse the name in such cases, in effect declaring
-a new variable with the same name but a different type in each case.
+Переключетель ```switch``` может использоваться для динамических типов переменных интерфейсов. Синтаксическое использование *type switch* типов производиться с помощью слова ```type``` внутри скобок.
+Если в условии переключателе переменная, то эта тип переменной будет проверяться в теле.
+**TODO**
+It's also idiomatic to reuse the name in such cases, in effect declaring a new variable with the same name but a different type in each case.
+**-**
 
 ```golang
 var t interface{}
@@ -589,16 +586,12 @@ case *int:
 }
 ```
 
-<h2 id="functions">Functions</h2>
+## Функции(Functions, методы)
 
-<h3 id="multiple-returns">Multiple return values</h3>
+### Множественное возвращение результатов
 
 
-One of Go's unusual features is that functions and methods
-can return multiple values.  This form can be used to
-improve on a couple of clumsy idioms in C programs: in-band
-error returns such as ```-1``` for ```EOF```
-and modifying an argument passed by address.
+One of Go's unusual features is that functions and methods can return multiple values.  This form can be used to improve on a couple of clumsy idioms in C programs: in-band error returns such as ```-1``` for ```EOF``` and modifying an argument passed by address.
 
 
 
@@ -652,7 +645,7 @@ You could use it to scan the numbers in an input slice ```b``` like this:
     }
 ```
 
-<h3 id="named-results">Named result parameters</h3>
+### "named-results">Named result parameters
 
 
 The return or result "parameters" of a Go function can be given names and
@@ -683,7 +676,7 @@ of ```io.ReadFull``` that uses them well:
 
 ```golang
 func ReadFull(r Reader, buf []byte) (n int, err error) {
-    for len(buf) &gt; 0 && err == nil {
+    for len(buf) > 0 && err == nil {
         var nr int
         nr, err = r.Read(buf)
         n += nr
@@ -693,7 +686,7 @@ func ReadFull(r Reader, buf []byte) (n int, err error) {
 }
 ```
 
-<h3 id="defer">Defer</h3>
+### "defer">Defer
 
 
 Go's ```defer``` statement schedules a function call (the
@@ -823,9 +816,9 @@ that it's not block-based but function-based.  In the section on ```panic``` and
 example of its possibilities.
 
 
-<h2 id="data">Data</h2>
+## "data">Data
 
-<h3 id="allocation_new">Allocation with ```new```</h3>
+### "allocation_new">Allocation with ```new```
 
 
 Go has two allocation primitives, the built-in functions ```new``` and ```make```.
@@ -875,7 +868,7 @@ p := new(SyncedBuffer)  // type *SyncedBuffer
 var v SyncedBuffer      // type  SyncedBuffer
 ```
 
-<h3 id="composite_literals">Constructors and composite literals</h3>
+### "composite_literals">Constructors and composite literals
 
 
 Sometimes the zero value isn't good enough and an initializing
@@ -955,7 +948,7 @@ s := []string      {Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
 m := map[int]string{Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
 ```
 
-<h3 id="allocation_make">Allocation with ```make```</h3>
+### "allocation_make">Allocation with ```make```
 
 
 Back to allocation.
@@ -1011,7 +1004,7 @@ To obtain an explicit pointer allocate with ```new``` or take the address
 of a variable explicitly.
 
 
-<h3 id="arrays">Arrays</h3>
+### "arrays">Arrays
 
 
 Arrays are useful when planning the detailed layout of memory and sometimes
@@ -1059,7 +1052,7 @@ But even this style isn't idiomatic Go.
 Use slices instead.
 
 
-<h3 id="slices">Slices</h3>
+### "slices">Slices
 
 
 Slices wrap arrays to give a more general, powerful, and convenient
@@ -1116,7 +1109,7 @@ resulting slice is returned.  The function uses the fact that ```len``` and ```c
 ```golang
 func Append(slice, data []byte) []byte {
     l := len(slice)
-    if l + len(data) &gt; cap(slice) {  // reallocate
+    if l + len(data) > cap(slice) {  // reallocate
         // Allocate double what's needed, for future growth.
         newSlice := make([]byte, (l+len(data))* 2)
         // The copy function is predeclared and works for any slice type.
@@ -1142,7 +1135,7 @@ design, though, we need a little more information, so we'll return
 to it later.
 
 
-<h3 id="two_dimensional_slices">Two-dimensional slices</h3>
+### "two_dimensional_slices">Two-dimensional slices
 
 
 Go's arrays and slices are one-dimensional.
@@ -1208,7 +1201,7 @@ for i := range picture {
 }
 ```
 
-<h3 id="maps">Maps</h3>
+### "maps">Maps
 
 
 Maps are a convenient and powerful built-in data structure that associate
@@ -1314,7 +1307,7 @@ from the map.
 delete(timeZone, "PDT")  // Now on Standard Time
 ```
 
-<h3 id="printing">Printing</h3>
+### "printing">Printing
 
 
 Formatted printing in Go uses a style similar to C's ```printf```
@@ -1416,7 +1409,7 @@ a space in the format (```%&nbsp;x```) it puts spaces between the bytes.
 Another handy format is ```%T```, which prints the *type* of a value.
 
 ```golang
-fmt.Printf(&quot;%T\n&quot;, timeZone)
+fmt.Printf("%T\n", timeZone)
 ```
 
 prints
@@ -1528,7 +1521,7 @@ func Min(a ...int) int {
 }
 ```
 
-<h3 id="append">Append</h3>
+### "append">Append
 
 Now we have the missing piece we needed to explain the design of
 the ```append``` built-in function.  The signature of ```append```
@@ -1578,7 +1571,7 @@ Without that ```...```, it wouldn't compile because the types
 would be wrong; ```y``` is not of type ```int```.
 
 
-<h2 id="initialization">Initialization</h2>
+## "initialization">Initialization
 
 
 Although it doesn't look superficially very different from
@@ -1588,7 +1581,7 @@ issues among initialized objects, even among different packages, are handled
 correctly.
 
 
-<h3 id="constants">Constants</h3>
+### "constants">Constants
 
 
 Constants in Go are just that constant.
@@ -1632,7 +1625,7 @@ the ```String``` method when it wants a string, and ```%f```
 wants a floating-point value.
 
 
-<h3 id="variables">Variables</h3>
+### "variables">Variables
 
 
 Variables can be initialized just like constants but the
@@ -1646,7 +1639,7 @@ var (
 )
 ```
 
-<h3 id="init">The init function</h3>
+### "init">The init function
 
 
 Finally, each source file can define its own niladic ```init``` function to
@@ -1678,9 +1671,9 @@ func init() {
 }
 ```
 
-<h2 id="methods">Methods</h2>
+## "methods">Methods
 
-<h3 id="pointers_vs_values">Pointers vs. Values</h3>
+### "pointers_vs_values">Pointers vs. Values
 
 As we saw with ```ByteSize```,
 methods can be defined for any named type (except a pointer or an interface);
@@ -1758,9 +1751,9 @@ By the way, the idea of using ```Write``` on a slice of bytes
 is central to the implementation of ```bytes.Buffer```.
 
 
-<h2 id="interfaces_and_types">Interfaces and other types</h2>
+## "interfaces_and_types">Interfaces and other types
 
-<h3 id="interfaces">Interfaces</h3>
+### "interfaces">Interfaces
 
 Interfaces in Go provide a way to specify the behavior of an
 object: if something can do *this*, then it can be used
@@ -1781,7 +1774,7 @@ In this contrived example ```Sequence``` satisfies both.
 
 {{code "/doc/progs/eff_sequence.go" `/^type/` "$"}}
 
-<h3 id="conversions">Conversions</h3>
+### "conversions">Conversions
 
 
 The ```String``` method of ```Sequence``` is recreating the
@@ -1827,7 +1820,7 @@ and ```[]int```), each of which does some part of the job.
 That's more unusual in practice but can be effective.
 
 
-<h3 id="interface_conversions">Interface conversions and type assertions</h3>
+### "interface_conversions">Interface conversions and type assertions
 
 
 <a href="#type_switch">Type switches</a> are a form of conversion: they take an interface and, for
@@ -1912,7 +1905,7 @@ if str, ok := value.(string); ok {
 }
 ```
 
-<h3 id="generality">Generality</h3>
+### "generality">Generality
 
 If a type exists only to implement an interface and will
 never have exported methods beyond that interface, there is
@@ -1983,7 +1976,7 @@ calls must be edited, but because the surrounding code must treat the result onl
 as a ```Stream```, it won't notice the difference.
 
 
-<h3 id="interface_methods">Interfaces and methods</h3>
+### "interface_methods">Interfaces and methods
 
 Since almost anything can have methods attached, almost anything can
 satisfy an interface.  One illustrative example is in the ```http```
@@ -2128,7 +2121,7 @@ a channel, and a function, all because interfaces are just sets of
 methods, which can be defined for (almost) any type.
 
 
-<h2 id="blank">The blank identifier</h2>
+## "blank">The blank identifier
 
 
 We've mentioned the blank identifier a couple of times now, in the context of
@@ -2143,7 +2136,7 @@ where a variable is needed but the actual value is irrelevant.
 It has uses beyond those we've seen already.
 
 
-<h3 id="blank_assign">The blank identifier in multiple assignment</h3>
+### "blank_assign">The blank identifier in multiple assignment
 
 
 The use of a blank identifier in a ```for``` ```range``` loop is a
@@ -2182,7 +2175,7 @@ if fi.IsDir() {
 }
 ```
 
-<h3 id="blank_unused">Unused imports and variables</h3>
+### "blank_unused">Unused imports and variables
 
 
 It is an error to import a package or to declare a variable without using it.
@@ -2219,7 +2212,7 @@ should come right after the imports and be commented,
 both to make them easy to find and as a reminder to clean things up later.
 
 
-<h3 id="blank_import">Import for side effect</h3>
+### "blank_import">Import for side effect
 
 
 An unused import like ```fmt``` or ```io``` in the
@@ -2246,7 +2239,7 @@ use of the package: in this file, it doesn't have a name.
 (If it did, and we didn't use that name, the compiler would reject the program.)
 
 
-<h3 id="blank_implements">Interface checks</h3>
+### "blank_implements">Interface checks
 
 
 As we saw in the discussion of <a href="#interfaces_and_types">interfaces</a> above,
@@ -2315,7 +2308,7 @@ which is a rare event.
 
 
 
-<h2 id="embedding">Embedding</h2>
+## "embedding">Embedding
 
 
 Go does not provide the typical, type-driven notion of subclassing,
@@ -2484,9 +2477,9 @@ is ever used.
 
 
 
-<h2 id="concurrency">Concurrency</h2>
+## "concurrency">Concurrency
 
-<h3 id="sharing">Share by communicating</h3>
+### "sharing">Share by communicating
 
 
 Concurrent programming is a large topic and there is space only for some
@@ -2522,7 +2515,7 @@ Communicating Sequential Processes (CSP),
 it can also be seen as a type-safe generalization of Unix pipes.
 
 
-<h3 id="goroutines">Goroutines</h3>
+### "goroutines">Goroutines
 
 
 They're called *goroutines* because the existing
@@ -2570,7 +2563,7 @@ These examples aren't too practical because the functions have no way of signali
 completion.  For that, we need channels.
 
 
-<h3 id="channels">Channels</h3>
+### "channels">Channels
 
 
 Like maps, channels are allocated with ```make```, and
@@ -2750,7 +2743,7 @@ func Serve(clientRequests chan *Request, quit chan bool) {
 }
 ```
 
-<h3 id="chan_of_chan">Channels of channels</h3>
+### "chan_of_chan">Channels of channels
 
 One of the most important properties of Go is that
 a channel is a first-class value that can be allocated and passed
@@ -2805,7 +2798,7 @@ code is a framework for a rate-limited, parallel, non-blocking RPC
 system, and there's not a mutex in sight.
 
 
-<h3 id="parallel">Parallelization</h3>
+### "parallel">Parallelization
 
 Another application of these ideas is to parallelize a calculation
 across multiple CPU cores.  If the calculation can be broken into
@@ -2883,7 +2876,7 @@ For a discussion of the distinction, see the talk cited in
 <a href="//blog.golang.org/2013/01/concurrency-is-not-parallelism.html">this
 blog post</a>.
 
-<h3 id="leaky_buffer">A leaky buffer</h3>
+### "leaky_buffer">A leaky buffer
 
 
 The tools of concurrent programming can even make non-concurrent
@@ -2948,7 +2941,7 @@ in just a few lines, relying on the buffered channel and
 the garbage collector for bookkeeping.
 
 
-<h2 id="errors">Errors</h2>
+## "errors">Errors
 
 
 Library routines must often return some sort of error indication to
@@ -3046,7 +3039,7 @@ error was of type ```*os.PathError```, and then so is ```e```,
 which we can examine for more information about the error.
 
 
-<h3 id="panic">Panic</h3>
+### "panic">Panic
 
 
 The usual way to report an error to a caller is to return an ```error``` as an extra return value.  The canonical ```Read``` method is a well-known instance; it returns a byte
@@ -3099,7 +3092,7 @@ func init() {
 }
 ```
 
-<h3 id="recover">Recover</h3>
+### "recover">Recover
 
 
 When ```panic``` is called, including implicitly for run-time
@@ -3241,7 +3234,7 @@ That's left as an exercise for the reader.
 
 
 
-<h2 id="web_server">A web server</h2>
+## "web_server">A web server
 
 
 Let's finish with a complete Go program, a web server.
