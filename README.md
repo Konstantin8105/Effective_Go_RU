@@ -565,9 +565,13 @@ func Compare(a, b []byte) int {
 
 Переключетель ```switch``` может использоваться для динамических типов переменных интерфейсов. Синтаксическое использование *type switch* типов производиться с помощью слова ```type``` внутри скобок.
 Если в условии переключателе переменная, то эта тип переменной будет проверяться в теле.
+
+
 **TODO**
 It's also idiomatic to reuse the name in such cases, in effect declaring a new variable with the same name but a different type in each case.
 **-**
+
+
 
 ```golang
 var t interface{}
@@ -590,37 +594,22 @@ case *int:
 
 ### Множественное возвращение результатов
 
+Одно из особенностей языка Go - это то что, функции, методы могут возвращать множество значений.
 
-One of Go's unusual features is that functions and methods can return multiple values.  This form can be used to improve on a couple of clumsy idioms in C programs: in-band error returns such as ```-1``` for ```EOF``` and modifying an argument passed by address.
+При использовании языка С, передача ошибки производиться через отрицательное значение с описание причины ошибки  другом месте.
 
-
-
-In C, a write error is signaled by a negative count with the
-error code secreted away in a volatile location.
-In Go, ```Write```
-can return a count *and* an error: &ldquo;Yes, you wrote some
-bytes but not all of them because you filled the device&rdquo;.
-The signature of the ```Write``` method on files from
-package ```os``` is:
-
+При использовании языка Go, ```Write``` может вернуть одновременно **и** возвращаемое значение **и** ошибку.
+Сингнатура метода ```Write``` в файлах пакета ```os```:
 
 ```golang
 func (file *File) Write(b []byte) (n int, err error)
 ```
 
+и как предусмотрено документацией, он возвращает число записанных байт и ненулевое значение ошибки ```error``` когда ```n``` ```!=``` ```len(b)```.
+Это общий стиль, смотрите также раздел посвященный ошибкам в качестве примера.
 
-and as the documentation says, it returns the number of bytes
-written and a non-nil ```error``` when ```n``` ```!=``` ```len(b)```.
-This is a common style; see the section on error handling for more examples.
-
-
-
-A similar approach obviates the need to pass a pointer to a return
-value to simulate a reference parameter.
-Here's a simple-minded function to
-grab a number from a position in a byte slice, returning the number
-and the next position.
-
+Данный подход исключает необходимость в возращении значимого параметра.
+Это очень простой способ возвращении из функции количества байт слайса, возвращая число и следующий параметр.
 
 ```golang
 func nextInt(b []byte, i int) (int, int) {
@@ -634,8 +623,7 @@ func nextInt(b []byte, i int) (int, int) {
 }
 ```
 
-
-You could use it to scan the numbers in an input slice ```b``` like this:
+Вы можете сканировать число чисел во входном слайсе ```b``` следующим образом:
 
 
 ```golang
@@ -645,23 +633,17 @@ You could use it to scan the numbers in an input slice ```b``` like this:
     }
 ```
 
-### "named-results">Named result parameters
+### Именование параметров результата
 
 
-The return or result "parameters" of a Go function can be given names and
-used as regular variables, just like the incoming parameters.
-When named, they are initialized to the zero values for their types when
-the function begins; if the function executes a ```return``` statement
-with no arguments, the current values of the result parameters are
-used as the returned values.
+The return or result "parameters" of a Go function can be given names and used as regular variables, just like the incoming parameters.
+When named, they are initialized to the zero values for their types when the function begins; if the function executes a ```return``` statement with no arguments, the current values of the result parameters are used as the returned values.
 
 
 
 The names are not mandatory but they can make code shorter and clearer:
 they're documentation.
-If we name the results of ```nextInt``` it becomes
-obvious which returned ```int```
-is which.
+If we name the results of ```nextInt``` it becomes obvious which returned ```int``` is which.
 
 
 ```golang
@@ -1274,7 +1256,7 @@ var ok bool
 seconds, ok = timeZone[tz]
 ```
 
-For obvious reasons this is called the &ldquo;comma ok&rdquo; idiom.
+For obvious reasons this is called the "comma ok" idiom.
 In this example, if ```tz``` is present, ```seconds```
 will be set appropriately and ```ok``` will be true; if not, ```seconds``` will be set to zero and ```ok``` will
 be false.
@@ -1353,7 +1335,7 @@ prints
 ```
 
 If you just want the default conversion, such as decimal for integers, you can use
-the catchall format ```%v``` (for &ldquo;value&rdquo;); the result is exactly
+the catchall format ```%v``` (for "value"); the result is exactly
 what ```Print``` and ```Println``` would produce.
 Moreover, that format can print *any* value, even arrays, slices, structs, and
 maps.  Here is a print statement for the time zone map defined in the previous section.
@@ -2312,7 +2294,7 @@ which is a rare event.
 
 
 Go does not provide the typical, type-driven notion of subclassing,
-but it does have the ability to &ldquo;borrow&rdquo; pieces of an
+but it does have the ability to "borrow" pieces of an
 implementation by *embedding* types within a struct or
 interface.
 
@@ -2609,7 +2591,7 @@ A buffered channel can be used like a semaphore, for instance to
 limit throughput.  In this example, incoming requests are passed
 to ```handle```, which sends a value into the channel, processes
 the request, and then receives a value from the channel
-to ready the &ldquo;semaphore&rdquo; for the next consumer.
+to ready the "semaphore" for the next consumer.
 The capacity of the channel buffer limits the number of
 simultaneous calls to ```process```.
 
