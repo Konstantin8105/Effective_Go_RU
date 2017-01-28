@@ -971,13 +971,11 @@ func (f * File) Read(buf []byte) (n int, err error)
     }
 ```
 
-The length of a slice may be changed as long as it still fits within
-the limits of the underlying array; just assign it to a slice of
-itself.  The *capacity* of a slice, accessible by the built-in
-function ```cap```, reports the maximum length the slice may
-assume.  Here is a function to append data to a slice.  If the data
-exceeds the capacity, the slice is reallocated.  The
-resulting slice is returned.  The function uses the fact that ```len``` and ```cap``` are legal when applied to the ```nil``` slice, and return 0.
+The length of a slice may be changed as long as it still fits within the limits of the underlying array; just assign it to a slice of itself.
+The *capacity* of a slice, accessible by the built-in function ```cap```, reports the maximum length the slice may assume.  
+Here is a function to append data to a slice.  
+If the data exceeds the capacity, the slice is reallocated.  
+The resulting slice is returned.  The function uses the fact that ```len``` and ```cap``` are legal when applied to the ```nil``` slice, and return 0.
 
 ```golang
 func Append(slice, data []byte) []byte {
