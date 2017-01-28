@@ -476,47 +476,39 @@ for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
 ### Switch(переключатель)
 
 В языке Go ```switch``` в основном такой же как в языке C.
-The expressions need not be constants or even integers, the cases are evaluated top to bottom until a match is found, and if the ```switch``` has no expression it switches on ```true```.
-It's therefore possible and idiomatic to write an ```if``` - ```else``` - ```if``` - ```else``` chain as a ```switch```.
-
+Выражение не обязательно должно быть константой или целым числом. Условия проверяються сверху-вниз до того пока не найдет совпадение.
+Если ```switch``` не имеет выражения, то переходит(переключаеться) до получения значения ```true```.
+В связи с этим идиоматически можно записывать ```if``` - ```else``` - ```if``` - ```else``` как ```switch```.
 
 ```golang
 func unhex(c byte) byte {
     switch {
-    case '0' <= c &amp;&amp; c <= '9':
+    case '0' <= c && c <= '9':
         return c - '0'
-    case 'a' <= c &amp;&amp; c <= 'f':
+    case 'a' <= c && c <= 'f':
         return c - 'a' + 10
-    case 'A' <= c &amp;&amp; c <= 'F':
+    case 'A' <= c && c <= 'F':
         return c - 'A' + 10
     }
     return 0
 }
 ```
 
-
-There is no automatic fall through, but cases can be presented
-in comma-separated lists.
+Отсутствие автоматическое пропускане условий, поэтому условия могут представлены через запятую.
 
 ```golang
 func shouldEscape(c byte) bool {
     switch c {
-    case ' ', '?', '&amp;', '=', '#', '+', '%':
+    case ' ', '?', '&', '=', '#', '+', '%':
         return true
     }
     return false
 }
 ```
 
-
-Although they are not nearly as common in Go as some other C-like
-languages, ```break``` statements can be used to terminate
-a ```switch``` early.
-Sometimes, though, it's necessary to break out of a surrounding loop,
-not the switch, and in Go that can be accomplished by putting a label
-on the loop and "breaking" to that label.
-This example shows both uses.
-
+Также допускается использовать ```break``` для прерывания работы ```switch``` *заранее*.
+Иногда, необходимо прерывать цикл, не переключатель, и тогда можно использовать подписи(*label*) в цикле и "прерывать" по подписи.
+Смотрите следующий пример:
 
 ```golang
 Loop:
@@ -543,20 +535,15 @@ Loop:
 	}
 ```
 
-
-Of course, the ```continue``` statement also accepts an optional label
-but it applies only to loops.
-
-
-
-To close this section, here's a comparison routine for byte slices that uses two ```switch``` statements:
+Естественно, ```continue``` также допускает подписи, но они используються только для циклов.
+В заключении, сравните методы для байтовых слайсов использующий два ```switch```:
 
 ```golang
 // Compare returns an integer comparing the two byte slices,
 // lexicographically.
 // The result will be 0 if a == b, -1 if a < b, and +1 if a &gt; b
 func Compare(a, b []byte) int {
-    for i := 0; i < len(a) &amp;&amp; i < len(b); i++ {
+    for i := 0; i < len(a) && i < len(b); i++ {
         switch {
         case a[i] &gt; b[i]:
             return 1
@@ -644,10 +631,10 @@ and the next position.
 
 ```golang
 func nextInt(b []byte, i int) (int, int) {
-    for ; i < len(b) &amp;&amp; !isDigit(b[i]); i++ {
+    for ; i < len(b) && !isDigit(b[i]); i++ {
     }
     x := 0
-    for ; i < len(b) &amp;&amp; isDigit(b[i]); i++ {
+    for ; i < len(b) && isDigit(b[i]); i++ {
         x = x*10 + int(b[i]) - '0'
     }
     return x, i
@@ -696,7 +683,7 @@ of ```io.ReadFull``` that uses them well:
 
 ```golang
 func ReadFull(r Reader, buf []byte) (n int, err error) {
-    for len(buf) &gt; 0 &amp;&amp; err == nil {
+    for len(buf) &gt; 0 && err == nil {
         var nr int
         nr, err = r.Read(buf)
         n += nr
@@ -923,7 +910,7 @@ func NewFile(fd int, name string) *File {
         return nil
     }
     f := File{fd, name, nil, 0}
-    return &amp;f
+    return &f
 }
 ```
 
@@ -937,7 +924,7 @@ so we can combine these last two lines.
 
 
 ```golang
-    return &amp;File{fd, name, nil, 0}
+    return &File{fd, name, nil, 0}
 ```
 
 
@@ -948,12 +935,12 @@ order, with the missing ones left as their respective zero values.  Thus we coul
 
 
 ```golang
-    return &amp;File{fd: fd, name: name}
+    return &File{fd: fd, name: name}
 ```
 
 
 As a limiting case, if a composite literal contains no fields at all, it creates
-a zero value for the type.  The expressions ```new(File)``` and ```&amp;File{}``` are equivalent.
+a zero value for the type.  The expressions ```new(File)``` and ```&File{}``` are equivalent.
 
 
 
@@ -1064,7 +1051,7 @@ func Sum(a *[3]float64) (sum float64) {
 }
 
 array := [...]float64{7.0, 8.5, 9.1}
-x := Sum(&amp;array)  // Note the explicit address-of operator
+x := Sum(&array)  // Note the explicit address-of operator
 ```
 
 
@@ -1399,7 +1386,7 @@ type T struct {
     b float64
     c string
 }
-t := &amp;T{ 7, -2.35, "abc\tdef" }
+t := &T{ 7, -2.35, "abc\tdef" }
 fmt.Printf("%v\n", t)
 fmt.Printf("%+v\n", t)
 fmt.Printf("%#v\n", t)
@@ -1409,9 +1396,9 @@ fmt.Printf("%#v\n", timeZone)
 prints
 
 ```
-&amp;{7 -2.35 abc   def}
-&amp;{a:7 b:-2.35 c:abc     def}
-&amp;main.T{a:7, b:-2.35, c:"abc\tdef"}
+&{7 -2.35 abc   def}
+&{a:7 b:-2.35 c:abc     def}
+&main.T{a:7, b:-2.35, c:"abc\tdef"}
 map[string] int{"CST":-21600, "PST":-28800, "EST":-18000, "UTC":0, "MST":-25200}
 ```
 
@@ -1687,7 +1674,7 @@ func init() {
         gopath = home + "/go"
     }
     // gopath may be overridden by --gopath flag on command line.
-    flag.StringVar(&amp;gopath, "gopath", gopath, "override default GOPATH")
+    flag.StringVar(&gopath, "gopath", gopath, "override default GOPATH")
 }
 ```
 
@@ -1743,7 +1730,7 @@ print into one.
 
 ```golang
     var b ByteSlice
-    fmt.Fprintf(&amp;b, "This hour has %d days\n", 7)
+    fmt.Fprintf(&b, "This hour has %d days\n", 7)
 ```
 
 We pass the address of a ```ByteSlice```
@@ -1763,7 +1750,7 @@ language takes care of the common case of invoking a pointer method on a
 value by inserting the address operator automatically.
 In our example, the variable ```b``` is addressable, so we can call
 its ```Write``` method with just ```b.Write```. The compiler
-will rewrite that to ```(&amp;b).Write``` for us.
+will rewrite that to ```(&b).Write``` for us.
 
 
 
@@ -2456,14 +2443,14 @@ so we can initialize it in the usual way inside the constructor for ```Job```, l
 
 ```golang
 func NewJob(command string, logger *log.Logger) *Job {
-    return &amp;Job{command, logger}
+    return &Job{command, logger}
 }
 ```
 
 or with a composite literal,
 
 ```golang
-job := &amp;Job{command, log.New(os.Stderr, "Job: ", log.Ldate)}
+job := &Job{command, log.New(os.Stderr, "Job: ", log.Ldate)}
 ```
 
 If we need to refer to an embedded field directly, the type name of the field,
@@ -2557,7 +2544,7 @@ management.
 Prefix a function or method call with the ```go```
 keyword to run the call in a new goroutine.
 When the call completes, the goroutine
-exits, silently.  (The effect is similar to the Unix shell's ```&amp;``` notation for running a command in the
+exits, silently.  (The effect is similar to the Unix shell's ```&``` notation for running a command in the
 background.)
 
 ```golang
@@ -2796,7 +2783,7 @@ func sum(a []int) (s int) {
     return
 }
 
-request := &amp;Request{[]int{3, 4, 5}, sum, make(chan int)}
+request := &Request{[]int{3, 4, 5}, sum, make(chan int)}
 // Send request
 clientRequests <- request
 // Wait for response.
@@ -3042,7 +3029,7 @@ for try := 0; try < 2; try++ {
     if err == nil {
         return
     }
-    if e, ok := err.(*os.PathError); ok &amp;&amp; e.Err == syscall.ENOSPC {
+    if e, ok := err.(*os.PathError); ok && e.Err == syscall.ENOSPC {
         deleteTempFiles()  // Recover some space.
         continue
     }
