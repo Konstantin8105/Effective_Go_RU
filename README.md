@@ -355,68 +355,46 @@ codeUsing(f, d)
 
 ### Переопределение и переназначение
 
+Последниий пример предедущего раздела  - показывает короткую форму декларации переменных ```:=```. Вызов ```os.Open``` деклорирует сразу две переменных ```f``` и ```err```.
 
-An aside: The last example in the previous section demonstrates a detail of how the
-```:=``` short declaration form works.
-The declaration that calls ```os.Open``` reads,
-
-
-```
+```golang
 f, err := os.Open(name)
 ```
 
+Несколько строк до этого, вызов чтения ```f.Stat``` было произведена декларация 2 переменных ```d``` и ```err```.
 
-This statement declares two variables, ```f``` and ```err```.
-A few lines later, the call to ```f.Stat``` reads,
-
-
-```
+```golang
 d, err := f.Stat()
 ```
 
+Заметьте, что ```err``` появляется в обоих случаях.
+Это дублирование разрешено: ```err``` в первом случаи декларируетяс в первую очередь, и переназначаеться во втором.
+То есть вызов ```f.Stat``` использует уже существующую переменную ```err``` и просто добавляет новое значение.
 
-which looks as if it declares ```d``` and ```err```.
-Notice, though, that ```err``` appears in both statements.
-This duplication is legal: ```err``` is declared by the first statement,
-but only <em>re-assigned</em> in the second.
-This means that the call to ```f.Stat``` uses the existing
-```err``` variable declared above, and just gives it a new value.
+В деклорации ```:=``` переменной ```v``` можно использовать, даже если она уже объявлена при условии:
 
 
+**TODO: перевести**
+* this declaration is in the same scope as the existing declaration of ```v```
+(if ```v``` is already declared in an outer scope, the declaration will create a new variable §),
+* the corresponding value in the initialization is assignable to ```v```, and
+* there is at least one other variable in the declaration that is being declared anew.
+**-**
 
-In a ```:=``` declaration a variable ```v``` may appear even
-if it has already been declared, provided:
+Эта не типичное решение создана из чистого прагматизма - сделать использование простой переменной ```err```, к примеру при длинных условиях ```if-else```.
+Вы заметете, что это используется часто.
 
+**TODO: перевести**
+§ It's worth noting here that in Go the scope of function parameters and return values is the same as the function body, even though they appear lexically outside the braces that enclose the body.
+**-**
 
-<ul>
-<li>this declaration is in the same scope as the existing declaration of ```v```
-(if ```v``` is already declared in an outer scope, the declaration will create a new variable §),</li>
-<li>the corresponding value in the initialization is assignable to ```v```, and</li>
-<li>there is at least one other variable in the declaration that is being declared anew.</li>
-</ul>
+### Оператор For
 
+В Go цикл ```for``` похожий но не очень на используемый в C.
+Он используется как ```for``` и  ```while``` и не используется как ```do-while```.
+Имеет 3 различных формы и только в одной из них используется точка с запятой.
 
-This unusual property is pure pragmatism,
-making it easy to use a single ```err``` value, for example,
-in a long ```if-else``` chain.
-You'll see it used often.
-
-
-
-§ It's worth noting here that in Go the scope of function parameters and return values
-is the same as the function body, even though they appear lexically outside the braces
-that enclose the body.
-
-
-<h3 id="for">For</h3>
-
-
-The Go ```for``` loop is similar to&mdash;but not the same as&mdash;C's.
-It unifies ```for```
-and ```while``` and there is no ```do-while```.
-There are three forms, only one of which has semicolons.
-
-```
+```golang
 // Like a C for
 for init; condition; post { }
 
@@ -427,22 +405,19 @@ for condition { }
 for { }
 ```
 
+Простое объявление позволяет легко объявить начальные условия цикла.
 
-Short declarations make it easy to declare the index variable right in the loop.
-
-```
+```golang
 sum := 0
-for i := 0; i &lt; 10; i++ {
+for i := 0; i < 10; i++ {
     sum += i
 }
 ```
 
 
-If you're looping over an array, slice, string, or map,
-or reading from a channel, a ```range``` clause can
-manage the loop.
+If you're looping over an array, slice, string, or map, or reading from a channel, a ```range``` clause can manage the loop.
 
-```
+```golang
 for key, value := range oldMap {
     newMap[key] = value
 }
@@ -507,7 +482,7 @@ you should use parallel assignment (although that precludes ```++``` and ```--``
 
 ```
 // Reverse a
-for i, j := 0, len(a)-1; i &lt; j; i, j = i+1, j-1 {
+for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
     a[i], a[j] = a[j], a[i]
 }
 ```
@@ -520,7 +495,7 @@ The expressions need not be constants or even integers,
 the cases are evaluated top to bottom until a match is found,
 and if the ```switch``` has no expression it switches on
 ```true```.
-It's therefore possible&mdash;and idiomatic&mdash;to write an
+It's therefore possible and idiomatic to write an
 ```if```-```else```-```if```-```else```
 chain as a ```switch```.
 
@@ -528,11 +503,11 @@ chain as a ```switch```.
 ```
 func unhex(c byte) byte {
     switch {
-    case '0' &lt;= c &amp;&amp; c &lt;= '9':
+    case '0' <= c &amp;&amp; c <= '9':
         return c - '0'
-    case 'a' &lt;= c &amp;&amp; c &lt;= 'f':
+    case 'a' <= c &amp;&amp; c <= 'f':
         return c - 'a' + 10
-    case 'A' &lt;= c &amp;&amp; c &lt;= 'F':
+    case 'A' <= c &amp;&amp; c <= 'F':
         return c - 'A' + 10
     }
     return 0
@@ -565,16 +540,16 @@ This example shows both uses.
 
 ```
 Loop:
-	for n := 0; n &lt; len(src); n += size {
+	for n := 0; n < len(src); n += size {
 		switch {
-		case src[n] &lt; sizeOne:
+		case src[n] < sizeOne:
 			if validateOnly {
 				break
 			}
 			size = 1
 			update(src[n])
 
-		case src[n] &lt; sizeTwo:
+		case src[n] < sizeTwo:
 			if n+1 &gt;= len(src) {
 				err = errShortInput
 				break Loop
@@ -583,7 +558,7 @@ Loop:
 				break
 			}
 			size = 2
-			update(src[n] + src[n+1]&lt;&lt;shift)
+			update(src[n] + src[n+1]<<shift)
 		}
 	}
 ```
@@ -600,20 +575,20 @@ To close this section, here's a comparison routine for byte slices that uses two
 ```
 // Compare returns an integer comparing the two byte slices,
 // lexicographically.
-// The result will be 0 if a == b, -1 if a &lt; b, and +1 if a &gt; b
+// The result will be 0 if a == b, -1 if a < b, and +1 if a &gt; b
 func Compare(a, b []byte) int {
-    for i := 0; i &lt; len(a) &amp;&amp; i &lt; len(b); i++ {
+    for i := 0; i < len(a) &amp;&amp; i < len(b); i++ {
         switch {
         case a[i] &gt; b[i]:
             return 1
-        case a[i] &lt; b[i]:
+        case a[i] < b[i]:
             return -1
         }
     }
     switch {
     case len(a) &gt; len(b):
         return 1
-    case len(a) &lt; len(b):
+    case len(a) < len(b):
         return -1
     }
     return 0
@@ -691,10 +666,10 @@ and the next position.
 
 ```
 func nextInt(b []byte, i int) (int, int) {
-    for ; i &lt; len(b) &amp;&amp; !isDigit(b[i]); i++ {
+    for ; i < len(b) &amp;&amp; !isDigit(b[i]); i++ {
     }
     x := 0
-    for ; i &lt; len(b) &amp;&amp; isDigit(b[i]); i++ {
+    for ; i < len(b) &amp;&amp; isDigit(b[i]); i++ {
         x = x*10 + int(b[i]) - '0'
     }
     return x, i
@@ -706,7 +681,7 @@ You could use it to scan the numbers in an input slice ```b``` like this:
 
 
 ```
-    for i := 0; i &lt; len(b); {
+    for i := 0; i < len(b); {
         x, i = nextInt(b, i)
         fmt.Println(x)
     }
@@ -807,7 +782,7 @@ executions.  Here's a silly example.
 
 
 ```
-for i := 0; i &lt; 5; i++ {
+for i := 0; i < 5; i++ {
     defer fmt.Printf("%d ", i)
 }
 ```
@@ -953,7 +928,7 @@ package ```os```.
 
 ```
 func NewFile(fd int, name string) *File {
-    if fd &lt; 0 {
+    if fd < 0 {
         return nil
     }
     f := new(File)
@@ -974,7 +949,7 @@ new instance each time it is evaluated.
 
 ```
 func NewFile(fd int, name string) *File {
-    if fd &lt; 0 {
+    if fd < 0 {
         return nil
     }
     f := File{fd, name, nil, 0}
@@ -1168,7 +1143,7 @@ the moment, the following snippet would also read the first 32 bytes of the buff
 ```
     var n int
     var err error
-    for i := 0; i &lt; 32; i++ {
+    for i := 0; i < 32; i++ {
         nbytes, e := f.Read(buf[i:i+1])  // Read one byte.
         if nbytes == 0 || e != nil {
             err = e
@@ -1428,7 +1403,7 @@ do not take flags for signedness or size; instead, the printing routines use the
 type of the argument to decide these properties.
 
 ```
-var x uint64 = 1&lt;&lt;64 - 1
+var x uint64 = 1<<64 - 1
 fmt.Printf("%d %x; %d %x\n", x, x, int64(x), int64(x))
 ```
 
@@ -1603,7 +1578,7 @@ for a min function that chooses the least of a list of integers:
 func Min(a ...int) int {
     min := int(^uint(0) >> 1)  // largest int
     for _ , i := range a {
-        if i &lt; min {
+        if i < min {
             min = i
         }
     }
@@ -1674,14 +1649,14 @@ correctly.
 <h3 id="constants">Constants</h3>
 
 
-Constants in Go are just that&mdash;constant.
+Constants in Go are just that constant.
 They are created at compile time, even when defined as
 locals in functions,
 and can only be numbers, characters (runes), strings or booleans.
 Because of the compile-time restriction, the expressions
 that define them must be constant expressions,
 evaluatable by the compiler.  For instance,
-```1&lt;&lt;3``` is a constant expression, while
+```1<<3``` is a constant expression, while
 ```math.Sin(math.Pi/4)``` is not because
 the function call to ```math.Sin``` needs
 to happen at run time.
@@ -2149,7 +2124,7 @@ has been visited?  Tie a channel to the web page.
 type Chan chan *http.Request
 
 func (ch Chan) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-    ch &lt;- req
+    ch <- req
     fmt.Fprint(w, "notification sent")
 }
 ```
@@ -2632,7 +2607,7 @@ it can also be seen as a type-safe generalization of Unix pipes.
 
 
 They're called <em>goroutines</em> because the existing
-terms&mdash;threads, coroutines, processes, and so on&mdash;convey
+terms threads, coroutines, processes, and so on convey
 inaccurate connotations.  A goroutine has a simple model: it is a
 function executing concurrently with other goroutines in the same
 address space.  It is lightweight, costing little more than the
@@ -2691,8 +2666,8 @@ cj := make(chan int, 0)         // unbuffered channel of integers
 cs := make(chan *os.File, 100)  // buffered channel of pointers to Files
 ```
 
-Unbuffered channels combine communication&mdash;the exchange of a value&mdash;with
-synchronization&mdash;guaranteeing that two calculations (goroutines) are in
+Unbuffered channels combine communication the exchange of a value with
+synchronization guaranteeing that two calculations (goroutines) are in
 a known state.
 
 
@@ -2705,10 +2680,10 @@ c := make(chan int)  // Allocate a channel.
 // Start the sort in a goroutine; when it completes, signal on the channel.
 go func() {
     list.Sort()
-    c &lt;- 1  // Send a signal; value does not matter.
+    c <- 1  // Send a signal; value does not matter.
 }()
 doSomethingForAWhile()
-&lt;-c   // Wait for sort to finish; discard sent value.
+<-c   // Wait for sort to finish; discard sent value.
 ```
 
 Receivers always block until there is data to receive.
@@ -2731,14 +2706,14 @@ simultaneous calls to ```process```.
 var sem = make(chan int, MaxOutstanding)
 
 func handle(r *Request) {
-    sem &lt;- 1    // Wait for active queue to drain.
+    sem <- 1    // Wait for active queue to drain.
     process(r)  // May take a long time.
-    &lt;-sem       // Done; enable next request to run.
+    <-sem       // Done; enable next request to run.
 }
 
 func Serve(queue chan *Request) {
     for {
-        req := &lt;-queue
+        req := <-queue
         go handle(req)  // Don't wait for handle to finish.
     }
 }
@@ -2764,10 +2739,10 @@ Here's an obvious solution, but beware it has a bug we'll fix subsequently:
 ```
 func Serve(queue chan *Request) {
     for req := range queue {
-        sem &lt;- 1
+        sem <- 1
         go func() {
             process(req) // Buggy; see explanation below.
-            &lt;-sem
+            <-sem
         }()
     }
 }```
@@ -2785,10 +2760,10 @@ to the closure in the goroutine:
 ```
 func Serve(queue chan *Request) {
     for req := range queue {
-        sem &lt;- 1
+        sem <- 1
         go func(req *Request) {
             process(req)
-            &lt;-sem
+            <-sem
         }(req)
     }
 }```
@@ -2804,10 +2779,10 @@ name, as in this example:
 func Serve(queue chan *Request) {
     for req := range queue {
         req := req // Create new instance of req for the goroutine.
-        sem &lt;- 1
+        sem <- 1
         go func() {
             process(req)
-            &lt;-sem
+            <-sem
         }()
     }
 }```
@@ -2847,10 +2822,10 @@ func handle(queue chan *Request) {
 
 func Serve(clientRequests chan *Request, quit chan bool) {
     // Start handlers
-    for i := 0; i &lt; MaxOutstanding; i++ {
+    for i := 0; i < MaxOutstanding; i++ {
         go handle(clientRequests)
     }
-    &lt;-quit  // Wait to be told to exit.
+    <-quit  // Wait to be told to exit.
 }
 ```
 
@@ -2889,9 +2864,9 @@ func sum(a []int) (s int) {
 
 request := &amp;Request{[]int{3, 4, 5}, sum, make(chan int)}
 // Send request
-clientRequests &lt;- request
+clientRequests <- request
 // Wait for response.
-fmt.Printf("answer: %d\n", &lt;-request.resultChan)
+fmt.Printf("answer: %d\n", <-request.resultChan)
 ```
 
 On the server side, the handler function is the only thing that changes.
@@ -2899,7 +2874,7 @@ On the server side, the handler function is the only thing that changes.
 ```
 func handle(queue chan *Request) {
     for req := range queue {
-        req.resultChan &lt;- req.f(req.args)
+        req.resultChan <- req.f(req.args)
     }
 }
 ```
@@ -2926,10 +2901,10 @@ type Vector []float64
 
 // Apply the operation to v[i], v[i+1] ... up to v[n-1].
 func (v Vector) DoSome(i, n int, u Vector, c chan int) {
-    for ; i &lt; n; i++ {
+    for ; i < n; i++ {
         v[i] += u.Op(v[i])
     }
-    c &lt;- 1    // signal that this piece is done
+    c <- 1    // signal that this piece is done
 }
 ```
 
@@ -2943,12 +2918,12 @@ const numCPU = 4 // number of CPU cores
 
 func (v Vector) DoAll(u Vector) {
     c := make(chan int, numCPU)  // Buffering optional but sensible.
-    for i := 0; i &lt; numCPU; i++ {
+    for i := 0; i < numCPU; i++ {
         go v.DoSome(i*len(v)/numCPU, (i+1)*len(v)/numCPU, u, c)
     }
     // Drain the channel.
-    for i := 0; i &lt; numCPU; i++ {
-        &lt;-c    // wait for one task to complete
+    for i := 0; i < numCPU; i++ {
+        <-c    // wait for one task to complete
     }
     // All done.
 }
@@ -3009,14 +2984,14 @@ func client() {
         var b *Buffer
         // Grab a buffer if available; allocate if not.
         select {
-        case b = &lt;-freeList:
+        case b = <-freeList:
             // Got one; nothing more to do.
         default:
             // None free, so allocate a new one.
             b = new(Buffer)
         }
         load(b)              // Read next message from the net.
-        serverChan &lt;- b      // Send to server.
+        serverChan <- b      // Send to server.
     }
 }
 ```
@@ -3027,11 +3002,11 @@ and returns the buffer to the free list.
 ```
 func server() {
     for {
-        b := &lt;-serverChan    // Wait for work.
+        b := <-serverChan    // Wait for work.
         process(b)
         // Reuse buffer if there's room.
         select {
-        case freeList &lt;- b:
+        case freeList <- b:
             // Buffer on free list; nothing more to do.
         default:
             // Free list full, just carry on.
@@ -3132,7 +3107,7 @@ field for recoverable failures.
 
 
 ```
-for try := 0; try &lt; 2; try++ {
+for try := 0; try < 2; try++ {
     file, err = os.Create(filename)
     if err == nil {
         return
@@ -3168,7 +3143,7 @@ unrecoverable?  Sometimes the program simply cannot continue.
 For this purpose, there is a built-in function ```panic```
 that in effect creates a run-time error that will stop the program
 (but see the next section).  The function takes a single argument
-of arbitrary type&mdash;often a string&mdash;to be printed as the
+of arbitrary type often a string to be printed as the
 program dies.  It's also a way to indicate that something impossible has
 happened, such as exiting an infinite loop.
 
@@ -3178,7 +3153,7 @@ happened, such as exiting an infinite loop.
 // A toy implementation of cube root using Newton's method.
 func CubeRoot(x float64) float64 {
     z := x/3   // Arbitrary initial value
-    for i := 0; i &lt; 1e6; i++ {
+    for i := 0; i < 1e6; i++ {
         prevz := z
         z -= (z*z*z-x) / (3*z*z)
         if veryClose(z, prevz) {
@@ -3235,7 +3210,7 @@ inside a server without killing the other executing goroutines.
 
 
 ```
-func server(workChan &lt;-chan *Work) {
+func server(workChan <-chan *Work) {
     for work := range workChan {
         go safelyDo(work)
     }
@@ -3307,7 +3282,7 @@ func Compile(str string) (regexp *Regexp, err error) {
 
 
 If ```doParse``` panics, the recovery block will set the
-return value to ```nil```&mdash;deferred functions can modify
+return value to ```nil``` deferred functions can modify
 named return values.  It will then check, in the assignment
 to ```err```, that the problem was a parse error by asserting
 that it has the local type ```Error```.
@@ -3346,7 +3321,7 @@ By the way, this re-panic idiom changes the panic value if an actual
 error occurs.  However, both the original and new failures will be
 presented in the crash report, so the root cause of the problem will
 still be visible.  Thus this simple re-panic approach is usually
-sufficient&mdash;it's a crash after all&mdash;but if you want to
+sufficient it's a crash after all but if you want to
 display only the original value, you can write a little more code to
 filter unexpected problems and re-panic with the original error.
 That's left as an exercise for the reader.
