@@ -1225,8 +1225,8 @@ fmt.Printf("%T\n", timeZone)
 map[string] int
 ```
 
-If you want to control the default format for a custom type, all that's required is to define a method with the signature ```String() string``` on the type.
-For our simple type ```T```, that might look like this.
+Если Вы хотите свой собственный формат типа, то для этого достаточно метод с сигнатурой ```String() string``` для Вашего типа.
+Для нашего простого примера, тип ```T```, выглядит следующим образом.
 
 ```golang
 func (t * T) String() string {
@@ -1235,22 +1235,18 @@ func (t * T) String() string {
 fmt.Printf("%v\n", t)
 ```
 
-to print in the format
+Печатает в следующем формате
 
 ```
 7/-2.35/"abc\tdef"
 ```
 
-(If you need to print *values* of type ```T``` as well as pointers to ```T```, the receiver for ```String``` must be of value type; this example used a pointer because
-that's more efficient and idiomatic for struct types.
-See the section below on <a href="#pointers_vs_values">pointers vs. value receivers</a> for more information.)
+(Если Ваш необходимо напечатать *значение* типа ```T``` как указателя на тип ```T```, то метод ```String``` должен иметь значение типа; этот пример использует указатель, т.к. они более эффективны и идиоматичны типу структуры.)
 
 
-
-Our ```String``` method is able to call ```Sprintf``` because the print routines are fully reentrant and can be wrapped this way.
-There is one important detail to understand about this approach, however: don't construct a ```String``` method by calling ```Sprintf``` in a way that will recur into your ```String``` method indefinitely.  This can happen if the ```Sprintf```
-call attempts to print the receiver directly as a string, which in turn will invoke the method again.  It's a common and easy mistake to make, as this example shows.
-
+Наша функция ```String``` может вызывать ```Sprintf```, потому что функция печати возвращаемая и поэтому можно её обернуть. Это важно для понимания данного подхода.
+Однако, не создавайте функцию ```String``` вызывающую метод ```Sprintf```, в случаи если далее будет рекурсирно вызвана ```String```.
+Это может произойти если ```Sprintf``` вызывает на печать строку получателя, который вызовет функцию снова. Это ошибку можно легко создать и она показана на следующем примере.
 
 ```golang
 type MyString string
@@ -1260,9 +1256,7 @@ func (m MyString) String() string {
 }
 ```
 
-
-It's also easy to fix: convert the argument to the basic string type, which does not have the method.
-
+Для того чтобы решить, необходимо изменить аргумент на базовый тип, который не имеет функции.
 
 ```golang
 type MyString string
@@ -1271,13 +1265,8 @@ func (m MyString) String() string {
 }
 ```
 
-
-In the <a href="#initialization">initialization section</a> we'll see another technique that avoids this recursion.
-
-
-
-Another printing technique is to pass a print routine's arguments directly to another such routine.
-The signature of ```Printf``` uses the type ```...interface{}``` for its final argument to specify that an arbitrary number of parameters (of arbitrary type) can appear after the format.
+Другой способ печати это допустить печать функции аргументов напрямую в другую функцию.
+Сигнатура ```Printf``` используется для типов ```...interface{}``` for its final argument to specify that an arbitrary number of parameters (of arbitrary type) can appear after the format.
 
 ```golang
 func Printf(format string, v ...interface{}) (n int, err error) {
