@@ -1080,10 +1080,9 @@ var timeZone = map[string]int{
 offset := timeZone["EST"]
 ```
 
-An attempt to fetch a map value with a key that  is not present in the map will return the zero value for the type of the entries in the map.  
-For instance, if the map contains integers, looking up a non-existent key will return ```0```.
-A set can be implemented as a map with value type ```bool```.
-Set the map entry to ```true``` to put the value in the set, and then test it by simple indexing.
+При попытки получения значения из карты по ключю, которого нет в карте, приведет к возвращению нулевого значения.
+К примеру, если карта содержит целые числа, то описывалось выше, для несуществующего ключа будет возвращено ```0```.
+Это можно представить как карту у которой в качестве типа значения используется ```bool```. Добавление записи в карту это как добавление со значением ```true``` в карту и дальнейшая простая проверка на индексирование.
 
 ```golang
 attended := map[string]bool{
@@ -1097,8 +1096,8 @@ if attended[person] { // will be false if person is not in the map
 }
 ```
 
-Sometimes you need to distinguish a missing entry from a zero value.  Is there an entry for ```"UTC"``` or is that the empty string because it's not in the map at all?
-You can discriminate with a form of multiple assignment.
+Иногда необходимо отличать отсутствие записи от нулевего значения. К примеру, есть ли запись для ```"UTC"``` или это пустая строка потому что отсутсвует значение в карте?
+Для того чтобы отличить - Вы можете использовать множественное присвоение.
 
 ```golang
 var seconds int
@@ -1106,10 +1105,9 @@ var ok bool
 seconds, ok = timeZone[tz]
 ```
 
-For obvious reasons this is called the "comma ok" idiom.
-In this example, if ```tz``` is present, ```seconds``` will be set appropriately and ```ok``` will be true; if not, ```seconds``` will be set to zero and ```ok``` will
-be false.
-Here's a function that puts it together with a nice error report:
+Очевидная причина называть данную идиому "запятая ок".
+В данном примере, если ```tz``` существует, то ```seconds``` будет иметь необходимое значение и ```ok``` будет ```true```, но если не существует, то ```seconds``` будет иметь нулевое значение а ```ok``` будет ```false```.
+В следующем примере, представлена функция с хорошей описанием ошибки:
 
 ```golang
 func offset(tz string) int {
@@ -1121,29 +1119,27 @@ func offset(tz string) int {
 }
 ```
 
-To test for presence in the map without worrying about the actual value, you can use the <a href="#blank">blank identifier</a> (```_```) in place of the usual variable for the value.
+В случаи если нам не беспокоит само значение, а лишь его наличие, то можно использовать **пустой идентификатор ```_```** расположенный вместо значения.
 
 ```golang
 _ , present := timeZone[tz]
 ```
 
-To delete a map entry, use the ```delete``` built-in function, whose arguments are the map and the key to be deleted.
-It's safe to do this even if the key is already absent from the map.
+Для удаления записи из карты, необходимо использовать встроенную функцию ```delete```, где в качестве аргументов задается карта и ключ для удаления.
+Данная операция безопасна, даже если данного ключа уже нет в карте.
 
 ```golang
 delete(timeZone, "PDT")  // Now on Standard Time
 ```
 
-### "printing">Printing
+### Печать(Printing)
 
+Форматированная печать в Go использует стилю в языке C ```printf```, но более богаче и более обобщенное. Необходимые функции расположены в пакете ```fmt``` и имеют назавания с большой буквы: ```fmt.Printf```, ```fmt.Fprintf```, ```fmt.Sprintf``` и так далее.  Функции (```Sprintf``` и другие) возвращают строку, а не заполняют предоставленный буфер.
 
-Formatted printing in Go uses a style similar to C's ```printf``` family but is richer and more general. The functions live in the ```fmt``` package and have capitalized names: ```fmt.Printf```, ```fmt.Fprintf```, ```fmt.Sprintf``` and so on.  The string functions (```Sprintf``` etc.)
-return a string rather than filling in a provided buffer.
+Вам нет необходимости в создании форматировании строк, так как для каждой  ```Printf```, ```Fprintf``` and ```Sprintf``` есть пара функций к примеру ```Print``` и ```Println```.
 
-
-You don't need to provide a format string.  For each of ```Printf```, ```Fprintf``` and ```Sprintf``` there is another pair of functions, for instance ```Print``` and ```Println```.
-These functions do not take a format string but instead generate a default format for each argument. The ```Println``` versions also insert a blank between arguments and append a newline to the output while the ```Print``` versions add blanks only if the operand on neither side is a string.
-In this example each line produces the same output.
+Данные функции не берут формат строки, а вместо этого устанавливают форматирование по-умолчанию для каждого аргумента. Функция ```Println``` также добавляет пробел между аргументами и добавляет разрыв строки в конце строки. Функция```Print``` добавляет пробел только если той же строке.
+В примере каждая строка производит одинаковый результат.
 
 ```golang
 fmt.Printf("Hello %d\n", 23)
@@ -1152,37 +1148,40 @@ fmt.Println("Hello", 23)
 fmt.Println(fmt.Sprint("Hello ", 23))
 ```
 
-The formatted print functions ```fmt.Fprint``` and friends take as a first argument any object that implements the ```io.Writer``` interface; the variables ```os.Stdout``` and ```os.Stderr``` are familiar instances.
+Для форматированной печати функцией ```fmt.Fprint``` и его друзьями, принимают в качестве первого аргумента объект реализующий интерфейс ```io.Writer```.
+Значения ```os.Stdout``` и ```os.Stderr``` знакомы.
 
 
-Here things start to diverge from C.  First, the numeric formats such as ```%d``` do not take flags for signedness or size; instead, the printing routines use the type of the argument to decide these properties.
+Следующее расходится с реализацией на языке С. Первое, числовые форматы ```%d``` не имеют флагов знаковости или размера; Вместо этого, функции печати используют тип аргумента для задания свойств.
 
 ```golang
 var x uint64 = 1<<64 - 1
 fmt.Printf("%d %x; %d %x\n", x, x, int64(x), int64(x))
 ```
 
-prints
+печатает
 
 ```
 18446744073709551615 ffffffffffffffff; -1 -1
 ```
 
-If you just want the default conversion, such as decimal for integers, you can use the catchall format ```%v``` (for "value"); the result is exactly what ```Print``` and ```Println``` would produce.
-Moreover, that format can print *any* value, even arrays, slices, structs, and maps.  Here is a print statement for the time zone map defined in the previous section.
+Если вы использовать соглашение по-умолчание, то для целых чисел можно использовать обобщенный формат ```%v``` (для "значений"); и результат будет одинаков как для  ```Print``` так и для ```Println```.
+
+Более того, данный формат может напечатать *любое* значение, даже срез, структуру или карту.
+Печать карты временной зоны из предедущего раздела.
 
 ```golang
 fmt.Printf("%v\n", timeZone)  // or just fmt.Println(timeZone)
 ```
 
-which gives output
+который печатает следующий результат
 
 ```
 map[CST:-21600 PST:-28800 EST:-18000 UTC:0 MST:-25200]
 ```
 
-For maps the keys may be output in any order, of course.
-When printing a struct, the modified format ```%+v``` annotates the fields of the structure with their names, and for any value the alternate format ```%#v``` prints the value in full Go syntax.
+Ключи карт могут быть напечатаны в любом порядке.
+При печати структуры, с аннотацией ```%+v``` производиться печать полей структуры с их именами и для каждого значение с форматом ```%#v``` печатается значение с полным интаксисом Go.
 
 ```golang
 type T struct {
@@ -1197,7 +1196,7 @@ fmt.Printf("%#v\n", t)
 fmt.Printf("%#v\n", timeZone)
 ```
 
-prints
+печатает
 
 ```
 &{7 -2.35 abc   def}
@@ -1206,20 +1205,21 @@ prints
 map[string] int{"CST":-21600, "PST":-28800, "EST":-18000, "UTC":0, "MST":-25200}
 ```
 
-(Note the ampersands.)
-That quoted string format is also available through ```%q``` when applied to a value of type ```string``` or ```[]byte```.
-The alternate format ```%#q``` will use backquotes instead if possible.
-(The ```%q``` format also applies to integers and runes, producing a single-quoted rune constant.)
-Also, ```%x``` works on strings, byte arrays and byte slices as well as on integers, generating a long hexadecimal string, and with a space in the format (```%&nbsp;x```) it puts spaces between the bytes.
+(На заметку: обратите внимание на амперсанты)
+
+Для ссылок на строки подходит ```%q```, который принимает значение на ```string``` или ```[]byte```.
+Альтернативный формат ```%#q``` будет использовать обратные кавычки, если это возможно.
+(Формат ```%q``` также допустим для целых чисел и рун, создавая односсылочные константы рун.)
+Также, ```%x``` работает со строками, массивом байт и срезом байт также как с целыми числами, создает шеснадцатиричные целые строки, а с пробелом в формате (```% x```) добавляет пробелы между байтами.
 
 
-Another handy format is ```%T```, which prints the *type* of a value.
+Другой удобный формат ```%T```, который печатает *тип* значения.
 
 ```golang
 fmt.Printf("%T\n", timeZone)
 ```
 
-prints
+печатает
 
 ```
 map[string] int
