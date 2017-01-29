@@ -1414,21 +1414,12 @@ func (b ByteSize) String() string {
 Выражение ```YB``` печатается как ```1.00YB```, когда ```ByteSize(1e13)``` печатает как ```9.09TB```.
 
 
-
-The use here of ```Sprintf```
-to implement ```ByteSize```'s ```String``` method is safe
-(avoids recurring indefinitely) not because of a conversion but
-because it calls ```Sprintf``` with ```%f```,
-which is not a string format: ```Sprintf``` will only call
-the ```String``` method when it wants a string, and ```%f```
-wants a floating-point value.
+Используемый здесь ```Sprintf``` в функции ```String``` типа ```ByteSize``` безопасна(не вызывается рекурсивно), не потому что происходит конвертирование, а потому что вызывается функция ```Sprintf``` с ```%f```, который не строковый формат: ```Sprintf``` будет вызывать функцию ```String```, функцию которой необходима строка и ```%f``` число с плавающей точкой.
 
 
-### "variables">Variables
+### Переменные(Variables)
 
-
-Variables can be initialized just like constants but the
-initializer can be a general expression computed at run time.
+Переменные могут инициализироваться как константы, но инициализация производиться во время работы.
 
 ```golang
 var (
@@ -1438,7 +1429,7 @@ var (
 )
 ```
 
-### "init">The init function
+### Функция init
 
 
 Finally, each source file can define its own niladic ```init``` function to
@@ -1571,7 +1562,51 @@ by the routines in package ```sort``` if it implements ```sort.Interface```, whi
 and it could also have a custom formatter.
 In this contrived example ```Sequence``` satisfies both.
 
-{{code "/doc/progs/eff_sequence.go" `/^type/` "$"}}
+```golang
+//{{code "/doc/progs/eff_sequence.go" `/^type/` "$"}}
+// Copyright 2009 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func main() {
+	seq := Sequence{6, 2, -1, 44, 16}
+	sort.Sort(seq)
+	fmt.Println(seq)
+}
+
+type Sequence []int
+
+// Methods required by sort.Interface.
+func (s Sequence) Len() int {
+	return len(s)
+}
+func (s Sequence) Less(i, j int) bool {
+	return s[i] < s[j]
+}
+func (s Sequence) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+// Method for printing - sorts the elements before printing.
+func (s Sequence) String() string {
+	sort.Sort(s)
+	str := "["
+	for i, elem := range s {
+		if i > 0 {
+			str += " "
+		}
+		str += fmt.Sprint(elem)
+	}
+	return str + "]"
+}
+```
 
 ### "conversions">Conversions
 
@@ -1995,7 +2030,25 @@ and an unused variable (```fd```),
 so it will not compile, but it would be nice to see if the
 code so far is correct.
 
-{{code "/doc/progs/eff_unused1.go" `/package/` `$`}}
+```golang
+///{{code "/doc/progs/eff_unused1.go" `/package/` `$`}}
+package main
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"os"
+)
+
+func main() {
+	fd, err := os.Open("test.go")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// TODO: use fd.
+}
+```
 
 To silence complaints about the unused imports, use a
 blank identifier to refer to a symbol from the imported package.
@@ -2003,7 +2056,29 @@ Similarly, assigning the unused variable ```fd```
 to the blank identifier will silence the unused variable error.
 This version of the program does compile.
 
-{{code "/doc/progs/eff_unused2.go" `/package/` `$`}}
+```golang
+//{{code "/doc/progs/eff_unused2.go" `/package/` `$`}}
+package main
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"os"
+)
+
+var _ = fmt.Printf // For debugging; delete when done.
+var _ io.Reader    // For debugging; delete when done.
+
+func main() {
+	fd, err := os.Open("test.go")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// TODO: use fd.
+	_ = fd
+}
+```
 
 
 By convention, the global declarations to silence import errors
@@ -3053,7 +3128,58 @@ for instance, a URL, saving you typing the URL into the phone's tiny keyboard.
 Here's the complete program.
 An explanation follows.
 
-{{code "/doc/progs/eff_qr.go" `/package/` `$`}}
+```golang
+//{{code "/doc/progs/eff_qr.go" `/package/` `$`}}
+// Copyright 2009 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package main
+
+import (
+	"flag"
+	"html/template"
+	"log"
+	"net/http"
+)
+
+var addr = flag.String("addr", ":1718", "http service address") // Q=17, R=18
+
+var templ = template.Must(template.New("qr").Parse(templateStr))
+
+func main() {
+	flag.Parse()
+	http.Handle("/", http.HandlerFunc(QR))
+	err := http.ListenAndServe(*addr, nil)
+	if err != nil {
+		log.Fatal("ListenAndServe:", err)
+	}
+}
+
+func QR(w http.ResponseWriter, req *http.Request) {
+	templ.Execute(w, req.FormValue("s"))
+}
+
+const templateStr = `
+<html>
+<head>
+<title>QR Link Generator</title>
+</head>
+<body>
+{{if .}}
+<img src="http://chart.apis.google.com/chart?chs=300x300&cht=qr&choe=UTF-8&chl={{.}}" />
+<br>
+{{.}}
+<br>
+<br>
+{{end}}
+<form action="/" name=f method="GET"><input maxLength=1024 size=70
+name=s value="" title="Text to QR Encode"><input type=submit
+value="Show QR" name=qr>
+</form>
+</body>
+</html>
+```
 
 The pieces up to ```main``` should be easy to follow.
 The one flag sets a default HTTP port for our server.  The template
