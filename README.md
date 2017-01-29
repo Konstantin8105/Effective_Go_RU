@@ -971,11 +971,11 @@ func (f * File) Read(buf []byte) (n int, err error)
     }
 ```
 
-The length of a slice may be changed as long as it still fits within the limits of the underlying array; just assign it to a slice of itself.
-The *capacity* of a slice, accessible by the built-in function ```cap```, reports the maximum length the slice may assume.  
-Here is a function to append data to a slice.  
-If the data exceeds the capacity, the slice is reallocated.  
-The resulting slice is returned.  The function uses the fact that ```len``` and ```cap``` are legal when applied to the ```nil``` slice, and return 0.
+Длина слайса(среза) может меняться меняться, пока не исчерпает размер внутреннего массива.
+С помощью встроенной функции ```cap``` можно узнать *емкость* слайса, представляющая макимальной длиной среза.
+В следующем примере расматривается функция для добавления данных в слайс.
+Если данные превышают емкость слайса, то слайс необходимо переопределить.
+Функция ```Append``` возвращает результирующий слайс. Функция использует тот факт что  использование ```len``` и ```cap``` допустимо даже если у нас имееться ```nil``` слайс - возращая 0.
 
 ```golang
 func Append(slice, data []byte) []byte {
@@ -995,36 +995,28 @@ func Append(slice, data []byte) []byte {
 }
 ```
 
+
+**TODO**
 We must return the slice afterwards because, although ```Append```
 can modify the elements of ```slice```, the slice itself (the run-time data
 structure holding the pointer, length, and capacity) is passed by value.
+**-**
+
+Добавление элементов в слайс настолько популярна, что функция ```append``` тала встроенной. Для того чтобы понять принцип работы данной функции нам необходимо больше информации, поэтому мы вернемся к этому позже.
 
 
+### Двухмерные слайсы(срезы)
 
-The idea of appending to a slice is so useful it's captured by the ```append``` built-in function.  To understand that function's
-design, though, we need a little more information, so we'll return
-to it later.
-
-
-### "two_dimensional_slices">Two-dimensional slices
-
-
-Go's arrays and slices are one-dimensional.
-To create the equivalent of a 2D array or slice, it is necessary to define an array-of-arrays
-or slice-of-slices, like this:
-
+Массивы и срезы в Go - одномерные.
+Для создания эквивалентого двухмерного массива или среза, то нам необходимо определять массив-массивов или срез-срезов, как в примере:
 
 ```golang
 type Transform [3][3]float64  // A 3x3 array, really an array of arrays.
 type LinesOfText [][]byte     // A slice of byte slices.
 ```
 
-
-Because slices are variable-length, it is possible to have each inner
-slice be a different length.
-That can be a common situation, as in our ```LinesOfText```
-example: each line has an independent length.
-
+В связи с тем что срезы переменной длины, то допустимо иметь каждый внутренний срез разной длины.
+Это наиболее общая ситуация, как в ```LinesOfText``` примере, в котором каждая строка имеет независимую длину.
 
 ```golang
 text := LinesOfText{
@@ -1034,19 +1026,12 @@ text := LinesOfText{
 }
 ```
 
-
-Sometimes it's necessary to allocate a 2D slice, a situation that can arise when
-processing scan lines of pixels, for instance.
-There are two ways to achieve this.
-One is to allocate each slice independently; the other
-is to allocate a single array and point the individual slices into it.
-Which to use depends on your application.
-If the slices might grow or shrink, they should be allocated independently
-to avoid overwriting the next line; if not, it can be more efficient to construct
-the object with a single allocation.
-For reference, here are sketches of the two methods.
-First, a line at a time:
-
+Иногда необходимо создавать двухмерные срезы, к примеру при обработки пикселей.
+Есть 2 способа для этого.
+Первый, создание каждого среза независимо и второй создание простого массива срезов.
+Наилучшый способ выбирается в зависимости от программы.
+Если срез можно увеличивать или уменьшать, они должны быть независимы для того чтобы избежать перезаписи новых строк. Если не требуется изменять размер, то наиболее эффективным был бы способ с создание одним их созданием.
+Рассмотрим оба способа.
 
 ```golang
 // Allocate the top-level slice.
@@ -1057,9 +1042,7 @@ for i := range picture {
 }
 ```
 
-
-And now as one allocation, sliced into lines:
-
+с одним созданием:
 
 ```golang
 // Allocate the top-level slice, the same as before.
@@ -1072,28 +1055,17 @@ for i := range picture {
 }
 ```
 
-### "maps">Maps
+### Карты(Maps)
 
 
-Maps are a convenient and powerful built-in data structure that associate
-values of one type (the *key*) with values of another type
-(the *element* or *value*)
-The key can be of any type for which the equality operator is defined,
-such as integers,
-floating point and complex numbers,
-strings, pointers, interfaces (as long as the dynamic type
-supports equality), structs and arrays.
-Slices cannot be used as map keys,
-because equality is not defined on them.
+Maps are a convenient and powerful built-in data structure that associate values of one type (the *key*) with values of another type (the *element* or *value*) The key can be of any type for which the equality operator is defined, such as integers,
+floating point and complex numbers, strings, pointers, interfaces (as long as the dynamic type supports equality), structs and arrays.
+Slices cannot be used as map keys, because equality is not defined on them.
 Like slices, maps hold references to an underlying data structure.
-If you pass a map to a function
-that changes the contents of the map, the changes will be visible
-in the caller.
+If you pass a map to a function that changes the contents of the map, the changes will be visible in the caller.
 
 
-Maps can be constructed using the usual composite literal syntax
-with colon-separated key-value pairs,
-so it's easy to build them during initialization.
+Maps can be constructed using the usual composite literal syntax with colon-separated key-value pairs, so it's easy to build them during initialization.
 
 ```golang
 var timeZone = map[string]int{
@@ -1105,22 +1077,16 @@ var timeZone = map[string]int{
 }
 ```
 
-Assigning and fetching map values looks syntactically just like
-doing the same for arrays and slices except that the index doesn't
-need to be an integer.
+Assigning and fetching map values looks syntactically just like doing the same for arrays and slices except that the index doesn't need to be an integer.
 
 ```golang
 offset := timeZone["EST"]
 ```
 
-An attempt to fetch a map value with a key that
-is not present in the map will return the zero value for the type
-of the entries
-in the map.  For instance, if the map contains integers, looking
-up a non-existent key will return ```0```.
+An attempt to fetch a map value with a key that  is not present in the map will return the zero value for the type of the entries in the map.  
+For instance, if the map contains integers, looking up a non-existent key will return ```0```.
 A set can be implemented as a map with value type ```bool```.
-Set the map entry to ```true``` to put the value in the set, and then
-test it by simple indexing.
+Set the map entry to ```true``` to put the value in the set, and then test it by simple indexing.
 
 ```golang
 attended := map[string]bool{
@@ -1134,9 +1100,7 @@ if attended[person] { // will be false if person is not in the map
 }
 ```
 
-Sometimes you need to distinguish a missing entry from
-a zero value.  Is there an entry for ```"UTC"```
-or is that the empty string because it's not in the map at all?
+Sometimes you need to distinguish a missing entry from a zero value.  Is there an entry for ```"UTC"``` or is that the empty string because it's not in the map at all?
 You can discriminate with a form of multiple assignment.
 
 ```golang
@@ -1146,8 +1110,7 @@ seconds, ok = timeZone[tz]
 ```
 
 For obvious reasons this is called the "comma ok" idiom.
-In this example, if ```tz``` is present, ```seconds```
-will be set appropriately and ```ok``` will be true; if not, ```seconds``` will be set to zero and ```ok``` will
+In this example, if ```tz``` is present, ```seconds``` will be set appropriately and ```ok``` will be true; if not, ```seconds``` will be set to zero and ```ok``` will
 be false.
 Here's a function that puts it together with a nice error report:
 
@@ -1161,18 +1124,14 @@ func offset(tz string) int {
 }
 ```
 
-To test for presence in the map without worrying about the actual value,
-you can use the <a href="#blank">blank identifier</a> (```_```)
-in place of the usual variable for the value.
+To test for presence in the map without worrying about the actual value, you can use the <a href="#blank">blank identifier</a> (```_```) in place of the usual variable for the value.
 
 ```golang
 _ , present := timeZone[tz]
 ```
 
-To delete a map entry, use the ```delete```
-built-in function, whose arguments are the map and the key to be deleted.
-It's safe to do this even if the key is already absent
-from the map.
+To delete a map entry, use the ```delete``` built-in function, whose arguments are the map and the key to be deleted.
+It's safe to do this even if the key is already absent from the map.
 
 ```golang
 delete(timeZone, "PDT")  // Now on Standard Time
@@ -1181,18 +1140,12 @@ delete(timeZone, "PDT")  // Now on Standard Time
 ### "printing">Printing
 
 
-Formatted printing in Go uses a style similar to C's ```printf```
-family but is richer and more general. The functions live in the ```fmt```
-package and have capitalized names: ```fmt.Printf```, ```fmt.Fprintf```, ```fmt.Sprintf``` and so on.  The string functions (```Sprintf``` etc.)
+Formatted printing in Go uses a style similar to C's ```printf``` family but is richer and more general. The functions live in the ```fmt``` package and have capitalized names: ```fmt.Printf```, ```fmt.Fprintf```, ```fmt.Sprintf``` and so on.  The string functions (```Sprintf``` etc.)
 return a string rather than filling in a provided buffer.
 
 
-You don't need to provide a format string.  For each of ```Printf```, ```Fprintf``` and ```Sprintf``` there is another pair
-of functions, for instance ```Print``` and ```Println```.
-These functions do not take a format string but instead generate a default
-format for each argument. The ```Println``` versions also insert a blank
-between arguments and append a newline to the output while
-the ```Print``` versions add blanks only if the operand on neither side is a string.
+You don't need to provide a format string.  For each of ```Printf```, ```Fprintf``` and ```Sprintf``` there is another pair of functions, for instance ```Print``` and ```Println```.
+These functions do not take a format string but instead generate a default format for each argument. The ```Println``` versions also insert a blank between arguments and append a newline to the output while the ```Print``` versions add blanks only if the operand on neither side is a string.
 In this example each line produces the same output.
 
 ```golang
@@ -1202,15 +1155,10 @@ fmt.Println("Hello", 23)
 fmt.Println(fmt.Sprint("Hello ", 23))
 ```
 
-The formatted print functions ```fmt.Fprint```
-and friends take as a first argument any object
-that implements the ```io.Writer``` interface; the variables ```os.Stdout```
-and ```os.Stderr``` are familiar instances.
+The formatted print functions ```fmt.Fprint``` and friends take as a first argument any object that implements the ```io.Writer``` interface; the variables ```os.Stdout``` and ```os.Stderr``` are familiar instances.
 
 
-Here things start to diverge from C.  First, the numeric formats such as ```%d```
-do not take flags for signedness or size; instead, the printing routines use the
-type of the argument to decide these properties.
+Here things start to diverge from C.  First, the numeric formats such as ```%d``` do not take flags for signedness or size; instead, the printing routines use the type of the argument to decide these properties.
 
 ```golang
 var x uint64 = 1<<64 - 1
