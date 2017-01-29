@@ -1057,15 +1057,12 @@ for i := range picture {
 
 ### Карты(Maps)
 
-
-Maps are a convenient and powerful built-in data structure that associate values of one type (the *key*) with values of another type (the *element* or *value*) The key can be of any type for which the equality operator is defined, such as integers,
-floating point and complex numbers, strings, pointers, interfaces (as long as the dynamic type supports equality), structs and arrays.
-Slices cannot be used as map keys, because equality is not defined on them.
-Like slices, maps hold references to an underlying data structure.
-If you pass a map to a function that changes the contents of the map, the changes will be visible in the caller.
-
-
-Maps can be constructed using the usual composite literal syntax with colon-separated key-value pairs, so it's easy to build them during initialization.
+Карты - это удобный и мощный встроенная структура данных, связывабщий значение одного типа(*ключ (key)*) со значением другого типа (*элемент (element)* или *значение (value)*).
+Ключ может быть любого типа для которого определен оператор равно, как для целых чисел, чисел с плавающей точкой или комплексные числа, строки, указатели, интерфейсы (если динамические типы поддерживают равенство), структуры и массивы.
+Срезы не используются в качестве ключа для карт, так как равенство не определено для них.
+Карты, также как и срезы, имеют внутреннюю структуру данных.
+Ели Вы передадите карту в функции и измените содержание карты, то изменения остануться для вызывающего.
+Карты могут быть созданы с использованием синтаксиса сложных литералов с разделением по колонкам пар ключ-значение, поэтому легко создать начальные данные.
 
 ```golang
 var timeZone = map[string]int{
@@ -1077,7 +1074,7 @@ var timeZone = map[string]int{
 }
 ```
 
-Assigning and fetching map values looks syntactically just like doing the same for arrays and slices except that the index doesn't need to be an integer.
+Добавление и получение значений из карт синтаксически выглядит как для массивов или срезов, за тем исключение того что индекс не оюязательно должен быть целым числом.
 
 ```golang
 offset := timeZone["EST"]
@@ -1171,11 +1168,8 @@ prints
 18446744073709551615 ffffffffffffffff; -1 -1
 ```
 
-If you just want the default conversion, such as decimal for integers, you can use
-the catchall format ```%v``` (for "value"); the result is exactly
-what ```Print``` and ```Println``` would produce.
-Moreover, that format can print *any* value, even arrays, slices, structs, and
-maps.  Here is a print statement for the time zone map defined in the previous section.
+If you just want the default conversion, such as decimal for integers, you can use the catchall format ```%v``` (for "value"); the result is exactly what ```Print``` and ```Println``` would produce.
+Moreover, that format can print *any* value, even arrays, slices, structs, and maps.  Here is a print statement for the time zone map defined in the previous section.
 
 ```golang
 fmt.Printf("%v\n", timeZone)  // or just fmt.Println(timeZone)
@@ -1188,9 +1182,7 @@ map[CST:-21600 PST:-28800 EST:-18000 UTC:0 MST:-25200]
 ```
 
 For maps the keys may be output in any order, of course.
-When printing a struct, the modified format ```%+v``` annotates the
-fields of the structure with their names, and for any value the alternate
-format ```%#v``` prints the value in full Go syntax.
+When printing a struct, the modified format ```%+v``` annotates the fields of the structure with their names, and for any value the alternate format ```%#v``` prints the value in full Go syntax.
 
 ```golang
 type T struct {
@@ -1215,14 +1207,10 @@ map[string] int{"CST":-21600, "PST":-28800, "EST":-18000, "UTC":0, "MST":-25200}
 ```
 
 (Note the ampersands.)
-That quoted string format is also available through ```%q``` when
-applied to a value of type ```string``` or ```[]byte```.
+That quoted string format is also available through ```%q``` when applied to a value of type ```string``` or ```[]byte```.
 The alternate format ```%#q``` will use backquotes instead if possible.
-(The ```%q``` format also applies to integers and runes, producing a
-single-quoted rune constant.)
-Also, ```%x``` works on strings, byte arrays and byte slices as well as
-on integers, generating a long hexadecimal string, and with
-a space in the format (```%&nbsp;x```) it puts spaces between the bytes.
+(The ```%q``` format also applies to integers and runes, producing a single-quoted rune constant.)
+Also, ```%x``` works on strings, byte arrays and byte slices as well as on integers, generating a long hexadecimal string, and with a space in the format (```%&nbsp;x```) it puts spaces between the bytes.
 
 
 Another handy format is ```%T```, which prints the *type* of a value.
@@ -1237,8 +1225,7 @@ prints
 map[string] int
 ```
 
-If you want to control the default format for a custom type, all that's required is to define
-a method with the signature ```String() string``` on the type.
+If you want to control the default format for a custom type, all that's required is to define a method with the signature ```String() string``` on the type.
 For our simple type ```T```, that might look like this.
 
 ```golang
@@ -1254,21 +1241,15 @@ to print in the format
 7/-2.35/"abc\tdef"
 ```
 
-(If you need to print *values* of type ```T``` as well as pointers to ```T```,
-the receiver for ```String``` must be of value type; this example used a pointer because
+(If you need to print *values* of type ```T``` as well as pointers to ```T```, the receiver for ```String``` must be of value type; this example used a pointer because
 that's more efficient and idiomatic for struct types.
 See the section below on <a href="#pointers_vs_values">pointers vs. value receivers</a> for more information.)
 
 
 
-Our ```String``` method is able to call ```Sprintf``` because the
-print routines are fully reentrant and can be wrapped this way.
-There is one important detail to understand about this approach,
-however: don't construct a ```String``` method by calling ```Sprintf``` in a way that will recur into your ```String```
-method indefinitely.  This can happen if the ```Sprintf```
-call attempts to print the receiver directly as a string, which in
-turn will invoke the method again.  It's a common and easy mistake
-to make, as this example shows.
+Our ```String``` method is able to call ```Sprintf``` because the print routines are fully reentrant and can be wrapped this way.
+There is one important detail to understand about this approach, however: don't construct a ```String``` method by calling ```Sprintf``` in a way that will recur into your ```String``` method indefinitely.  This can happen if the ```Sprintf```
+call attempts to print the receiver directly as a string, which in turn will invoke the method again.  It's a common and easy mistake to make, as this example shows.
 
 
 ```golang
@@ -1280,8 +1261,7 @@ func (m MyString) String() string {
 ```
 
 
-It's also easy to fix: convert the argument to the basic string type, which does not have the
-method.
+It's also easy to fix: convert the argument to the basic string type, which does not have the method.
 
 
 ```golang
@@ -1297,18 +1277,14 @@ In the <a href="#initialization">initialization section</a> we'll see another te
 
 
 Another printing technique is to pass a print routine's arguments directly to another such routine.
-The signature of ```Printf``` uses the type ```...interface{}```
-for its final argument to specify that an arbitrary number of parameters (of arbitrary type)
-can appear after the format.
+The signature of ```Printf``` uses the type ```...interface{}``` for its final argument to specify that an arbitrary number of parameters (of arbitrary type) can appear after the format.
 
 ```golang
 func Printf(format string, v ...interface{}) (n int, err error) {
 ```
 
-Within the function ```Printf```, ```v``` acts like a variable of type ```[]interface{}``` but if it is passed to another variadic function, it acts like
-a regular list of arguments.
-Here is the implementation of the
-function ```log.Println``` we used above. It passes its arguments directly to ```fmt.Sprintln``` for the actual formatting.
+Within the function ```Printf```, ```v``` acts like a variable of type ```[]interface{}``` but if it is passed to another variadic function, it acts like a regular list of arguments.
+Here is the implementation of the function ```log.Println``` we used above. It passes  its arguments directly to ```fmt.Sprintln``` for the actual formatting.
 
 ```golang
 // Println prints to the standard logger in the manner of fmt.Println.
@@ -1317,16 +1293,13 @@ func Println(v ...interface{}) {
 }
 ```
 
-We write ```...``` after ```v``` in the nested call to ```Sprintln``` to tell the
-compiler to treat ```v``` as a list of arguments; otherwise it would just pass ```v``` as a single slice argument.
+We write ```...``` after ```v``` in the nested call to ```Sprintln``` to tell the compiler to treat ```v``` as a list of arguments; otherwise it would just pass ```v``` as a single slice argument.
 
 
-There's even more to printing than we've covered here.  See the ```godoc``` documentation
-for package ```fmt``` for the details.
+There's even more to printing than we've covered here.  See the ```godoc``` documentation for package ```fmt``` for the details.
 
 
-By the way, a ```...``` parameter can be of a specific type, for instance ```...int```
-for a min function that chooses the least of a list of integers:
+By the way, a ```...``` parameter can be of a specific type, for instance ```...int``` for a min function that chooses the least of a list of integers:
 
 ```golang
 func Min(a ...int) int {
