@@ -1266,14 +1266,16 @@ func (m MyString) String() string {
 ```
 
 Другой способ печати это допустить печать функции аргументов напрямую в другую функцию.
-Сигнатура ```Printf``` используется для типов ```...interface{}``` for its final argument to specify that an arbitrary number of parameters (of arbitrary type) can appear after the format.
+Сигнатура ```Printf``` используется для типов ```...interface{}```, что допускает произвольное число аргументов, которые добавляються после формата *format*.
 
 ```golang
 func Printf(format string, v ...interface{}) (n int, err error) {
 ```
 
+**TODO**
 Within the function ```Printf```, ```v``` acts like a variable of type ```[]interface{}``` but if it is passed to another variadic function, it acts like a regular list of arguments.
 Here is the implementation of the function ```log.Println``` we used above. It passes  its arguments directly to ```fmt.Sprintln``` for the actual formatting.
+**-**
 
 ```golang
 // Println prints to the standard logger in the manner of fmt.Println.
@@ -1282,13 +1284,11 @@ func Println(v ...interface{}) {
 }
 ```
 
-We write ```...``` after ```v``` in the nested call to ```Sprintln``` to tell the compiler to treat ```v``` as a list of arguments; otherwise it would just pass ```v``` as a single slice argument.
+Запись ```...``` после ```v``` при вызове функции ```Sprintln``` объявляет компилятору о том что ```v``` является списком аргументов; сдругой стороны ```v``` воспринимается как простой срез аргументов.
 
+Если Вас необходимо большее количество информации, то смотрите документацию ```godoc``` в пакете```fmt```.
 
-There's even more to printing than we've covered here.  See the ```godoc``` documentation for package ```fmt``` for the details.
-
-
-By the way, a ```...``` parameter can be of a specific type, for instance ```...int``` for a min function that chooses the least of a list of integers:
+Кстати параметр ```...``` может иметь тип, для примера```...int``` для функции определения минимума используется список целых чисел:
 
 ```golang
 func Min(a ...int) int {
@@ -1302,7 +1302,7 @@ func Min(a ...int) int {
 }
 ```
 
-### "append">Append
+### Присоединение(Append)
 
 Now we have the missing piece we needed to explain the design of
 the ```append``` built-in function.  The signature of ```append```
