@@ -1304,26 +1304,18 @@ func Min(a ...int) int {
 
 ### Присоединение(Append)
 
-Now we have the missing piece we needed to explain the design of
-the ```append``` built-in function.  The signature of ```append```
-is different from our custom ```Append``` function above.
-Schematically, it's like this:
+В настоящий момент пришел момент для разъяснения конструкции встроенной функции```append```. Сигнатура функции ```append``` отличается от ранее описанной функции ```Append```.
+Схематично, выглядит следующим образом:
 
 ```golang
 func append(slice []*T*, elements ...*T*) []*T*
 ```
 
-where *T* is a placeholder for any given type.  You can't
-actually write a function in Go where the type ```T```
-is determined by the caller.
-That's why ```append``` is built in: it needs support from the
-compiler.
+где *T* любой тип. Вы не можете написать в языке Go функцию в которой ```T``` определена вызывающим. Поэтому необходима поддержка компилятора для функции ```append```.
 
-
-What ```append``` does is append the elements to the end of
-the slice and return the result.  The result needs to be returned
-because, as with our hand-written ```Append```, the underlying
-array may change.  This simple example
+Данная функция ```append``` добавляет элемент в конец среза и возвращает результат.
+Причина возврата результата в том что как в рукописной функции ```Append``` массив может измениться.
+Простой пример:
 
 ```golang
 x := []int{1,2,3}
@@ -1331,15 +1323,10 @@ x = append(x, 4, 5, 6)
 fmt.Println(x)
 ```
 
-prints ```[1 2 3 4 5 6]```.  So ```append``` works a
-little like ```Printf```, collecting an arbitrary number of
-arguments.
+печатает ```[1 2 3 4 5 6]```.  Итак, ```append``` работает в принципе как ```Printf``` с произвольным количеством аргументов.
 
 
-But what if we wanted to do what our ```Append``` does and
-append a slice to a slice?  Easy: use ```...``` at the call
-site, just as we did in the call to ```Output``` above.  This
-snippet produces identical output to the one above.
+Но что если необходимо добавить срез в срез, как в нашей реализации ```Append```? Все просто: используем ```...``` который мы использовали в ```Output```. Вот пример кода для получение того же результата.
 
 ```golang
 x := []int{1,2,3}
@@ -1348,52 +1335,83 @@ x = append(x, y...)
 fmt.Println(x)
 ```
 
-Without that ```...```, it wouldn't compile because the types
-would be wrong; ```y``` is not of type ```int```.
+Обращаю внимание, что без ```...``` компилятор напишит ошибку, так как ```y``` не имеет тип ```int```.
 
 
-## "initialization">Initialization
+## Инициализация(Initialization)
+
+Инициализация в языке Go более мощный инструмент нежели в языках С или С++.
+Даже сложные структуры можно инициализировать. Упорядочивание между инициализируемыми объектами разных пакетов, обрабатывается корректно.
 
 
-Although it doesn't look superficially very different from
-initialization in C or C++, initialization in Go is more powerful.
-Complex structures can be built during initialization and the ordering
-issues among initialized objects, even among different packages, are handled
-correctly.
+### Константы(Constants)
 
 
-### "constants">Constants
+Константы в Go это просто константы.
+Они создаються во время компиляции даже если она определена в локальной функции и могут быть цифры, символы(руны), строки или булевый тип.
+Из-за ограничения времени компиляции, компилатор должен определять какие выражения могут быть константами. К примеру, выражение ```1<<3```  это константное выражение, в то время как выражение ```math.Sin(math.Pi/4)``` не является константой, так как вызывает функцию ```math.Sin``` требующую выполнения по время выполнения.
 
 
-Constants in Go are just that constant.
-They are created at compile time, even when defined as
-locals in functions,
-and can only be numbers, characters (runes), strings or booleans.
-Because of the compile-time restriction, the expressions
-that define them must be constant expressions,
-evaluatable by the compiler.  For instance, ```1<<3``` is a constant expression, while ```math.Sin(math.Pi/4)``` is not because
-the function call to ```math.Sin``` needs
-to happen at run time.
+В языке Go, перечисление констант производиться с помощью перечислятора **```iota```**. Так как ```iota``` может быть неявно повторяемой для выражения или выражений, то легко можно строить сложные наборы значений.
 
 
+```golang
+//{{code "/doc/progs/eff_bytesize.go" `/^type ByteSize/` `/^\)/`}}
+// Copyright 2009 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
-In Go, enumerated constants are created using the ```iota```
-enumerator.  Since ```iota``` can be part of an expression and
-expressions can be implicitly repeated, it is easy to build intricate
-sets of values.
+package main
 
-{{code "/doc/progs/eff_bytesize.go" `/^type ByteSize/` `/^\)/`}}
+import "fmt"
 
-The ability to attach a method such as ```String``` to any
-user-defined type makes it possible for arbitrary values to format themselves
-automatically for printing.
-Although you'll see it most often applied to structs, this technique is also useful for
-scalar types such as floating-point types like ```ByteSize```.
+type ByteSize float64
 
-{{code "/doc/progs/eff_bytesize.go" `/^func.*ByteSize.*String/` `/^}/`}}
+const (
+	_           = iota // ignore first value by assigning to blank identifier
+	KB ByteSize = 1 << (10 * iota)
+	MB
+	GB
+	TB
+	PB
+	EB
+	ZB
+	YB
+)
+```
 
-The expression ```YB``` prints as ```1.00YB```,
-while ```ByteSize(1e13)``` prints as ```9.09TB```.
+Использование функции ```String``` к пользовательским типам производить печать необходимым образом.
+**TODO**
+Although you'll see it most often applied to structs, this technique is also useful for scalar types such as floating-point types like ```ByteSize```.
+**-**
+
+```golang
+//{{code "/doc/progs/eff_bytesize.go" `/^func.*ByteSize.*String/` `/^}/`}}
+
+func (b ByteSize) String() string {
+	switch {
+	case b >= YB:
+		return fmt.Sprintf("%.2fYB", b/YB)
+	case b >= ZB:
+		return fmt.Sprintf("%.2fZB", b/ZB)
+	case b >= EB:
+		return fmt.Sprintf("%.2fEB", b/EB)
+	case b >= PB:
+		return fmt.Sprintf("%.2fPB", b/PB)
+	case b >= TB:
+		return fmt.Sprintf("%.2fTB", b/TB)
+	case b >= GB:
+		return fmt.Sprintf("%.2fGB", b/GB)
+	case b >= MB:
+		return fmt.Sprintf("%.2fMB", b/MB)
+	case b >= KB:
+		return fmt.Sprintf("%.2fKB", b/KB)
+	}
+	return fmt.Sprintf("%.2fB", b)
+}
+```
+
+Выражение ```YB``` печатается как ```1.00YB```, когда ```ByteSize(1e13)``` печатает как ```9.09TB```.
 
 
 
