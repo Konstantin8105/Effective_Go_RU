@@ -1434,11 +1434,7 @@ var (
 Каждый исходный код определить свою первичную функцию ```init``` для обязательных  настройки. (На самом деле файл можт иметь несколько функций ```init```.)
 И наконец значит в конце: функция ```init``` вызывается после всех объявлений переменных и после всех объявлений переменных всех пакетов.
 
-
-Besides initializations that cannot be expressed as declarations,
-a common use of ```init``` functions is to verify or repair
-correctness of the program state before real execution begins.
-
+Общее применение функции ```init``` в проверки или починки состояния программы до начала реального исполнения.
 
 ```golang
 func init() {
@@ -1456,19 +1452,14 @@ func init() {
 }
 ```
 
-## "methods">Methods
+## Методы(Methods)
 
-### "pointers_vs_values">Pointers vs. Values
+### Указатели или Значения
 
-As we saw with ```ByteSize```,
-methods can be defined for any named type (except a pointer or an interface);
-the receiver does not have to be a struct.
+Как мы видели в примеры с ```ByteSize```, функции может иметь имя типа (кроме указателей или интерфейсов) и приемник не обязательно должен иметь структуры.
 
-
-In the discussion of slices above, we wrote an ```Append```
-function.  We can define it as a method on slices instead.  To do
-this, we first declare a named type to which we can bind the method, and
-then make the receiver for the method a value of that type.
+Как обсуждалось ранее в срезах, мы написали функцию ```Append```.
+Мы можем определить функции вместе со срезом. Для этого, мы объявим именованный тип, который мы можем связать с функцией и там самым создать приемника данной функции для значений этого типа.
 
 ```golang
 type ByteSlice []byte
