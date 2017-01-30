@@ -1459,7 +1459,7 @@ func init() {
 Как мы видели в примеры с ```ByteSize```, функции может иметь имя типа (кроме указателей или интерфейсов) и приемник не обязательно должен иметь структуры.
 
 Как обсуждалось ранее в срезах, мы написали функцию ```Append```.
-Мы можем определить функции вместе со срезом. Для этого, мы объявим именованный тип, который мы можем связать с функцией и там самым создать приемника данной функции для значений этого типа.
+Мы можем определить функции вместе со срезом. Для этого, мы объявим именованный тип, который мы можем связать с функцией и там самым создать получателя данной функции для значений этого типа.
 
 ```golang
 type ByteSlice []byte
@@ -1469,10 +1469,7 @@ func (slice ByteSlice) Append(data []byte) []byte {
 }
 ```
 
-This still requires the method to return the updated slice.  We can
-eliminate that clumsiness by redefining the method to take a
-*pointer* to a ```ByteSlice``` as its receiver, so the
-method can overwrite the caller's slice.
+Данный метод все также возвращает обновленный срез. Для решения этой неуклюжести можно воспользоаться *указателем* на ```ByteSize``` в получатель, итак сожет быть переписана следующим образом.
 
 ```golang
 func (p *ByteSlice) Append(data []byte) {
@@ -1482,8 +1479,7 @@ func (p *ByteSlice) Append(data []byte) {
 }
 ```
 
-In fact, we can do even better.  If we modify our function so it looks
-like a standard ```Write``` method, like this,
+На самом деле, мы можем сделать это ещё лучше. Если мы изменим функцию, то она будет выглядить как стандартная функция ```Write```, то есть вот так,
 
 ```golang
 func (p *ByteSlice) Write(data []byte) (n int, err error) {
@@ -1494,59 +1490,39 @@ func (p *ByteSlice) Write(data []byte) (n int, err error) {
 }
 ```
 
-then the type ```*ByteSlice``` satisfies the standard interface ```io.Writer```, which is handy.  For instance, we can
-print into one.
+тип ```*ByteSlice``` удовлетворяет стандартному интерфейсу ```io.Writer```, что удобно. Например, мы можем напечатать один из них:
 
 ```golang
     var b ByteSlice
     fmt.Fprintf(&b, "This hour has %d days\n", 7)
 ```
 
-We pass the address of a ```ByteSlice```
-because only ```*ByteSlice``` satisfies ```io.Writer```.
-The rule about pointers vs. values for receivers is that value methods
-can be invoked on pointers and values, but pointer methods can only be
-invoked on pointers.
+Мы передаем адресс ```ByteSlice```, поскольку только ```*ByteSlice``` удовлетворяет интерфейсу ```io.Writer```.
+Правило получателя *о указателях или значениях* в том что функции значения могут использоваться для указателей и значений, а функция указателямогут только использовать указатель.
 
 
+Это правило возникло потому что функции указателя могут изменять получателя.
+Вызывая значение в функции значений получаешь копию значения, поэтому никаких модификаций не произойдет.
+Поэтому язык запрещает эту ошибку.
+Когда адрессуется значение, то язык заботиться что подставляя символ адресации автоматически.
 
-This rule arises because pointer methods can modify the receiver; invoking
-them on a value would cause the method to receive a copy of the value, so
-any modifications would be discarded.
-The language therefore disallows this mistake.
-There is a handy exception, though. When the value is addressable, the
-language takes care of the common case of invoking a pointer method on a
-value by inserting the address operator automatically.
-In our example, the variable ```b``` is addressable, so we can call
-its ```Write``` method with just ```b.Write```. The compiler
-will rewrite that to ```(&b).Write``` for us.
+К примеру, переменная ```b``` адрессованная, поэтому мы можем вызвать функцию ```Write``` просто вызвав ```b.Write```.
+Компилятор сам допишет ```(&b).Write``` за нас.
 
 
-
-By the way, the idea of using ```Write``` on a slice of bytes
-is central to the implementation of ```bytes.Buffer```.
+Кстати, идея использования ```Write``` на срезах байт наиважнейшая для реализации ```bytes.Buffer```.
 
 
-## "interfaces_and_types">Interfaces and other types
+## Интерфейсы и другие типы
 
-### "interfaces">Interfaces
+### Интерфейсы
 
-Interfaces in Go provide a way to specify the behavior of an
-object: if something can do *this*, then it can be used
-*here*.  We've seen a couple of simple examples already;
-custom printers can be implemented by a ```String``` method
-while ```Fprintf``` can generate output to anything
-with a ```Write``` method.
-Interfaces with only one or two methods are common in Go code, and are
-usually given a name derived from the method, such as ```io.Writer```
-for something that implements ```Write```.
+Интерфейсы в Go позволяют создать особое поведения для объектов: *Если нечто может делать* **это** *, то это можно использовать* **здесь**. Мы уже это встречали в простых примерах, когда реализовывали функцию ```String``` для печати, в то время как ```Fprintf``` может выдавать на печать другое с методом ```Write```.
+Интерфейсы с одним или двумя функциями свойственны в языке Go, как ```io.Writer``` реализующий ```Write```.
 
-
-A type can implement multiple interfaces.
-For instance, a collection can be sorted
-by the routines in package ```sort``` if it implements ```sort.Interface```, which contains ```Len()```, ```Less(i, j int) bool```, and ```Swap(i, j int)```,
-and it could also have a custom formatter.
-In this contrived example ```Sequence``` satisfies both.
+Любой тип может реализовывать множество интерфейсов.
+К примеру, коллекции могут быть отсортированы с помощью функций из пакета ```sort```, если она реализует ```sort.Interface```, который состоит из ```Len()```, ```Less(i, j int) bool```, и ```Swap(i, j int)``` и это может задать собственный формат.
+Рассмотрим пример ```Sequence```
 
 ```golang
 //{{code "/doc/progs/eff_sequence.go" `/^type/` "$"}}
@@ -1594,12 +1570,9 @@ func (s Sequence) String() string {
 }
 ```
 
-### "conversions">Conversions
+### Преобразование (Conversions)
 
-
-The ```String``` method of ```Sequence``` is recreating the
-work that ```Sprint``` already does for slices.  We can share the
-effort if we convert the ```Sequence``` to a plain ```[]int``` before calling ```Sprint```.
+Функция ```String``` работает с ```Sequence``` и ```Sprint``` уже работает со срезами. Мы может распространить данный эффект, ели конвертируем  ```Sequence``` на  ```[]int``` до вызова ```Sprint```.
 
 ```golang
 func (s Sequence) String() string {
@@ -1608,20 +1581,13 @@ func (s Sequence) String() string {
 }
 ```
 
-This method is another example of the conversion technique for calling ```Sprintf``` safely from a ```String``` method.
-Because the two types (```Sequence``` and ```[]int```)
-are the same if we ignore the type name, it's legal to convert between them.
-The conversion doesn't create a new value, it just temporarily acts
-as though the existing value has a new type.
-(There are other legal conversions, such as from integer to floating point, that
-do create a new value.)
+Это функция другой пример технику конвертирования для вызова ```Sprintf``` безопасно для функции ```String```.
+Так как два типа (```Sequence``` и ```[]int```) одинаковы, то мы можем игнорировать имя типа, это допустимое конвертирование между ними.
+При конвертации не происходит создание нового значения, это временная замена существующего значения на новый тип.
+(При других допустимых конвертациях, к примеру из целого числа в число с плавающей точкой, происходи создание нового значения.)
 
 
-It's an idiom in Go programs to convert the
-type of an expression to access a different
-set of methods. As an example, we could use the existing
-type ```sort.IntSlice``` to reduce the entire example
-to this:
+Это идиоматично в программе Go - конвертация типа производиться получения доступа к другим функциям. К примеру, мы можем использовать существующий тип ```sort.IntSlice```:
 
 ```golang
 type Sequence []int
@@ -1633,14 +1599,11 @@ func (s Sequence) String() string {
 }
 ```
 
-Now, instead of having ```Sequence``` implement multiple
-interfaces (sorting and printing), we're using the ability of a data item to be
-converted to multiple types (```Sequence```, ```sort.IntSlice```
-and ```[]int```), each of which does some part of the job.
-That's more unusual in practice but can be effective.
+Теперь, наш ```Sequence``` реализует множество интерфейсов (сортировка и печать),  мы можем использовать множество типов (```Sequence```, ```sort.IntSlice```
+and ```[]int```), которые выполняют определенную часть работ.
+Это не типично в использовании но эффективно.
 
-
-### "interface_conversions">Interface conversions and type assertions
+### Конвертация интерфейсов и привязка типов
 
 
 <a href="#type_switch">Type switches</a> are a form of conversion: they take an interface and, for
