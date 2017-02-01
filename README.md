@@ -1605,13 +1605,9 @@ and ```[]int```), которые выполняют определенную ч�
 
 ### Конвертация интерфейсов и привязка типов
 
-
-<a href="#type_switch">Type switches</a> are a form of conversion: they take an interface and, for
-each case in the switch, in a sense convert it to the type of that case.
-Here's a simplified version of how the code under ```fmt.Printf``` turns a value into
-a string using a type switch.
-If it's already a string, we want the actual string value held by the interface, while if it has a ```String``` method we want the result of calling the method.
-
+Переключатель типов(Type switches) является одной из форм конвертации: которая на основе интерфейса и переключателя для каждого элемента, в некотором смысле преобразует тип в элемент переключателя.
+Это простой вариант как в коде ```fmt.Printf``` конвертирует значение в строку, используя переключатель типа.
+И если это уже строка, мы хотим чтобы фактическое значение происходило по его интерфейсу, но в случаи если она имеет функцию ```String```, то хотим чтобы в результате вызывалась именно она.
 
 ```golang
 type Stringer interface {
@@ -1627,10 +1623,8 @@ case Stringer:
 }
 ```
 
-
-The first case finds a concrete value; the second converts the interface into another interface.
-It's perfectly fine to mix types this way.
-
+В первом случат ищется конкретное значение, во втором случаи происходит преобразование интерфейса в другой интерфейс.
+Это хороший подход в перемещивании типов.
 
 
 What if there's only one type we care about? If we know the value holds a ```string```
