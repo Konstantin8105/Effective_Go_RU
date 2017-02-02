@@ -1626,33 +1626,26 @@ case Stringer:
 В первом случат ищется конкретное значение, во втором случаи происходит преобразование интерфейса в другой интерфейс.
 Это хороший подход в перемещивании типов.
 
-
-What if there's only one type we care about? If we know the value holds a ```string```
-and we just want to extract it?
-A one-case type switch would do, but so would a *type assertion*.
-A type assertion takes an interface value and extracts from it a value of the specified explicit type.
-The syntax borrows from the clause opening a type switch, but with an explicit
-type rather than the ```type``` keyword:
-
+Что если, мы будет беспокоиться лишь об одном типе? Если мы знаем что значение имеет тип ```string``` и мы хотим вытащить только его?
+Можно сделать переключатель только с одним типом, но это будет *type assertion*.
+И *type assertion* берет значение интерфейса и переводит из его значения в его тип.
+Заимствование типа из открытия *type switch*, но переводит тип с помощью ключевого слова ```type```:
 
 ```golang
 value.(typeName)
 ```
 
-
-and the result is a new value with the static type ```typeName```.
-That type must either be the concrete type held by the interface, or a second interface
-type that the value can be converted to.
-To extract the string we know is in the value, we could write:
+и в результате у нас значение со статическим типом ```typeName```.
+Этот тип должен быть конкретным типом имеющим интерфейс, или второй тип интерфейса - это тип в который может быть сконвертирован.
+Если мы знаем что это строка в значении, то мы можем записать:
 
 
 ```golang
 str := value.(string)
 ```
 
-
-But if it turns out that the value does not contain a string, the program will crash with a run-time error.
-To guard against that, use the "comma, ok" idiom to test, safely, whether the value is a string:
+Но если выясниться, что значение хранит не строку, то программа будет обружена во время работы *a run-time error*.
+для защиты от этого используется идиома *запятая, ок* *"comma, ok"* для безопасности и проверка является ли значение строкой:
 
 
 ```golang
@@ -1664,15 +1657,10 @@ if ok {
 }
 ```
 
-
-If the type assertion fails, ```str``` will still exist and be of type string, but it will have
-the zero value, an empty string.
+В случаи неудачи, ```str``` будет всё ещё существовать и будет типом строка, но будет иметь нулевое значени - путую строку.
 
 
-
-As an illustration of the capability, here's an ```if```-```else```
-statement that's equivalent to the type switch that opened this section.
-
+Для иллюстрации, используем условие ```if```-```else``` как эквивалент переключателя типов *type switch* в начале этого раздела.
 
 ```golang
 if str, ok := value.(string); ok {
@@ -1682,43 +1670,23 @@ if str, ok := value.(string); ok {
 }
 ```
 
-### "generality">Generality
+### Общее(Generality)
 
-If a type exists only to implement an interface and will
-never have exported methods beyond that interface, there is
-no need to export the type itself.
-Exporting just the interface makes it clear the value has no
-interesting behavior beyond what is described in the
-interface.
-It also avoids the need to repeat the documentation
-on every instance of a common method.
+Если тип существует только для реализации интерфейса и никогда не будет экспортироваться за пределы интерфейса, то нет необходимости экспортировать сам тип.
+Экспортирование только интерфейса делает более понятным значение имеет не интересное поведение за пределами описанного интерфейса.
+Также это позволяет избегать повторения документации для каждого экземпляра общего метода.
 
 
-In such cases, the constructor should return an interface value
-rather than the implementing type.
-As an example, in the hash libraries
-both ```crc32.NewIEEE``` and ```adler32.New```
-return the interface type ```hash.Hash32```.
-Substituting the CRC-32 algorithm for Adler-32 in a Go program
-requires only changing the constructor call;
-the rest of the code is unaffected by the change of algorithm.
+Втаких случаях, конструктор может возвращать значение интерфейса, что лучше чем реализованный тип.
+Для примера, в  библиотеках хэш *hash* оба конструктора ```crc32.NewIEEE``` и ```adler32.New``` возвращают тип интерфейса ```hash.Hash32```.
+Для подстановки алгоритма CRC-32 для Adler-32 в программе Go требуется только изменить вызов конструктора, а остальная часть кода не зависит от алгоритма.
 
 
-A similar approach allows the streaming cipher algorithms
-in the various ```crypto``` packages to be
-separated from the block ciphers they chain together.
-The ```Block``` interface
-in the ```crypto/cipher``` package specifies the
-behavior of a block cipher, which provides encryption
-of a single block of data.
-Then, by analogy with the ```bufio``` package,
-cipher packages that implement this interface
-can be used to construct streaming ciphers, represented
-by the ```Stream``` interface, without
-knowing the details of the block encryption.
+Подобный подход позволяет создать поток шифровальных алгоритмов в различных пакетов ```crypto``` устанавливаются в цепь отделенные от блока шифрования.
+Интерфейс ```Block``` в пакете ```crypto/cipher``` имеющий поведение шифрование, который обеспечивает шифрование одного блока данных.
+Это по аналогии с пакетом ```bufio```, пакет шифрования реализует этот интерфейс может использовать конструктор поток шифрования, представление интерфейса ```Stream``` без известных деталей о шифрования.
 
-
-The  ```crypto/cipher``` interfaces look like this:
+Интерфейсы ```crypto/cipher``` выглядят следующим образом:
 
 ```golang
 type Block interface {
@@ -1732,28 +1700,19 @@ type Stream interface {
 }
 ```
 
+Определение режима счетчика потока *counter mode (CTR) stream*, который превращает блоки шифрования в поток шифрования, обратите внимание, что шифрование блоков абстрагировано:
 
-Here's the definition of the counter mode (CTR) stream,
-which turns a block cipher into a streaming cipher; notice
-that the block cipher's details are abstracted away:
-
-
-```
+```golang
 // NewCTR returns a Stream that encrypts/decrypts using the given Block in
 // counter mode. The length of iv must be the same as the Block's block size.
 func NewCTR(block Block, iv []byte) Stream
 ```
 
-_ ```NewCTR``` applies not
-just to one specific encryption algorithm and data source but to any
-implementation of the ```Block``` interface and any ```Stream```.  Because they return
-interface values, replacing CTR
-encryption with other encryption modes is a localized change.  The constructor
-calls must be edited, but because the surrounding code must treat the result only
-as a ```Stream```, it won't notice the difference.
+Принятое ```NewCTR``` не только для одного конкретного алгоритма шифрования и исходных данных, но для любой реализации интерфейса ```Block``` и любой ```Stream```.
+Так как он возвращает тип интерфейса, замена шифрование CTR с другими режимами шифрования это локальное изменение. Вызов конструктора должен быть отредактирован, а потому что окружающий код не заметит разницы , так как результат ```Stream```.
 
 
-### "interface_methods">Interfaces and methods
+### Интерфейсы и методы(функции)
 
 Since almost anything can have methods attached, almost anything can
 satisfy an interface.  One illustrative example is in the ```http```
