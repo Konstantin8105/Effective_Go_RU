@@ -1862,24 +1862,12 @@ if fi.IsDir() {
 
 ### Неиспользуемое импортирование и значения
 
+Ошибкой является неиспользование пакета или декларация переменной без использования.
+Неиспользованный импорт увеличивает программу и делает компиляцию медленее, в то время как переменная инициализированная но не используемая, по крайней мере приводит к пустому вычислению или является индикатором об ошибке.
+Однако неиспользуемые импорты и переменные возникают, когда программа на стадии активной разработки и удаление их может раздражать, только лишь для того чтобы прошла компиляция и если они снова понадобяться позже.
+Пустые идентификаторы позволяют создать обход(**workaround**).
 
-It is an error to import a package or to declare a variable without using it.
-Unused imports bloat the program and slow compilation,
-while a variable that is initialized but not used is at least
-a wasted computation and perhaps indicative of a
-larger bug.
-When a program is under active development, however,
-unused imports and variables often arise and it can
-be annoying to delete them just to have the compilation proceed,
-only to have them be needed again later.
-The blank identifier provides a workaround.
-
-
-This half-written program has two unused imports
-(```fmt``` and ```io```)
-and an unused variable (```fd```),
-so it will not compile, but it would be nice to see if the
-code so far is correct.
+Это полунаписанная программа имеет два неиспользуемых импорта (```fmt``` и ```io```) и не используемую переменную (```fd```), и она не проходит компиляцию, но было бы хорошо если бы можно было увидеть что код корректен.
 
 ```golang
 ///{{code "/doc/progs/eff_unused1.go" `/package/` `$`}}
@@ -1901,11 +1889,9 @@ func main() {
 }
 ```
 
-To silence complaints about the unused imports, use a
-blank identifier to refer to a symbol from the imported package.
-Similarly, assigning the unused variable ```fd```
-to the blank identifier will silence the unused variable error.
-This version of the program does compile.
+Для того чтобы избежать жалоб о неиспользуемых импортах, необходимо использовать символ пустого идентификатора для обозначения импортирования пакета.
+Аналогично, можно поступать с неиспользуемой переменной ```fd``` при использовании пустого идентификатора, что приведет к избеганию ошибки о неиспользованной переменной.
+Следующая весия программы будет компилироваться.
 
 ```golang
 //{{code "/doc/progs/eff_unused2.go" `/package/` `$`}}
@@ -1931,13 +1917,9 @@ func main() {
 }
 ```
 
+В соответствии с соглашением, глобальная декларация для замалчивания ошибки импорта должно идти сразу за импортированием и должно быть откомментировано, это сделано для того чтобы легко можно было найти и помнить об отчистки позже.
 
-By convention, the global declarations to silence import errors
-should come right after the imports and be commented,
-both to make them easy to find and as a reminder to clean things up later.
-
-
-### "blank_import">Import for side effect
+### Импортирование для побочного влияния (Import for side effect)
 
 
 An unused import like ```fmt``` or ```io``` in the
