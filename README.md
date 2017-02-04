@@ -1828,31 +1828,20 @@ http.Handle("/args", http.HandlerFunc(ArgServer))
 
 В этом разделе мы сделали сервер HTTP из структуры, целого числа, канала, и функции, все потому что интерфейсы имеют только набор методов, которые могут быть определены для (почти) любого типа.
 
-## Пустой идентификатор (The blank identifier)
+## Пустой идентификатор (The blank identifier **_**)
 
 Мы уже упоминали пустой идентификатор  пару раз, в разделах о циклах ```for``` ```range``` и картах ```maps```.
 Пустой идентификаторможет быть назначен или объявлен для любого типа, значение при этом отбрасывается.
 Это чем то похоже на запись в Unix файла в ```/dev/null```: Это значение только на запись, где переменна необходима, но значение не важно.
 Есть дополнительные способы использования.
 
-### Пустой дентификатор в множественном присваении
+### Пустой дентификатор в множественном присваении (**_**)
+
+Использование пустого идентификатора в цикле ```for``` ```range``` является лишь одним случаем применения в общей картине множественного присваения.
 
 
-The use of a blank identifier in a ```for``` ```range``` loop is a
-special case of a general situation: multiple assignment.
-
-
-
-If an assignment requires multiple values on the left side,
-but one of the values will not be used by the program,
-a blank identifier on the left-hand-side of
-the assignment avoids the need
-to create a dummy variable and makes it clear that the
-value is to be discarded.
-For instance, when calling a function that returns
-a value and an error, but only the error is important,
-use the blank identifier to discard the irrelevant value.
-
+Если требуется множество значений на левой стороне при присваении, но одно из значений не будет использоваться программой, то используется пустой идентификатор на левой стороне присвоения для того чтобы избежать необходимости в ненужных переменных и создание чистого понимания об отброшенном значении.
+Например, когда вызываетс функция возвращающая значение и ошибку, но при этом только ошибка важно, то пустой идентификатор используется для того чтобы отбросить ненужное значение.
 
 ```golang
 if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -1860,10 +1849,7 @@ if _, err := os.Stat(path); os.IsNotExist(err) {
 }
 ```
 
-
-Occasionally you'll see code that discards the error value in order
-to ignore the error; this is terrible practice. Always check error returns;
-they're provided for a reason.
+Иногда Вы увидите код в котором отбрасывается ошибка, это ужасная практика. Всегда проверяйте возвращенную ошибку, так как они предоставляються по некой причине.
 
 
 ```golang
@@ -1874,7 +1860,7 @@ if fi.IsDir() {
 }
 ```
 
-### "blank_unused">Unused imports and variables
+### Неиспользуемое импортирование и значения
 
 
 It is an error to import a package or to declare a variable without using it.
