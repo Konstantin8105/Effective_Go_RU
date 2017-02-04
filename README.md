@@ -1919,34 +1919,22 @@ func main() {
 
 В соответствии с соглашением, глобальная декларация для замалчивания ошибки импорта должно идти сразу за импортированием и должно быть откомментировано, это сделано для того чтобы легко можно было найти и помнить об отчистки позже.
 
-### Импортирование для побочного влияния (Import for side effect)
+### Импортирование для побочного эффекта (Import for side effect)
 
-
-An unused import like ```fmt``` or ```io``` in the
-previous example should eventually be used or removed:
-blank assignments identify code as a work in progress.
-But sometimes it is useful to import a package only for its
-side effects, without any explicit use.
-For example, during its ```init``` function,
-the ```<a href="/pkg/net/http/pprof/">net/http/pprof</a>```
-package registers HTTP handlers that provide
-debugging information. It has an exported API, but
-most clients need only the handler registration and
-access the data through a web page.
-To import the package only for its side effects, rename the package
-to the blank identifier:
+Неиспользуемые импорты, как например ```fmt``` и ```io``` в предедущем примере, в конечном счете должны быть удалены: пустое задание должно определять что код в процессе разработки.
+Но иногда, используется импортирование пакета только для создания побочного влияния, без какого либо явного использования.
+К примеру, для функции ```init``` в пакете [net/http/pprof](https://golang.org/pkg/net/http/pprof/) регистрирует HTTP обработчики для обеспечения отладочной информацией.
+Он имеет экспортированный API, но большенству клиентов необходима только регистрация обработчиков и получение доступа к данным через веб-страницу.
+Только для импортирования пакета с этим побочным эффектом, переименовывают пакет в пустой идентификатор:
 
 ```golang
 import _ "net/http/pprof"
 ```
 
-This form of import makes clear that the package is being
-imported for its side effects, because there is no other possible
-use of the package: in this file, it doesn't have a name.
-(If it did, and we didn't use that name, the compiler would reject the program.)
+Эта форма импортирования означает что данный пакет импортируется для данного побочного эффекта, потому что нет другой возможности использовать пакет: в этот файл, не имеет имени. (Если же он имеет и мы не используем это имя, то компилятор отменит программу.)
 
 
-### "blank_implements">Interface checks
+### Интерфейс проверки (Interface checks)
 
 
 As we saw in the discussion of <a href="#interfaces_and_types">interfaces</a> above,
