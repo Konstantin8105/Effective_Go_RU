@@ -1828,22 +1828,14 @@ http.Handle("/args", http.HandlerFunc(ArgServer))
 
 В этом разделе мы сделали сервер HTTP из структуры, целого числа, канала, и функции, все потому что интерфейсы имеют только набор методов, которые могут быть определены для (почти) любого типа.
 
-## "blank">The blank identifier
+## Пустой идентификатор (The blank identifier)
 
+Мы уже упоминали пустой идентификатор  пару раз, в разделах о циклах ```for``` ```range``` и картах ```maps```.
+Пустой идентификаторможет быть назначен или объявлен для любого типа, значение при этом отбрасывается.
+Это чем то похоже на запись в Unix файла в ```/dev/null```: Это значение только на запись, где переменна необходима, но значение не важно.
+Есть дополнительные способы использования.
 
-We've mentioned the blank identifier a couple of times now, in the context of
-<a href="#for">```for``` ```range``` loops</a>
-and <a href="#maps">maps</a>.
-The blank identifier can be assigned or declared with any value of any type, with the
-value discarded harmlessly.
-It's a bit like writing to the Unix ```/dev/null``` file:
-it represents a write-only value
-to be used as a place-holder
-where a variable is needed but the actual value is irrelevant.
-It has uses beyond those we've seen already.
-
-
-### "blank_assign">The blank identifier in multiple assignment
+### Пустой дентификатор в множественном присваении
 
 
 The use of a blank identifier in a ```for``` ```range``` loop is a
