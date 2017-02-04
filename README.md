@@ -1714,10 +1714,8 @@ func NewCTR(block Block, iv []byte) Stream
 
 ### Интерфейсы и методы(функции)
 
-Since almost anything can have methods attached, almost anything can
-satisfy an interface.  One illustrative example is in the ```http```
-package, which defines the ```Handler``` interface.  Any object
-that implements ```Handler``` can serve HTTP requests.
+Так как метод может иметь почти всё, поэтому все можно удовлетворить интерфейсами.
+Один из примеров из пакета ```http```, который имеет интерфейс ```Handler```. Любой объект реализующий ```Handler``` может служить для HTTP запросов.
 
 ```golang
 type Handler interface {
@@ -1725,18 +1723,11 @@ type Handler interface {
 }
 ```
 
- _ ```ResponseWriter``` is itself an interface that provides access
-to the methods needed to return the response to the client.
-Those methods include the standard ```Write``` method, so an ```http.ResponseWriter``` can be used wherever an ```io.Writer```
-can be used. ```Request``` is a struct containing a parsed representation
-of the request from the client.
+Сам интерфейс ```ResponseWriter``` обеспечивает функции для возврата запроса клиенту.
+Эти функции включают метод ```Write```, то ```http.ResponseWriter``` можно  использовать везде как где можно использовать ```io.Writer```. ```Request``` это структура хранящая информацию о запросе от клиента.
 
-
-For brevity, let's ignore POSTs and assume HTTP requests are always
-GETs; that simplification does not affect the way the handlers are
-set up.  Here's a trivial but complete implementation of a handler to
-count the number of times the
-page is visited.
+Для упрощения, давайте игнорировать POSTs и предположим что HTTP запросы всегда используют GETs; Это упрощение не влияет на способ натройки обработчика *handlers*.
+К примеру следующий код показывает полный обработчик для подсчета количества раз показа данной страницы.
 
 ```golang
 // Simple counter server.
@@ -1750,8 +1741,8 @@ func (ctr *Counter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 ```
 
-(Keeping with our theme, note how ```Fprintf``` can print to an ```http.ResponseWriter```.)
-For reference, here's how to attach such a server to a node on the URL tree.
+(Обратите внимание, на то как ```Fprintf``` печатает в ```http.ResponseWriter```.)
+Для справки, следующий код показывает как присоединить сервер к узлу в *URL tree*.
 
 ```golang
 import "net/http"
@@ -1760,8 +1751,8 @@ ctr := new(Counter)
 http.Handle("/counter", ctr)
 ```
 
-But why make ```Counter``` a struct?  An integer is all that's needed.
-(The receiver needs to be a pointer so the increment is visible to the caller.)
+Но зачем использовать структуру для ```Counter```? Все что нам необходимо - это целое число.
+(Для получателя *receiver* необходим указатель, тогда инкремент будет виден для вызывающего *caller*)
 
 ```golang
 // Simpler counter server.
@@ -1773,8 +1764,7 @@ func (ctr *Counter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 ```
 
-What if your program has some internal state that needs to be notified that a page
-has been visited?  Tie a channel to the web page.
+Что делать если Ваша программа имеет некое внутреннее состояние и необходимо уведомить что страница была посещена? Необходимо связать веб страницы каналом.
 
 ```golang
 // A channel that sends a notification on each visit.
@@ -1787,9 +1777,8 @@ func (ch Chan) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 ```
 
-Finally, let's say we wanted to present on ```/args``` the arguments
-used when invoking the server binary.
-It's easy to write a function to print the arguments.
+Если нам требуется представить на ```/args``` аргументы использованные для запуска приложения сервера.
+Просто необходимо написать функцию для печати аргументов.
 
 ```golang
 func ArgServer() {
@@ -1797,11 +1786,9 @@ func ArgServer() {
 }
 ```
 
-How do we turn that into an HTTP server?  We could make ```ArgServer```
-a method of some type whose value we ignore, but there's a cleaner way.
-Since we can define a method for any type except pointers and interfaces,
-we can write a method for a function.
-The ```http``` package contains this code:
+Как превратить это в HTTP сервер?  Мы могли бы сделать метод ```ArgServer``` некоторого типа значение которого мы игнорируем, но сесть более простой путь.
+Так как мы можем определить метод для любого типа, кроме указателя и интерфейса, то мы можем записать метод для функции.
+В пакете ```http``` есть следующий код:
 
 ```golang
 // The HandlerFunc type is an adapter to allow the use of
@@ -1816,15 +1803,9 @@ func (f HandlerFunc) ServeHTTP(w ResponseWriter, req *Request) {
 }
 ```
 
-_ ```HandlerFunc``` is a type with a method, ```ServeHTTP```,
-so values of that type can serve HTTP requests.  Look at the implementation
-of the method: the receiver is a function, ```f```, and the method
-calls ```f```.  That may seem odd but it's not that different from, say,
-the receiver being a channel and the method sending on the channel.
+Это тип ```HandlerFunc``` с методом ```ServeHTTP```, поэтому значения данного типа может служит для запросов HTTP. Посмотрим на реализацию метода: *receiver* это функция, ```f```, и метод называется ```f```. Это может показаться странным, но это ничем не отличается от работы с каналами и метод бы отсылал на канал.
 
-
-To make ```ArgServer``` into an HTTP server, we first modify it
-to have the right signature.
+Для создания ```ArgServer``` как HTTP сервера, вначале мы изменим корректную сигнатуру.
 
 ```golang
 // Argument server.
@@ -1833,29 +1814,19 @@ func ArgServer(w http.ResponseWriter, req *http.Request) {
 }
 ```
 
-_ ```ArgServer``` now has same signature as ```HandlerFunc```,
-so it can be converted to that type to access its methods,
-just as we converted ```Sequence``` to ```IntSlice```
-to access ```IntSlice.Sort```.
-The code to set it up is concise:
+Сейчас, ```ArgServer``` имеет ту же сигнатуру как ```HandlerFunc```, поэтому его можно конвертировать в этот тип для доступа к его методам, просто как сконвертировать ```Sequence``` в ```IntSlice``` для доступа к ```IntSlice.Sort```.
+Код для настройки лаконичен:
 
 ```golang
 http.Handle("/args", http.HandlerFunc(ArgServer))
 ```
 
-When someone visits the page ```/args```,
-the handler installed at that page has value ```ArgServer```
-and type ```HandlerFunc```.
-The HTTP server will invoke the method ```ServeHTTP```
-of that type, with ```ArgServer``` as the receiver, which will in turn call ```ArgServer``` (via the invocation ```f(c, req)```
-inside ```HandlerFunc.ServeHTTP```).
-The arguments will then be displayed.
+Когда кто-то посещает страницу ```/args```, обработчик **handler** устанавливает страницу со значением ```ArgServer``` и типом ```HandlerFunc```.
+Сервер HTTP будет вызывать метод ```ServeHTTP``` данного типа с получателем ```ArgServer```, который будет вызывать ```ArgServer``` через вызов ```f(c, req)```
+внутри ```HandlerFunc.ServeHTTP```.
+Вследствии этого аргументы будут отображены.
 
-
-In this section we have made an HTTP server from a struct, an integer,
-a channel, and a function, all because interfaces are just sets of
-methods, which can be defined for (almost) any type.
-
+В этом разделе мы сделали сервер HTTP из структуры, целого числа, канала, и функции, все потому что интерфейсы имеют только набор методов, которые могут быть определены для (почти) любого типа.
 
 ## "blank">The blank identifier
 
