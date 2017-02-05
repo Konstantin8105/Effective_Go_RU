@@ -2107,27 +2107,24 @@ func (job *Job) Logf(format string, args ...interface{}) {
 Однако, если дублированные имена никогда не встречаються в программе вне определенного типа, то это нормально.
 Это защищает от изменения типов вложенности за его пределами; и это не проблема, если добавлено поле вступающее в конфликт с другим полем в другом подтипе, если ни одно из полей не используется.
 
-## Согласованность (Concurrency)
+## Согласованность, параллельная обработка, параллельное выполнение  (Concurrency)
 
-### Распространяеть путем передачи (Share by communicating)
+### Распределение памяти по сообщениям (Share by communicating)
 
-
-Concurrent programming is a large topic and there is space only for some
-Go-specific highlights here.
+Параллельное программирование является большой темой и здесь будет рассматриваться только специфичное для языка Go.
 
 
-Concurrent programming in many environments is made difficult by the
-subtleties required to implement correct access to shared variables.  Go encourages
-a different approach in which shared values are passed around on channels
-and, in fact, never actively shared by separate threads of execution.
-Only one goroutine has access to the value at any given time.
-Data races cannot occur, by design.
-To encourage this way of thinking we have reduced it to a slogan:
+Параллельное программирование во многих средах затруднено для корректной реализации доступа к общим переменным.
 
-<blockquote>
-Do not communicate by sharing memory;
-instead, share memory by communicating.
-</blockquote>
+В языке Go поддерживается другой подход, в котором общие переменные *shared values* передаються через каналы, по сути, никогда активно не распределяет исполнение потоков.
+Только одна го-рутина(**goroutine**) имеет доступ к переменной в любой момент.
+Перенос данных не присходит по конструкции языка.
+Для того чтобы способствовать данному стилю мышления используеться лозунг:
+
+
+> Do not communicate by sharing memory; instead, share memory by communicating.
+
+>  
 
 This approach can be taken too far.  Reference counts may be best done
 by putting a mutex around an integer variable, for instance.  But as a
