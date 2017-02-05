@@ -2138,33 +2138,22 @@ func (job *Job) Logf(format string, args ...interface{}) {
 ### Го-рутины (Goroutines)
 
 
-They're called *goroutines* because the existing
-terms threads, coroutines, processes, and so on convey
-inaccurate connotations.  A goroutine has a simple model: it is a
-function executing concurrently with other goroutines in the same
-address space.  It is lightweight, costing little more than the
-allocation of stack space.
-And the stacks start small, so they are cheap, and grow
-by allocating (and freeing) heap storage as required.
+Они называется Го-рутины, потомы что существующие термины потоки, корутины, процессы и так далее передают неточную коннотацию.
+**Го-рутины** имеют простую модель: это функция выполняющаяся параллельно с другими го-рутинами а одном адресном пространстве. Они легковесны стоящие чуть больше чем выделение простанства в стэке. Они дешевы, и растут по мере необходимости путем выделения или освобождения в куче.
 
 
-Goroutines are multiplexed onto multiple OS threads so if one should
-block, such as while waiting for I/O, others continue to run.  Their
-design hides many of the complexities of thread creation and
-management.
+
+Горутины рапределяються на несколько покотов OS, и если один заблокируется, например из за ожидания I/O, другие продолжат работу. Их дизайн скрывает много сложностей по создание потоков и их управлению.
 
 
-Prefix a function or method call with the ```go```
-keyword to run the call in a new goroutine.
-When the call completes, the goroutine
-exits, silently.  (The effect is similar to the Unix shell's ```&``` notation for running a command in the
-background.)
+Префикс ```go``` у функции или метода запускает новую горутину.
+Когда вызов закончен, горутина выходит, молча. (Этот эффект похож на команду Unix с нотацией ```&``` означающая запуск команды в фоновом режиме.)
 
 ```golang
 go list.Sort()  // run list.Sort concurrently; don't wait for it.
 ```
 
-A function literal can be handy in a goroutine invocation.
+Встроенные функции могут быть удобны для вызова горутин.
 
 ```golang
 func Announce(message string, delay time.Duration) {
@@ -2175,15 +2164,12 @@ func Announce(message string, delay time.Duration) {
 }
 ```
 
-In Go, function literals are closures: the implementation makes
-sure the variables referred to by the function survive as long as they are active.
+В языке Go, встоенные функции закрываемые и их реализация гарантирует что ссылаемые переменные будут жить до тех пор пока функция активна.
+
+Эти примеры не очень практичны, так как функции не имеют сигнализировать о своем завершении. Для этого у нас есть каналы.
 
 
-These examples aren't too practical because the functions have no way of signaling
-completion.  For that, we need channels.
-
-
-### "channels">Channels
+### Каналы (Channels)
 
 
 Like maps, channels are allocated with ```make```, and
