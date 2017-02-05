@@ -2253,15 +2253,10 @@ func Serve(queue chan *Request) {
 }
 ```
 
-
-The bug is that in a Go ```for``` loop, the loop variable
-is reused for each iteration, so the ```req```
-variable is shared across all goroutines.
-That's not what we want.
-We need to make sure that ```req``` is unique for each goroutine.
-Here's one way to do that, passing the value of ```req``` as an argument
-to the closure in the goroutine:
-
+Ошибка в том, что в языке Go цикл ```for```, цикл переменной повторно используется для каждой итерации, так что переменные ```req``` разделяется по всем горутинам.
+Это не то что мы хотим.
+Нам нужно убедиться, что ```req``` является уникальной для каждой горутиной.
+Вот один из способов, передавать значение ```req``` как в качестве аргумент для закрытии горутины:
 
 ```golang
 func Serve(queue chan *Request) {
@@ -2275,12 +2270,8 @@ func Serve(queue chan *Request) {
 }
 ```
 
-
-Compare this version with the previous to see the difference in how
-the closure is declared and run.
-Another solution is just to create a new variable with the same
-name, as in this example:
-
+Сравнивая эту версию с предедущей можно увидеть раздницу в том как объявляется запуск и закрытие.
+Другое решение заключается в том что создается новая переменная с тем же именем, как в примере:
 
 ```golang
 func Serve(queue chan *Request) {
@@ -2295,8 +2286,7 @@ func Serve(queue chan *Request) {
 }
 ```
 
-
-It may seem odd to write
+Может кажется странным, писать:
 
 
 ```golang
@@ -2304,21 +2294,15 @@ req := req
 ```
 
 
-but it's legal and idiomatic in Go to do this.
-You get a fresh version of the variable with the same name, deliberately
-shadowing the loop variable locally but unique to each goroutine.
+Но это допустимо и идиоматично делать это.
+Вы получаете новую переменную с тем же именем, намеренно затеняя переменную цикла локально, но уникальный для каждой горутины.
 
 
+Возвращаясь к общей проблеме написания сервера, иной подход для управления ресурсами начинается с фиксиции числа обработчиков ```handle``` горутин читающих из канала запросов.
+Ограничение количества горутин количеством одновременных вызовов к ```process```.
 
-Going back to the general problem of writing the server,
-another approach that manages resources well is to start a fixed
-number of ```handle``` goroutines all reading from the request
-channel.
-The number of goroutines limits the number of simultaneous
-calls to ```process```.
-This ```Serve``` function also accepts a channel on which
-it will be told to exit; after launching the goroutines it blocks
-receiving from that channel.
+
+Функция ```Serve``` также принимает канал, на который посылается об окончании; после запуска горутины блокируют получающих в этот канал.
 
 
 ```golang
@@ -2337,7 +2321,7 @@ func Serve(clientRequests chan *Request, quit chan bool) {
 }
 ```
 
-### "chan_of_chan">Channels of channels
+### Канал каналов (Channels of channels)
 
 One of the most important properties of Go is that
 a channel is a first-class value that can be allocated and passed
