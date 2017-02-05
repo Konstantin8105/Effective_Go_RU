@@ -2367,15 +2367,9 @@ func handle(queue chan *Request) {
 
 ### Параллелелизм (Parallelization)
 
-Another application of these ideas is to parallelize a calculation
-across multiple CPU cores.  If the calculation can be broken into
-separate pieces that can execute independently, it can be parallelized,
-with a channel to signal when each piece completes.
+Другой пример использования этих идей в расчете на наскольких ядрах CPU. Если расчет можно разбить на кусочки выполняющиеся независимо, то это можно разпараллелить с каналами сигнализирующие, когда отдельный кусочек закончил свою работу.
 
-
-Let's say we have an expensive operation to perform on a vector of items,
-and that the value of the operation on each item is independent,
-as in this idealized example.
+К примеру, у нас есть дорогая операция выполнения на векторе элементов и эти операции можно выполнять независимо, то вот идеализированный пример.
 
 ```golang
 type Vector []float64
@@ -2389,10 +2383,8 @@ func (v Vector) DoSome(i, n int, u Vector, c chan int) {
 }
 ```
 
-We launch the pieces independently in a loop, one per CPU.
-They can complete in any order but it doesn't matter; we just
-count the completion signals by draining the channel after
-launching all the goroutines.
+Вы выполняем кусочки независимо в цикле, по одному CPU на кусочек.
+Они могут закончить в любом порядке, но это не важно; мы только считаем количество сигналов окончания по каналу после запуска всех дорутин.
 
 ```golang
 const numCPU = 4 // number of CPU cores
@@ -2410,40 +2402,28 @@ func (v Vector) DoAll(u Vector) {
 }
 ```
 
-Rather than create a constant value for numCPU, we can ask the runtime what
-value is appropriate.
-The function ```<a href="/pkg/runtime#NumCPU">runtime.NumCPU</a>```
-returns the number of hardware CPU cores in the machine, so we could write
+Вместо того, чтобы создать постоянное значение для numCPU, мы можем задать во время выполнения необходимое значение.
+Функция [runtime.NumCPU](https://golang.org/pkg/runtime/#NumCPU) возвращает количество ядер CPU в машине, тогда мы должны записать:
 
 ```golang
 var numCPU = runtime.NumCPU()
 ```
 
-There is also a function ```<a href="/pkg/runtime#GOMAXPROCS">runtime.GOMAXPROCS</a>```,
-which reports (or sets)
-the user-specified number of cores that a Go program can have running
-simultaneously.
-It defaults to the value of ```runtime.NumCPU``` but can be
-overridden by setting the similarly named shell environment variable
-or by calling the function with a positive number.  Calling it with
-zero just queries the value.
-Therefore if we want to honor the user's resource request, we should write
+Есть также такая функция [runtime.GOMAXPROCS](https://golang.org/pkg/runtime/#GOMAXPROCS), которая возаращаем заданное пользователем количество ядер, которая программа Go может использовать.
+По умолчанию значение ```runtime.NumCPU```, но может быть переопределен путем установки в среде с тем де именем или вызовом функции с положительным числом.
+Вызов с нулевым значением запрашивает значение.
+Поэтому если мы хотим выполнить запрос ресурсов пользователя, мы должны написать
 
 ```golang
 var numCPU = runtime.GOMAXPROCS(0)
 ```
 
-Be sure not to confuse the ideas of concurrency—structuring a program
-as independently executing components—and parallelism—executing
-calculations in parallel for efficiency on multiple CPUs.
-Although the concurrency features of Go can make some problems easy
-to structure as parallel computations, Go is a concurrent language,
-not a parallel one, and not all parallelization problems fit Go's model.
-For a discussion of the distinction, see the talk cited in
-<a href="//blog.golang.org/2013/01/concurrency-is-not-parallelism.html">this
-blog post</a>.
+Будьте уверены, чтобы не путать идеи параллельно-структурированной(**concurrency—structuring**) программы как независимо иполняемых компонентов и паралелльно-выполняемые вычисления(**parallelism—executing**) для эффективности на нескольких процессорах.
+Хотя особеннсти *concurrency* в языке Go могут решить некоторые проблемы легко с использованием структур параллельного вычисления, Go является *concurrent* языком, не параллельным и не все проблемы параллелизма подходят модели Go.
+Для обсуждения различий, смотрите [следующий блог](https://blog.golang.org/concurrency-is-not-parallelism).
 
-### "leaky_buffer">A leaky buffer
+
+### Утечка буффера (A leaky buffer)
 
 
 The tools of concurrent programming can even make non-concurrent
