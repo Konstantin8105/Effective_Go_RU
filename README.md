@@ -2124,25 +2124,18 @@ func (job *Job) Logf(format string, args ...interface{}) {
 
 > Do not communicate by sharing memory; instead, share memory by communicating.
 
->  
-
-This approach can be taken too far.  Reference counts may be best done
-by putting a mutex around an integer variable, for instance.  But as a
-high-level approach, using channels to control access makes it easier
-to write clear, correct programs.
+> Не общайтесь с распределением памяти; Вместо того чтобы распределять память коммуникациям.
 
 
-One way to think about this model is to consider a typical single-threaded
-program running on one CPU. It has no need for synchronization primitives.
-Now run another such instance; it too needs no synchronization.  Now let those
-two communicate; if the communication is the synchronizer, there's still no need
-for other synchronization.  Unix pipelines, for example, fit this model
-perfectly.  Although Go's approach to concurrency originates in Hoare's
-Communicating Sequential Processes (CSP),
-it can also be seen as a type-safe generalization of Unix pipes.
+Это дальновидный подход. К примеру, наилучшим образом подсчет ссылок можно произодить установкой мютексов(**mutex**) вокруг целого переменной.
+Но это высокоуровневый подход, использование каналов для контроля доступа являеться более простым и корректным для программ.
 
 
-### "goroutines">Goroutines
+Один из способов думать об этой модели как для типичных однопоточных программ запущенных на одном процессоре CPU. И нет необходимости в синхронизации примитивов.
+Для запуска следующего экземпляра, нет необходимостив синхронизации. Сейчас рассмотрим два способа коммуникации; Если коммуникация синхронна, то все также не требуется в дополнительной синхронизациию. К примеру, *Unix pipelines* великолепно используют эту модель. Хотя подход языка Go для организации параллельных процессов берет начало в **Hoare's Communicating Sequential Processes (CSP)**, он также может рассматриваться как обобщения безопасности типов Unix pipes.
+
+
+### Го-рутины (Goroutines)
 
 
 They're called *goroutines* because the existing
