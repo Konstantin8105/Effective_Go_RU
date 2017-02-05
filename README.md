@@ -1981,16 +1981,10 @@ var _ json.Marshaler = (*RawMessage)(nil)
 
 ## Вложение (Embedding)
 
+Язык Go не поддерживает типичное управление типов подклассов, но он имеет возможноть "заимствовать" части реализации с помощью типа *вложения* структуры или интерфейса.
 
-Go does not provide the typical, type-driven notion of subclassing,
-but it does have the ability to "borrow" pieces of an
-implementation by *embedding* types within a struct or
-interface.
-
-
-Interface embedding is very simple.
-We've mentioned the ```io.Reader``` and ```io.Writer``` interfaces before;
-here are their definitions.
+Вложение интерфейса необячайно простое.
+Мы уже упомянали об интерфейсах ```io.Reader``` and ```io.Writer``` ранее, вот их определение.
 
 ```golang
 type Reader interface {
@@ -2002,13 +1996,9 @@ type Writer interface {
 }
 ```
 
-The ```io``` package also exports several other interfaces
-that specify objects that can implement several such methods.
-For instance, there is ```io.ReadWriter```, an interface
-containing both ```Read``` and ```Write```.
-We could specify ```io.ReadWriter``` by listing the
-two methods explicitly, but it's easier and more evocative
-to embed the two interfaces to form the new one, like this:
+Пакет ```io```также экспортирует несколько других интерфейсов, которые определяют объекты, которые могут реализовывать несколько таих методов.
+К примеру, ```io.ReadWriter``` содержит оба интерфейса ```Read``` и ```Write```.
+Мы может указать ```io.ReadWriter``` перечислением двух методов в явном виде, но это проще и более запомяющим будет встраивание двух интерфейсов в одну новую форму, вот так:
 
 ```golang
 // ReadWriter is the interface that combines the Reader and Writer interfaces.
@@ -2018,20 +2008,10 @@ type ReadWriter interface {
 }
 ```
 
-This says just what it looks like: A ```ReadWriter``` can do
-what a ```Reader``` does *and* what a ```Writer```
-does; it is a union of the embedded interfaces (which must be disjoint
-sets of methods).
-Only interfaces can be embedded within interfaces.
+Это выглядит следующим образом: ```ReadWriter``` может делать все что делает ```Reader``` **и** что делает ```Writer```. Это объединение встраивания интерфейсов (которые не имеют пересечений в методах).
+Только интерфейсы могут встраивать интерфейсы.
 
-
-The same basic idea applies to structs, but with more far-reaching
-implications.  The ```bufio``` package has two struct types, ```bufio.Reader``` and ```bufio.Writer```, each of
-which of course implements the analogous interfaces from package ```io```.
-And ```bufio``` also implements a buffered reader/writer,
-which it does by combining a reader and a writer into one struct
-using embedding: it lists the types within the struct
-but does not give them field names.
+Аналогичная идея используется для структур, но с большим количеством последствий. Пакет ```bufio``` имеет две структуры типов - ```bufio.Reader``` и ```bufio.Writer```, каждая из которых реализует аналогичные интерфейсы как в пакете ```io```. И ```bufio``` также реализует буфферизованное чтение/запись, которое объединяет чтение и запись в одну структуру с использованием вложения: этот список типов структур, но не давая имена полям.
 
 ```golang
 // ReadWriter stores pointers to a Reader and a Writer.
@@ -2042,10 +2022,8 @@ type ReadWriter struct {
 }
 ```
 
-The embedded elements are pointers to structs and of course
-must be initialized to point to valid structs before they
-can be used.
-The ```ReadWriter``` struct could be written as
+Вложение указателей элементов в структуры и конечно должно быть инициализированно необходимой структурой до его использования.
+Стрктура ```ReadWriter``` может быть записана так:
 
 ```golang
 type ReadWriter struct {
@@ -2054,9 +2032,12 @@ type ReadWriter struct {
 }
 ```
 
+**TODO**
 but then to promote the methods of the fields and to
 satisfy the ```io``` interfaces, we would also need
 to provide forwarding methods, like this:
+**-**
+
 
 ```golang
 func (rw *ReadWriter) Read(p []byte) (n int, err error) {
@@ -2064,25 +2045,18 @@ func (rw *ReadWriter) Read(p []byte) (n int, err error) {
 }
 ```
 
-By embedding the structs directly, we avoid this bookkeeping.
-The methods of embedded types come along for free, which means that ```bufio.ReadWriter```
-not only has the methods of ```bufio.Reader``` and ```bufio.Writer```,
-it also satisfies all three interfaces:
+Для непосредственного вложения структур, мы должны избегать эту бухалтерию.
+Метод вложенного типа приходит свободно, что означает что ```bufio.ReadWriter```имеет не только его методы ```bufio.Reader``` и ```bufio.Writer```, а также удовлетворяет всем трем интерфейсам:
 * ```io.Reader```,
-* ```io.Writer```, and
+* ```io.Writer```, и
 * ```io.ReadWriter```.
 
 
-There's an important way in which embedding differs from subclassing.  When we embed a type,
-the methods of that type become methods of the outer type,
-but when they are invoked the receiver of the method is the inner type, not the outer one.
-In our example, when the ```Read``` method of a ```bufio.ReadWriter``` is
-invoked, it has exactly the same effect as the forwarding method written out above;
-the receiver is the ```reader``` field of the ```ReadWriter```, not the ```ReadWriter``` itself.
+Это важное отличие вложения от подклассов. Когда мы вкладываем тип, методы этого типа становяться методами внешнего типа, но для получателя они вызываються как встроенные типы, а не внешние.
+В нашем примере, когда метод ```Read``` из ```bufio.ReadWriter``` вызывается, он и вызываються также как описано выше; получатель поля ```reader``` из ```ReadWriter```, является самим ```ReadWriter```.
 
-
-Embedding can also be a simple convenience.
-This example shows an embedded field alongside a regular, named field.
+Вложение может быть простым и удобным.
+Этот пример показывает вложение поля рядом с именованным полем.
 
 ```golang
 type Job struct {
@@ -2091,19 +2065,14 @@ type Job struct {
 }
 ```
 
-The ```Job``` type now has the ```Log```, ```Logf```
-and other
-methods of ```*log.Logger```.  We could have given the ```Logger```
-a field name, of course, but it's not necessary to do so.  And now, once
-initialized, we can
-log to the ```Job```:
+Тип ```Job``` сейчас имеет ```Log```, ```Logf``` и другие методы ```*log.Logger```.
+Мы могли бы дать имя для ```Logger```, конечно же, но в этом нет необходимости. И сейчас, мыможем логировать ```Job```:
 
 ```golang
 job.Log("starting now...")
 ```
 
-The ```Logger``` is a regular field of the ```Job``` struct,
-so we can initialize it in the usual way inside the constructor for ```Job```, like this,
+Регулярное поле ```Logger``` в структуре ```Job```, поэтому мы можем инициализировать его как обычно внутри конструктора ```Job```, вот так:
 
 ```golang
 func NewJob(command string, logger *log.Logger) *Job {
@@ -2111,18 +2080,14 @@ func NewJob(command string, logger *log.Logger) *Job {
 }
 ```
 
-or with a composite literal,
+или с помощью сложных литералов:
 
 ```golang
 job := &Job{command, log.New(os.Stderr, "Job: ", log.Ldate)}
 ```
 
-If we need to refer to an embedded field directly, the type name of the field,
-ignoring the package qualifier, serves as a field name, as it did
-in the ```Read``` method of our ```ReaderWriter``` struct.
-Here, if we needed to access the ```*log.Logger``` of a ```Job``` variable ```job```,
-we would write ```job.Logger```,
-which would be useful if we wanted to refine the methods of ```Logger```.
+Если нам необходимо обратиться непосредственно к вложенному полю, имени типа поля, игнорируя пакетный классификатор, как к имени поля, как это сделано в методе ```Read``` в нашей структуре ```ReaderWriter```.
+При этом нам необходим доступ к ```*log.Logger``` в ```Job``` переменной ```job```, мы можем написать ```job.Logger```, что полезно если мы хотим уточнить методы ```Logger```.
 
 ```golang
 func (job *Job) Logf(format string, args ...interface{}) {
@@ -2130,27 +2095,21 @@ func (job *Job) Logf(format string, args ...interface{}) {
 }
 ```
 
-Embedding types introduces the problem of name conflicts but the rules to resolve
-them are simple.
-First, a field or method ```X``` hides any other item ```X``` in a more deeply
-nested part of the type.
-If ```log.Logger``` contained a field or method called ```Command```, the ```Command``` field
-of ```Job``` would dominate it.
-
-
-Second, if the same name appears at the same nesting level, it is usually an error;
-it would be erroneous to embed ```log.Logger``` if the ```Job``` struct
-contained another field or method called ```Logger```.
-However, if the duplicate name is never mentioned in the program outside the type definition, it is OK.
-This qualification provides some protection against changes made to types embedded from outside; there
-is no problem if a field is added that conflicts with another field in another subtype if neither field
-is ever used.
+Вложение типов создает проблему конфликта имен, но правила для их решения просты.
 
 
 
-## "concurrency">Concurrency
+Первое, поли или метод ```X``` скрывает любой иной элемент ```X``` в более глубокой части вложенного типа.
+Если ```log.Logger``` содержит поле или метод под названием ```Command```, то поле ```Command``` в ```Job``` будет преобладать над ним.
 
-### "sharing">Share by communicating
+
+Во-вторых, если есть одинаковые имена на том же уровне вложенности, это как правило ошибка и было бы ошибочно вставлять ```log.Logger```, если структура ```Job``` имеет другое вложенное поле или метод с названием ```Logger```.
+Однако, если дублированные имена никогда не встречаються в программе вне определенного типа, то это нормально.
+Это защищает от изменения типов вложенности за его пределами; и это не проблема, если добавлено поле вступающее в конфликт с другим полем в другом подтипе, если ни одно из полей не используется.
+
+## Согласованность (Concurrency)
+
+### Распространяеть путем передачи (Share by communicating)
 
 
 Concurrent programming is a large topic and there is space only for some
