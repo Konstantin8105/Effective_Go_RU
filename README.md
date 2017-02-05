@@ -2323,17 +2323,9 @@ func Serve(clientRequests chan *Request, quit chan bool) {
 
 ### Канал каналов (Channels of channels)
 
-One of the most important properties of Go is that
-a channel is a first-class value that can be allocated and passed
-around like any other.  A common use of this property is
-to implement safe, parallel demultiplexing.
+Одно из важных свойств Go в том что каналы это переменная, а значит аллоцированы и могут передаваться как любой другой элемент. Одно из использований данной свойства в реализации безопасного и **параллельного демультиплексирования**.
 
-
-In the example in the previous section, ```handle``` was
-an idealized handler for a request but we didn't define the
-type it was handling.  If that type includes a channel on which
-to reply, each client can provide its own path for the answer.
-Here's a schematic definition of type ```Request```.
+В примере из предедущего раздела, ```handle``` был идеальным обработчиком для запросов, но он не определял тип обработки. Если тип включен в канал, на который отвечать, то каждый клиент может предоставить собственный путь для ответа. Вот схематичное определение типа ```Request```.
 
 ```golang
 type Request struct {
@@ -2343,8 +2335,7 @@ type Request struct {
 }
 ```
 
-The client provides a function and its arguments, as well as
-a channel inside the request object on which to receive the answer.
+Клиент предоставляет функцию и ее аргументы, а также канал внутри объекта запроса, не который будет получен ответ.
 
 ```golang
 func sum(a []int) (s int) {
@@ -2361,7 +2352,7 @@ clientRequests <- request
 fmt.Printf("answer: %d\n", <-request.resultChan)
 ```
 
-On the server side, the handler function is the only thing that changes.
+На стороне сервера, функция обработчик это единственное что меняется.
 
 ```golang
 func handle(queue chan *Request) {
@@ -2371,12 +2362,10 @@ func handle(queue chan *Request) {
 }
 ```
 
-There's clearly a lot more to do to make it realistic, but this
-code is a framework for a rate-limited, parallel, non-blocking RPC
-system, and there's not a mutex in sight.
+Этот пример является примером основой для ограничения скорости, параллелизма, неблокирующей RPC систесы и без использования мютекса.
 
 
-### "parallel">Parallelization
+### Параллелелизм (Parallelization)
 
 Another application of these ideas is to parallelize a calculation
 across multiple CPU cores.  If the calculation can be broken into
