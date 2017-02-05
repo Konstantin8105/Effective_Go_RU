@@ -2171,11 +2171,9 @@ func Announce(message string, delay time.Duration) {
 
 ### Каналы (Channels)
 
-
-Like maps, channels are allocated with ```make```, and
-the resulting value acts as a reference to an underlying data structure.
-If an optional integer parameter is provided, it sets the buffer size for the channel.
-The default is zero, for an unbuffered or synchronous channel.
+Каналы, как и карты(map) выделяються в памяти с помощью ```make``` и полученное значение является ссылкой на изначальную структуру данных.
+Если задан необязательный целый параметр, то он указывает на размер буффера в канале.
+По умолчанию, значение нулевое, как для небуфферезованного или синхронного канала.
 
 ```golang
 ci := make(chan int)            // unbuffered channel of integers
@@ -2183,14 +2181,11 @@ cj := make(chan int, 0)         // unbuffered channel of integers
 cs := make(chan *os.File, 100)  // buffered channel of pointers to Files
 ```
 
-Unbuffered channels combine communication the exchange of a value with
-synchronization guaranteeing that two calculations (goroutines) are in
-a known state.
+Небуфферезованные каналы гарантируют, что обмен значениями будет синхронным между двумя горутинами в известном сотоянии.
 
 
-There are lots of nice idioms using channels.  Here's one to get us started.
-In the previous section we launched a sort in the background. A channel
-can allow the launching goroutine to wait for the sort to complete.
+Есть много хороших идиом использования каналов. Вот один с которого мы начнем.
+В предедущем разделе мы запускали сортировку в фоне. Канал может помощь отследить завершение горутины с сортировкой.
 
 ```golang
 c := make(chan int)  // Allocate a channel.
@@ -2203,14 +2198,11 @@ doSomethingForAWhile()
 <-c   // Wait for sort to finish; discard sent value.
 ```
 
-Receivers always block until there is data to receive.
-If the channel is unbuffered, the sender blocks until the receiver has
-received the value.
-If the channel has a buffer, the sender blocks only until the
-value has been copied to the buffer; if the buffer is full, this
-means waiting until some receiver has retrieved a value.
+Получатель всегда блокируется до тех пор пока данные не получит получатель.
+Если канал не буфферизованный, отсылающий блокируется до тех пор пока получатель не получит данные.
+Если канал буфферизованный, то отсылающий блокируется только тогда когда значение копируется в буффер; если буффер полон, то будет ожидать до тех пор коку получатель не получит значение.
 
-
+**TODO**
 A buffered channel can be used like a semaphore, for instance to
 limit throughput.  In this example, incoming requests are passed
 to ```handle```, which sends a value into the channel, processes
@@ -2218,6 +2210,7 @@ the request, and then receives a value from the channel
 to ready the "semaphore" for the next consumer.
 The capacity of the channel buffer limits the number of
 simultaneous calls to ```process```.
+**-**
 
 ```golang
 var sem = make(chan int, MaxOutstanding)
@@ -2236,22 +2229,17 @@ func Serve(queue chan *Request) {
 }
 ```
 
-
+**TODO**
 Once ```MaxOutstanding``` handlers are executing ```process```,
 any more will block trying to send into the filled channel buffer,
 until one of the existing handlers finishes and receives from the buffer.
+**-**
 
 
-
-This design has a problem, though: ```Serve```
-creates a new goroutine for
-every incoming request, even though only ```MaxOutstanding```
-of them can run at any moment.
-As a result, the program can consume unlimited resources if the requests come in too fast.
-We can address that deficiency by changing ```Serve``` to
-gate the creation of the goroutines.
-Here's an obvious solution, but beware it has a bug we'll fix subsequently:
-
+Данный дизайн имеет проблемы: ```Serve```  создает новую горутину для каждого входящего запроса, при этом будет запущено не более ```MaxOutstanding``` в один момент.
+Если количество запросов увеличивается слишком быстро, то как результат, программа может потребовать безконечное количество ресурсов.
+Мы можем решить это изменением ```Serve``` используя изменения количества порождаемых горутин.
+Вот очевидное решение, но будьте осторожны, так как оно имеет ошибку, которую позже исправим:
 
 ```golang
 func Serve(queue chan *Request) {
