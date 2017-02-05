@@ -2469,40 +2469,21 @@ func server() {
 ```
 
 Клиент пытаеться получить буфер из ```freeList```; если ни один не доступен, он выделяется новые.
+Посылка от сервера в ```freeList``` подставляется назад ```b``` в свободный список, если список не полон, и в этом случаи буфер сбрасывается, чтобы утилизироваться сборщиком мусора.
+
+(Положение ```default``` в ```select``` выполняется когда другие условия не готовы, это означает что  ```selects``` никогда не блокируется.)
+Эта реализация устроена как утечкающее ведро со свободным списком всего в несколько строк, опираясь на буферизованный канал и сборщик мусора.
 
 
-The server's send to ```freeList``` puts ```b``` back
-on the free list unless the list is full, in which case the
-buffer is dropped on the floor to be reclaimed by
-the garbage collector.
+## Ошибки (Errors)
+
+Библиотеки подпрограмм часто должны возвращать какой-то признак ошибки для вызывающего.
+Как уже упомяналось ранее, множественные значения в Go могут легко возвращать подробное описание ошибки вместе с нормальным возвращением значения.
+Использование данной особенности Go для возвращения детального описания ошибки является хорошим стилем.
+Например, как вы увидете ```os.Open``` при неудаче не просто возвращает указатель на  ```nil```, он также возвращает значение ошибки, описывающей что пошло не так.
 
 
-
-(The ```default``` clauses in the ```select```
-statements execute when no other case is ready,
-meaning that the ```selects``` never block.)
-This implementation builds a leaky bucket free list
-in just a few lines, relying on the buffered channel and
-the garbage collector for bookkeeping.
-
-
-## "errors">Errors
-
-
-Library routines must often return some sort of error indication to
-the caller.
-As mentioned earlier, Go's multivalue return makes it
-easy to return a detailed error description alongside the normal
-return value.
-It is good style to use this feature to provide detailed error information.
-For example, as we'll see, ```os.Open``` doesn't
-just return a ```nil``` pointer on failure, it also returns an
-error value that describes what went wrong.
-
-
-
-By convention, errors have type ```error```,
-a simple built-in interface.
+В соответствии с соглашением, ошибки имеют тип ```error```, простой встроенный интерфейс.
 
 ```golang
 type error interface {
@@ -2510,14 +2491,9 @@ type error interface {
 }
 ```
 
-A library writer is free to implement this interface with a
-richer model under the covers, making it possible not only
-to see the error but also to provide some context.
-As mentioned, alongside the usual ```*os.File```
-return value, ```os.Open``` also returns an
-error value.
-If the file is opened successfully, the error will be ```nil```,
-but when there is a problem, it will hold an ```os.PathError```:
+Библиотека записи может реализовать данный интерфейс с богатой моделью покрытия, что позволяет не только увидеть ошибку, но и также обеспечить некий контекст.
+Как уже отмечалось, наряду с обычным ```*os.File``` возвращением значения, ```os.Open``` также возвращает значение ошибки.
+Если файл будет успешно открыт то значение ошибки будет ```nil```, но когда есть проблема, то будет передана ```os.PathError```:
 
 ```golang
 // PathError records an error and the operation and
@@ -2533,12 +2509,12 @@ func (e * PathError) Error() string {
 }
 ```
 
-_ ```PathError```'s ```Error``` generates
-a string like this:
+Ошибка ```Error``` в ```PathError``` сгенерирует строку как эта:
 
 ```command
 open /etc/passwx: no such file or directory
 ```
+
 
 Such an error, which includes the problematic file name, the
 operation, and the operating system error it triggered, is useful even
