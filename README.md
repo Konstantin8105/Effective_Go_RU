@@ -2425,14 +2425,7 @@ var numCPU = runtime.GOMAXPROCS(0)
 
 ### Утечка буффера (A leaky buffer)
 
-
-The tools of concurrent programming can even make non-concurrent
-ideas easier to express.  Here's an example abstracted from an RPC
-package.  The client goroutine loops receiving data from some source,
-perhaps a network.  To avoid allocating and freeing buffers, it keeps
-a free list, and uses a buffered channel to represent it.  If the
-channel is empty, a new buffer gets allocated.
-Once the message buffer is ready, it's sent to the server on ```serverChan```.
+Инструменты конкарентси программирования позволяет для неконкаренси идеям быть нагляднее. Вот пример из пакета RPC.  Цикл клиента горутины принимает данные из нескольких источников, возможно из сети. Для того чтобы избежать выделения и освобождения буферов, он пустой список и использует буферизованный канал для его представления. Если канал пуст, то выделяется новый буфер. После того, как буфер готов, он высылает на сервер на ```serverChan```.
 
 ```golang
 var freeList = make(chan *Buffer, 100)
@@ -2455,8 +2448,9 @@ func client() {
 }
 ```
 
-The server loop receives each message from the client, processes it,
-and returns the buffer to the free list.
+
+Цикл сервера принимает каждое сообщение из клиента, обрабатывает его и возврает  буфер на пустое список.
+
 
 ```golang
 func server() {
@@ -2474,12 +2468,16 @@ func server() {
 }
 ```
 
-The client attempts to retrieve a buffer from ```freeList```;
-if none is available, it allocates a fresh one.
+Клиент пытаеться получить буфер из ```freeList```; если ни один не доступен, он выделяется новые.
+
+
 The server's send to ```freeList``` puts ```b``` back
 on the free list unless the list is full, in which case the
 buffer is dropped on the floor to be reclaimed by
 the garbage collector.
+
+
+
 (The ```default``` clauses in the ```select```
 statements execute when no other case is ready,
 meaning that the ```selects``` never block.)
