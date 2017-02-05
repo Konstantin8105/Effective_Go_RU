@@ -1934,36 +1934,26 @@ import _ "net/http/pprof"
 Эта форма импортирования означает что данный пакет импортируется для данного побочного эффекта, потому что нет другой возможности использовать пакет: в этот файл, не имеет имени. (Если же он имеет и мы не используем это имя, то компилятор отменит программу.)
 
 
-### Интерфейс проверки (Interface checks)
+### Проверка интерфейса (Interface checks)
+
+Как мы видели ранее в разделе об интерфейсах, нет необходимости в объявлении что тип реализует определенный интерфейс.
+Вместо этого, тип реализует интерфейс только путем реализации методов интерфейса.
+На практике, большенство преобразований интерфейсов статично и поэтому проверяется во время компиляции.
 
 
-As we saw in the discussion of <a href="#interfaces_and_types">interfaces</a> above,
-a type need not declare explicitly that it implements an interface.
-Instead, a type implements the interface just by implementing the interface's methods.
-In practice, most interface conversions are static and therefore checked at compile time.
-For example, passing an ```*os.File``` to a function
-expecting an ```io.Reader``` will not compile unless ```*os.File``` implements the ```io.Reader``` interface.
+К примеру, передавая ```*os.File``` в функцию ожидающая ```io.Reader``` не будет скомпилировано, так как ```*os.File``` не реализует интерфейс ```io.Reader```.
 
 
+Хотя все же некоторые проверки интерфейсов происходят во время выполнения.
+Один из примеров в пакете [encoding/json](https://golang.org/pkg/encoding/json/), который определяет интерфейс [Marshaler](https://golang.org/pkg/encoding/json/#Marshaler). Когда **JSON encoder** принимает значение, которое реализует этот интерфейс, *encoder* вызывает функцию упаковщик значений для преобразования в JSON, в отличии от стандартного преобразования.
 
-Some interface checks do happen at run-time, though.
-One instance is in the ```<a href="/pkg/encoding/json/">encoding/json</a>```
-package, which defines a ```<a href="/pkg/encoding/json/#Marshaler">Marshaler</a>```
-interface. When the JSON encoder receives a value that implements that interface,
-the encoder invokes the value's marshaling method to convert it to JSON
-instead of doing the standard conversion.
-The encoder checks this property at run time with a <a href="#interface_conversions">type assertion</a> like:
-
+*Encoder* проверяет эти свойства во время работы:
 
 ```golang
 m, ok := val.(json.Marshaler)
 ```
 
-
-If it's necessary only to ask whether a type implements an interface, without
-actually using the interface itself, perhaps as part of an error check, use the blank
-identifier to ignore the type-asserted value:
-
+Если необходимо только запросить тип реализуемого интерфейса без использования самого интерфейса, то это часть проверки ошибок, используйте пустой идентификатор для игнорирования защиты типов:
 
 ```golang
 if _, ok := val.(json.Marshaler); ok {
@@ -1971,39 +1961,25 @@ if _, ok := val.(json.Marshaler); ok {
 }
 ```
 
-
-One place this situation arises is when it is necessary to guarantee within the package implementing the type that
-it actually satisfies the interface.
-If a type—for example, ```<a href="/pkg/encoding/json/#RawMessage">json.RawMessage</a>```—needs
-a custom JSON representation, it should implement ```json.Marshaler```, but there are no static conversions that would
-cause the compiler to verify this automatically.
-If the type inadvertently fails to satisfy the interface, the JSON encoder will still work,
-but will not use the custom implementation.
-To guarantee that the implementation is correct,
-a global declaration using the blank identifier can be used in the package:
+Одна из ситуаций применения это когда необходимо гарантировать в рамках пакета что данный тип реализует интерфейс.
+Если взглянуть на пример [json.RawMessage](https://golang.org/pkg/encoding/json/#RawMessage), где необходима пользовательское представление в формате JSON, он должен реализовывать ```json.Marshaler```, но отсутствует статическое преобразование для автоматической проверки компилятором.
+Если определенный тип не будет реализовывать интерфейс, то *JSON encoder* будет все же работать, но без пользовательской реализации.
+Для гарантирования корректной реализации, в пакете можете использовать пустой идентификатор для глобальной декларации:
 
 ```golang
 var _ json.Marshaler = (*RawMessage)(nil)
 ```
 
-In this declaration, the assignment involving a conversion of a ```*RawMessage``` to a ```Marshaler``` requires that ```*RawMessage``` implements ```Marshaler```,
-and that property will be checked at compile time.
-Should the ```json.Marshaler``` interface change, this package
-will no longer compile and we will be on notice that it needs to be updated.
+в этой деклорации, присвоение с конвертацией ```*RawMessage``` к ```Marshaler``` требует чтобы, ```*RawMessage``` реализовывал ```Marshaler``` и данная проверка будет производиться во время компиляции.
+В случаи если интерфейс ```json.Marshaler```, этот пакет не будет компилироваться и мы будем знать об обновлении.
+
+Использование пустого идентификатора в данном случат является индикатором о проверки типов, и при этом не создается переменной.
+Не используйте этот подход для проверки каждого типа.
+В соответствии с соглашением, такая деклорация используется только когда отсутствует статическая конвертация уже существующая в коде, который является редким событием.
 
 
 
-The appearance of the blank identifier in this construct indicates that
-the declaration exists only for the type checking,
-not to create a variable.
-Don't do this for every type that satisfies an interface, though.
-By convention, such declarations are only used
-when there are no static conversions already present in the code,
-which is a rare event.
-
-
-
-## "embedding">Embedding
+## Вложение (Embedding)
 
 
 Go does not provide the typical, type-driven notion of subclassing,
