@@ -2515,18 +2515,12 @@ func (e * PathError) Error() string {
 open /etc/passwx: no such file or directory
 ```
 
-
-Such an error, which includes the problematic file name, the
-operation, and the operating system error it triggered, is useful even
-if printed far from the call that caused it;
-it is much more informative than the plain
-"no such file or directory".
+Такая ошибка, которая включает имя проблемного файла, операции, ошибка операционной системя и т.д., полезная, даже если напечатать далеко от вызова; это гораздо полезнее, что просто запись "файл или папка не найдены".
 
 
+Если это возможно, то строка ошибки должна определять происхождение, например, при наличии префикса имен операции или пакета, который вызвал ошибку.
+Например, в пакете ```image``` при ошибки декодирования представлена от неизвестного формата: "image: unknown format".
 
-When feasible, error strings should identify their origin, such as by having
-a prefix naming the operation or package that generated the error.  For example, in package ```image```, the string representation for a decoding error due to an
-unknown format is "image: unknown format".
 
 
 
