@@ -2547,19 +2547,10 @@ for try := 0; try < 2; try++ {
 ### Паника (Panic)
 
 
-The usual way to report an error to a caller is to return an ```error``` as an extra return value.  The canonical ```Read``` method is a well-known instance; it returns a byte
-count and an ```error```.  But what if the error is
-unrecoverable?  Sometimes the program simply cannot continue.
+Обычный способ сообщить об ошибке к абоненту, это вернуть ```error```, в качестве дополнительного возвращаемого значения. Канонический метод ```Read``` является хорошим примером, который возвращает количество байт и ```error```. Но что если ошибка невосстановимая? Иногда программа просто не может продолжать работать.
 
-
-
-For this purpose, there is a built-in function ```panic```
-that in effect creates a run-time error that will stop the program
-(but see the next section).  The function takes a single argument
-of arbitrary type often a string to be printed as the
-program dies.  It's also a way to indicate that something impossible has
-happened, such as exiting an infinite loop.
-
+Для этого есть встроенная функция ```panic```, которая создает ошибку во время выполнения программы, которая остановит программу (но смотрите следующий раздел).
+Функци принимает один аргумент произвольного типа, часто используется строка для вывода на печать, так как программа умирает. Это также путь указать, что произошло что-то невозможное, как например выход из бесконечного цикла.
 
 
 ```golang
@@ -2579,13 +2570,7 @@ func CubeRoot(x float64) float64 {
 ```
 
 
-This is only an example but real library functions should
-avoid ```panic```.  If the problem can be masked or worked
-around, it's always better to let things continue to run rather
-than taking down the whole program.  One possible counterexample
-is during initialization: if the library truly cannot set itself up,
-it might be reasonable to panic, so to speak.
-
+Это вего лишь пример и в реальных библиотечных функциях следует избегать ```panic```. Если проблема может быть замаскирована или работать по другому алгоритму, то это всегда лучше, чтобы программа продолжала работать, а не выключать её. Один из возможных примеров: если библиотека действительно не может это сделать, то это причина паниковать.
 
 ```golang
 var user = os.Getenv("USER")
@@ -2597,7 +2582,7 @@ func init() {
 }
 ```
 
-### "recover">Recover
+### Восстановление (Recover)
 
 
 When ```panic``` is called, including implicitly for run-time
