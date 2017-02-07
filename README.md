@@ -2522,13 +2522,7 @@ open /etc/passwx: no such file or directory
 Например, в пакете ```image``` при ошибки декодирования представлена от неизвестного формата: "image: unknown format".
 
 
-
-
-Callers that care about the precise error details can
-use a type switch or a type assertion to look for specific
-errors and extract details.  For ```PathErrors```
-this might include examining the internal ```Err```
-field for recoverable failures.
+Вызывающие, которые заботятся о точности ошибки, могут использовать переключатель типов *type switch* или *type assertion* для того специфицирования ошибок и получения большего количества деталей. Для ```PathErrors``` это означает включения изучения внутренних полей ```Err``` для восстановления причины отказа.
 
 
 ```golang
@@ -2545,16 +2539,12 @@ for try := 0; try < 2; try++ {
 }
 ```
 
-
-The second ```if``` statement here is another <a href="#interface_conversions">type assertion</a>.
-If it fails, ```ok``` will be false, and ```e```
-will be ```nil```.
-If it succeeds,  ```ok``` will be true, which means the
-error was of type ```*os.PathError```, and then so is ```e```,
-which we can examine for more information about the error.
+Здесь вторая проверка ```if``` это ещё другой тип *type assertion*.
+Если это не удается, то ```ok``` будет *false* и значение ```e``` будет ```nil```.
+Если это удается, то ```ok``` будет *true*, который означает, что имеет тип ```*os.PathError```, и затем когда ```e```, который мы можем рассматривать для более подробной информации об обшибке.
 
 
-### "panic">Panic
+### Паника (Panic)
 
 
 The usual way to report an error to a caller is to return an ```error``` as an extra return value.  The canonical ```Read``` method is a well-known instance; it returns a byte
