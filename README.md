@@ -2668,23 +2668,13 @@ if pos == 0 {
 
 ## Веб-сервер
 
+Давайте закончим разработкой веб-вервера на Go.
+Google предоставлен сервис по адресу [http://chart.apis.google.com](http://chart.apis.google.com) с автоматическим форматированием данных графиков и диаграмм.
+Это трудно использовать в интерактивном режиме, но Вам необходимо добавить URL в качестве запроса.
+Эдесь программа использует приятный простой интерфейс с одной формой для данных: для небольшого кусочка текста, который вызывает серсер диаграмм для создания QC кода, кодируя текст в матрицу пиксел.
+Эта картинка можно быть сфотографированна с помощью камеры телефона и интерпретирована, к примеру, как URL, экономя тем самым его набор на маленькой клавиатуре телефона.
 
-Let's finish with a complete Go program, a web server.
-This one is actually a kind of web re-server.
-Google provides a service at
-<a href="http://chart.apis.google.com">http://chart.apis.google.com</a>
-that does automatic formatting of data into charts and graphs.
-It's hard to use interactively, though,
-because you need to put the data into the URL as a query.
-The program here provides a nicer interface to one form of data: given a short piece of text,
-it calls on the chart server to produce a QR code, a matrix of boxes that encode the
-text.
-That image can be grabbed with your cell phone's camera and interpreted as,
-for instance, a URL, saving you typing the URL into the phone's tiny keyboard.
-
-
-Here's the complete program.
-An explanation follows.
+Вот программа полностью с последующими пояснениями.
 
 ```golang
 //{{code "/doc/progs/eff_qr.go" `/package/` `$`}}
@@ -2736,50 +2726,31 @@ name=s value="" title="Text to QR Encode"><input type=submit
 value="Show QR" name=qr>
 </form>
 </body>
-</html>
+</html>`
 ```
 
-The pieces up to ```main``` should be easy to follow.
-The one flag sets a default HTTP port for our server.  The template
-variable ```templ``` is where the fun happens. It builds an HTML template
-that will be executed by the server to display the page; more about
-that in a moment.
+Легко понять, что происходит в ```main```.
+Один флаг устанавливает HTTP сервер по умолчания для нашего сервера.
+В значении шаблона ```templ```, происходит самое интересное. Он конструирует шаблон HTML, который будет выполнен сервером для показа страницы. Давайте опишим, что происходит в этот момтент.
+
+Функция ```main``` разбирает флаги и использует механизм о котором мы говорили выше, связывает функцию ```QR``` для корневого пути для сервера.
+Когда вызывается ```http.ListenAndServe``` для старта сервера, он блокируется пока сервер запущен.
+
+Функция ```QR``` только получает запрос, который содержит дынные формы, и выполняет шаблон на данных в форме с именем переменной ```s```.
 
 
-The ```main``` function parses the flags and, using the mechanism
-we talked about above, binds the function ```QR``` to the root path
-for the server.  Then ```http.ListenAndServe``` is called to start the
-server; it blocks while the server runs.
+Пакет шаблонов ```html/template``` можный; данная программа лишь слегка затрагивает его возможности.
+По сути, он переписывает часть текста HTML на лету, заменяя элементы на элементы данных, передаваемые в ```templ.Execute```, в данном случаи переменной формы.
+В тексте шаблона (```templateStr```), имеються *двойные скобки разделители* обозначающие действия шаблона.
+Участок от ```{{html "{{if .}}"}}``` до ```{{html "{{end}}"}}``` выполняются только если значения текущей элемента данных, вызывают ```.``` (точка) не пустая. То есть, если строка пуста, то данный учаток шаблона игнорируется.
 
 
-_ ```QR``` just receives the request, which contains form data, and
-executes the template on the data in the form value named ```s```.
+Два примере кода ```{{html "{{.}}"}}``` предназначены для показа существующих данных в запросе шаблона на веб странице.
+Пакет шаблонов HTML автоматически обеспечивает соответсвие, поэтому текст является безопасным для отображения.
 
 
-The template package ```html/template``` is powerful;
-this program just touches on its capabilities.
-In essence, it rewrites a piece of HTML text on the fly by substituting elements derived
-from data items passed to ```templ.Execute```, in this case the
-form value.
-Within the template text (```templateStr```),
-double-brace-delimited pieces denote template actions.
-The piece from ```{{html "{{if .}}"}}```
-to ```{{html "{{end}}"}}``` executes only if the value of the current data item, called ```.``` (dot),
-is non-empty.
-That is, when the string is empty, this piece of the template is suppressed.
+Остальные строки шаблона, просто строки HTML , которые показываются при загрузки страницы.
+Если это слишком быстрое объяеснение, то смотрите [документацию](https://golang.org/pkg/html/template/) о пакете шаблонов для большего понимания.
 
-
-The two snippets ```{{html "{{.}}"}}``` say to show the data presented to
-the template—the query string—on the web page.
-The HTML template package automatically provides appropriate escaping so the
-text is safe to display.
-
-
-The rest of the template string is just the HTML to show when the page loads.
-If this is too quick an explanation, see the <a href="/pkg/html/template/">documentation</a>
-for the template package for a more thorough discussion.
-
-
-And there you have it: a useful web server in a few lines of code plus some
-data-driven HTML text.
-Go is powerful enough to make a lot happen in a few lines.
+В результате у Вас есть: полезный пример веб сервера из нескольких строк кода с управлением данных текста HTML.
+Язые Go достаточно мощный для создание много чего интересного за несколько строк.
