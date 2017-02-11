@@ -2584,28 +2584,12 @@ func init() {
 
 ### Восстановление (Recover)
 
+Когда вызывается ```panic```, в том числе не явно при наличии ошибок во время выполнения программы, к примеру когда происходит обращение к срезу за его пределами или при некорректной работы с типами, происходит немедленное прекращение работы функции и начинается раскручивание стека горутин, запуск всех отсроченных функций *defer*.
+Если раскручивание достигает вершины стека, то программа умирает. Тем не менее, можно использовать встроенную функцию ```recover```, чтобы восстановить констроль над горутинами и возобновить нормальное выполнение.
 
-When ```panic``` is called, including implicitly for run-time
-errors such as indexing a slice out of bounds or failing a type
-assertion, it immediately stops execution of the current function
-and begins unwinding the stack of the goroutine, running any deferred
-functions along the way.  If that unwinding reaches the top of the
-goroutine's stack, the program dies.  However, it is possible to
-use the built-in function ```recover``` to regain control
-of the goroutine and resume normal execution.
+Вызов ```recover``` останавливает раскручивание и возвращает аргументы в ```panic```. Поскольку только код, который работает во время раскручивания внутри отложенных функций, ```recover``` полезно устанавливать внутри отложенных функций.
 
-
-
-A call to ```recover``` stops the unwinding and returns the
-argument passed to ```panic```.  Because the only code that
-runs while unwinding is inside deferred functions, ```recover```
-is only useful inside deferred functions.
-
-
-
-One application of ```recover``` is to shut down a failing goroutine
-inside a server without killing the other executing goroutines.
-
+Одно ```recover``` приложение выключает недопустимые горутины изнутри, то сервер без выключения других запущенных горутин.
 
 ```golang
 func server(workChan <-chan *Work) {
@@ -2624,32 +2608,15 @@ func safelyDo(work *Work) {
 }
 ```
 
-
-In this example, if ```do(work)``` panics, the result will be
-logged and the goroutine will exit cleanly without disturbing the
-others.  There's no need to do anything else in the deferred closure;
-calling ```recover``` handles the condition completely.
+В этом примере, если будет вызвана паника в  ```do(work)```, то результат будет залогирован и горутина закончит работу без препятствия выполнения для других. Там нет необходимости делать что то дополнительно при отсроченном выполнении; вызывание ```recover``` обрабатывает сосотяние полностью.
 
 
-
-Because ```recover``` always returns ```nil``` unless called directly
-from a deferred function, deferred code can call library routines that themselves
-use ```panic``` and ```recover``` without failing.  As an example,
-the deferred function in ```safelyDo``` might call a logging function before
-calling ```recover```, and that logging code would run unaffected
-by the panicking state.
+Так как ```recover``` всегда возвращает ```nil```, если вызывалась из отложенной функции, отложенный код может вызывать библиотеку функций, которые сами используют ```panic``` и ```recover``` без сбоя.
+К примеру, отложенная функция в ```safelyDo``` может вызвать функцию логирования до вызова ```recover```, и этот код логирования будет работать не зависимо от состоянии паники.
 
 
-
-With our recovery pattern in place, the ```do```
-function (and anything it calls) can get out of any bad situation
-cleanly by calling ```panic```.  We can use that idea to
-simplify error handling in complex software.  Let's look at an
-idealized version of a ```regexp``` package, which reports
-parsing errors by calling ```panic``` with a local
-error type.  Here's the definition of ```Error```,
-an ```error``` method, and the ```Compile``` function.
-
+С помощью данного шаблона восстановления , функция ```do``` (и все что он вызывает) может выйти из любой ситуации вызовом ```panic```.
+Мы можеи использовать данную идею для простой обработки ошибок в сложной программе. Давайте взглянем на идеализированную версию пакета ```regexp```, которая сообщает об ошибки с помощью ```panic``` с типом локальной ошибки. Это определение ```Error```, в методе ```error``` и функции ```Compile```.
 
 ```golang
 // Error is the type of a parse error; it satisfies the error interface.
@@ -2678,28 +2645,12 @@ func Compile(str string) (regexp *Regexp, err error) {
 }
 ```
 
-
-If ```doParse``` panics, the recovery block will set the
-return value to ```nil``` deferred functions can modify
-named return values.  It will then check, in the assignment
-to ```err```, that the problem was a parse error by asserting
-that it has the local type ```Error```.
-If it does not, the type assertion will fail, causing a run-time error
-that continues the stack unwinding as though nothing had interrupted
-it.
-This check means that if something unexpected happens, such
-as an index out of bounds, the code will fail even though we
-are using ```panic``` and ```recover``` to handle
-parse errors.
+Если происходит паника в ```doParse```, то блок восстановления будет устанавливать значение ```nil``` отложенная функция может модифицировать имя возвращаемых значений.
+Затем он проверяет, значение ```err```, синтаксическая ошибка имеет ликальный тип ```Error```. Если этого не произойдет, то это приведет к ошибке во время выполнения и будет раскручивать стек.
+Эта проверка означает что если происходит что-то необжиданное, как выход за пределы индексирования, код будет прерван даже при использовании ```panic``` и ```recover``` для обработки ошибок.
 
 
-
-With error handling in place, the ```error``` method (because it's a
-method bound to a type, it's fine, even natural, for it to have the same name
-as the builtin ```error``` type)
-makes it easy to report parse errors without worrying about unwinding
-the parse stack by hand:
-
+При наличии обработчика ошибок, метод ```error``` (потому его метод связан с типом, это хорошо, так как он имеет то же имя что встроенный тип ```error```) позволяет легко сообщить о наличии синтаксической ошибки, не беспокоясь о разматывания стек вручную:
 
 ```golang
 if pos == 0 {
@@ -2707,24 +2658,15 @@ if pos == 0 {
 }
 ```
 
-
-Useful though this pattern is, it should be used only within a package. ```Parse``` turns its internal ```panic``` calls into ```error``` values; it does not expose ```panics```
-to its client.  That is a good rule to follow.
+Данный шаблон полезный в рамках только одного пакета. Превращение ```Parse```  внутреннего вызова ```panic``` в значение ```error```, что позволяет на выставлять ```panics``` для клиента. Это хорошее правило, чтобы ему следовать.
 
 
-
-By the way, this re-panic idiom changes the panic value if an actual
-error occurs.  However, both the original and new failures will be
-presented in the crash report, so the root cause of the problem will
-still be visible.  Thus this simple re-panic approach is usually
-sufficient it's a crash after all but if you want to
-display only the original value, you can write a little more code to
-filter unexpected problems and re-panic with the original error.
-That's left as an exercise for the reader.
+Данный подход, меняет идиому паник на значение паники если произошла ошибка.
+Тем не менее, как оригинальная, так и новые сбои будут представлены в отчете сбоев, поэтому основная причина этой проблемы не будет видна.
+Если Вы зотите увидеть только оригинальные значения, Вам необходимо немного больше кода для фильтрации неожиданных проблем и повторно паниковать с оригинальной ошибкой.
 
 
-
-## "web_server">A web server
+## Веб-сервер
 
 
 Let's finish with a complete Go program, a web server.
