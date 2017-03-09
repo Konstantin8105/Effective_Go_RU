@@ -1,4 +1,4 @@
-# Effective Go (RU) (Эффективное программирование на языке Go)
+# Effective Go (RU) (Эффективный Go)
 
 Оригинал смотри: https://golang.org/doc/effective_go.html
 ```command
