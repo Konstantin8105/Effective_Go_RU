@@ -62,7 +62,7 @@ go version go1.7.4
 ### Канал каналов (Channels of channels)
 ### Параллелелизм (Parallelization)
 ### Текущий буффер (A leaky buffer)
-* [Ошибки (Errors)](#Ошибки-Errors)
+* [Ошибки (Errors)](#Ошибки--Errors-)
 ### Паника (Panic)
 ### Восстановление (Recover)
 * [Веб-сервер](#Веб-сервер)
