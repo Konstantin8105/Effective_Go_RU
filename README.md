@@ -57,7 +57,7 @@ go version go1.7.4
 * [Согласованность, параллельная обработка, параллельное выполнение  (Concurrency)](#Согласованность-параллельная-обработка-параллельное-выполнение--concurrency)
 	* [Распределение памяти по сообщениям (Share by communicating)](#Распределение-памяти-по-сообщениям-share-by-communicating)
 	* [Го-рутины (Goroutines)](#Го-рутины-goroutines)
-	* [Каналы (Channels)](#Каналы-channels)
+	* [Каналы (Channels)](#Каналы-Channels)
 	* [Канал каналов (Channels of channels)](#Канал-каналов-channels-of-channels)
 	* [Параллелелизм (Parallelization)](#Параллелелизм-parallelization)
 	* [Текущий буффер (A leaky buffer)](#Текущий-буффер-a-leaky-buffer)
