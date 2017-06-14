@@ -1,11 +1,10 @@
 # Effective Go (RU) (Эффективный Go)
 
 Оригинал смотри: https://golang.org/doc/effective_go.html
-```command
-go version go1.7.4
-```
 
-#Оглавление
+`go version go1.7.4`
+
+# Оглавление
 
 * [Введение](#Введение)
 * [Примеры](#Примеры)
