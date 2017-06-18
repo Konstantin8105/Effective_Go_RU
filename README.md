@@ -1,9 +1,17 @@
 # Effective Go (RU) (Эффективный Go)
 
-Оригинал смотри: https://golang.org/doc/effective_go.html
+------
 
+Оригинал смотри: https://golang.org/doc/effective_go.html
 `go version go1.7.4`
 
+------
+
+**Список дополнительных материалов:**
+* [Руководство сотрудничества](https://github.com/Konstantin8105/Contribution_Guide_RU)
+* [Эффективный Go](https://github.com/Konstantin8105/Effective_Go_RU)
+
+------
 # Оглавление
 
 * [Введение](#Введение)
@@ -2974,3 +2982,11 @@ value="Show QR" name=qr>
 Язые Go достаточно мощный для создание много чего интересного за несколько строк.
 
 [^](#Оглавление)
+
+------
+
+**Список дополнительных материалов:**
+* [Руководство сотрудничества](https://github.com/Konstantin8105/Contribution_Guide_RU)
+* [Эффективный Go](https://github.com/Konstantin8105/Effective_Go_RU)
+
+------
