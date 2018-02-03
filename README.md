@@ -1516,7 +1516,7 @@ Although you'll see it most often applied to structs, this technique is also use
 **-**
 
 ```golang
-//{{code "/doc/progs/eff_bytesize.go" `/^func.*ByteSize.*String/` `/^}/`}}
+//See code "/doc/progs/eff_bytesize.go"
 
 func (b ByteSize) String() string {
 	switch {
