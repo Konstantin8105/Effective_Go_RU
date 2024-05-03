@@ -879,13 +879,11 @@ leaving: b
 К примеру `new(T)` резервирует память нулями для нового элемента типа `T` и возвращает его указатель на значение типа `*T`. В терминологии Go, он возвращает указатель на новую зарезервированную память заполненная нулями с типом `T`.
 
 
-**TODO**
-Since the memory returned by `new` is zeroed, it's helpful to arrange when designing your data structures that the zero value of each type can be used without further initialization.  This means a user of the data structure can create one with `new` and get right to work.
-For example, the documentation for `bytes.Buffer` states that "the zero value for `Buffer` is an empty buffer ready to use."
-Similarly, `sync.Mutex` does not have an explicit constructor or `Init` method.
-Instead, the zero value for a `sync.Mutex` is defined to be an unlocked mutex.
-The zero-value-is-useful property works transitively. Consider this type declaration.
-**-**
+Поскольку память, возвращаемая функцией `new`, обнуляется, полезно заранее продумать, чтобы нулевое значение каждого типа можно было использовать без дополнительной инициализации. Это означает, что пользователь структуры данных может создать её с помощью `new` и сразу приступить к работе.
+Например, в документации для `bytes.Buffer` указано, что "нулевое значение для `Buffer` — это пустой буфер, готовый к использованию."
+Аналогично, `sync.Mutex` не имеет явного конструктора или метода `Init`.
+Вместо этого, нулевое значение для `sync.Mutex` определено как разблокированный мьютекс.
+Свойство полезности нулевого значения работает транзитивно. Рассмотрим это объявление типа:
 
 ```golang
 type SyncedBuffer struct {
@@ -894,9 +892,7 @@ type SyncedBuffer struct {
 }
 ```
 
-**TODO**
-Values of type `SyncedBuffer` are also ready to use immediately upon allocation or just declaration.  In the next snippet, both `p` and `v` will work correctly without further arrangement.
-**-**
+Значения типа `SyncedBuffer` также готовы к немедленному использованию сразу после выделения памяти или просто объявления. В следующем фрагменте кода и `p`, и `v` будут корректно работать без дополнительной настройки.
 
 ```golang
 p := new(SyncedBuffer)  // type *SyncedBuffer
